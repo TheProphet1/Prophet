@@ -93,7 +93,7 @@
 	</extension>
 </addon>
 
-    <addon id="repository.prophet" name="The Prophet repo" version="1.0.0" provider-name="The Prophet">
+    <addon id="repository.prophet" name="The Prophet repo" version="1.0.5" provider-name="The Prophet">
         <requires>
             <import addon="xbmc.addon" version="12.0.0"/>
         </requires>
