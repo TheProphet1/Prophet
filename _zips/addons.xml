@@ -93,53 +93,53 @@
 	</extension>
 </addon>
 
-<addon id="repository.prophet" name="The Prophet repo" version="1.0.0" provider-name="The Prophet">
-	<requires>
-		<import addon="xbmc.addon" version="12.0.0"/>
-	</requires>
-	<extension point="xbmc.addon.repository" name="The Prophet repo">
-		<info compressed="false">https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/addons.xml</info>
-		<checksum>https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/addons.xml.md5</checksum>
-		<datadir zip="true">https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/</datadir>
-		<hashes>false</hashes>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/jsergio123/zips/master/</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/eggman19/eggman/master/_files/</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/</datadir>
-		</dir>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>The Prophet repo</summary>
-		<description>Welcome to The Prophet repo</description>
-		<platform>all</platform>
-		<genre>movies,usa</genre>
-	</extension>
-</addon>
+    <addon id="repository.prophet" name="The Prophet repo" version="1.0.0" provider-name="The Prophet">
+        <requires>
+            <import addon="xbmc.addon" version="12.0.0"/>
+        </requires>
+        <extension point="xbmc.addon.repository" name="The Prophet repo">
+            <info compressed="false">https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/</datadir>
+            <hashes>false</hashes>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/jsergio123/zips/master/</datadir>
+        </dir>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/</datadir>
+        </dir>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/eggman19/eggman/master/_files/</datadir>
+        </dir>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers</datadir>
+        </dir>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
+        </dir>
+        <dir>
+            <info compressed="false">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/</datadir>
+        </dir>
+        </extension>
+        <extension point="xbmc.addon.metadata">
+            <summary>The Prophet repo</summary>
+            <description>Welcome to The Prophet repo</description>
+            <platform>all</platform>
+            <genre>movies,usa</genre>
+        </extension>
+    </addon>
 
 <addon id="script.amass.artwork" version="1.0.0" name="Amass Artwork" provider-name="The Prophet">
 	<requires>
