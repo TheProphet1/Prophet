@@ -17,12 +17,7 @@
             <info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/</datadir>
-        </dir>
-        <dir>
-            <info compressed="false">https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/eggman19/eggman/master/_files/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/eggman19/eggman/master/_files/</datadir>
-        </dir>  
+        </dir> 
         <dir>       
             <info compressed="false">https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/eggman19/eggscrapers/master/_eggscrapers/addons.xml.md5</checksum>
@@ -32,12 +27,7 @@
             <info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
             <checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
             <datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
-        </dir>  
-        <dir>
-            <info compressed="false">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/therealatreides/houseatreides/master/_zipfiles/</datadir>
-        </dir>  
+        </dir>   
         </extension>
         <extension point="xbmc.addon.metadata">
             <summary>The Prophet repo</summary>
