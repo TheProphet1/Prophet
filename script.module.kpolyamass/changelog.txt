@@ -1,0 +1,9 @@
+[B]1.0.8[/B]
+- Multiple Updates
+
+[B]1.0.2[/B]
+- Updated cfscrape
+- Added more sources
+
+[B]1.0.1[/B]
+- Changed icon, fanart
