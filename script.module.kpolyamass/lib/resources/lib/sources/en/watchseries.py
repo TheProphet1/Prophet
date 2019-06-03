@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Eggman Add-on
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -31,7 +29,7 @@ class source:
         self.priority = 0
         self.language = ['en']
         self.domains = ['watch-series.co','watch-series.ru']
-        self.base_link = 'https://ww2.watch-series.co'
+        self.base_link = 'https://ww3.watch-series.co'
         self.search_link = 'search.html?keyword=%s'
         self.scraper = cfscrape.create_scraper()
 

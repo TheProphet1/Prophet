@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Eggman Add-on
-
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -16,17 +13,19 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 '''
 
-
 import re
-import traceback
+
 import urllib
 import urlparse
 
-from resources.lib.modules import cfscrape, cleantitle, client, debrid, dom_parser2, log_utils
-
+from resources.lib.modules import cfscrape
+from resources.lib.modules import cleantitle
+from resources.lib.modules import client
+from resources.lib.modules import debrid
+from resources.lib.modules import dom_parser2
+from resources.lib.modules import log_utils
 
 class source:
     def __init__(self):
@@ -45,7 +44,6 @@ class source:
             url = urllib.urlencode(url)
             return url
         except Exception:
-           
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -54,7 +52,6 @@ class source:
             url = urllib.urlencode(url)
             return url
         except Exception:
-
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -68,7 +65,6 @@ class source:
             url = urllib.urlencode(url)
             return url
         except Exception:
-
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -79,41 +75,25 @@ class source:
                 return sources
 
             data = urlparse.parse_qs(url)
-
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
-
-            title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
 
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
             query = '%s S%02dE%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode'])) if\
                 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
-            query_alt = '%s %s S%02dE%02d' % (data['tvshowtitle'], data['year'], int(data['season']), int(data['episode'])) if\
-                'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
 
             url = self.search_link % urllib.quote_plus(query).lower()
             url = urlparse.urljoin(self.base_link, url)
-            url_alt = self.search_link % urllib.quote_plus(query_alt).lower()
-            url_alt = urlparse.urljoin(self.base_link, url_alt)
 
             headers = {
-                'Referer': 'www.ddlvalley.me/?s=',
+                'Referer': 'http://www.ddlvalley.me/?s=',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                 'Accept-Encoding': 'gzip, deflate', 'Accept-Language': 'en-US,en;q=0.9',
                 'User-Agent':
-                'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+                'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0'}
             r = self.scraper.get(url, headers=headers).content
 
             items = dom_parser2.parse_dom(r, 'h2')
-            if items is None and 'tvshowtitle' in data:
-                r = self.scraper.get(url, headers=headers).content
-                items = dom_parser2.parse_dom(r, 'h2')
-                if items is None:
-                    return sources
-
-            log_utils.log('DDL - Passed')
-            log_utils.log('DDL - items' + str(items))
-
             items = [dom_parser2.parse_dom(i.content, 'a', req=['href', 'rel', 'data-wpel-link']) for i in items]
             items = [(i[0].content, i[0].attrs['href']) for i in items]
 
@@ -128,12 +108,12 @@ class source:
                         continue
                     url = item[1]
                     headers = {
-                        'Referer': 'www.ddlvalley.me/search/',
+                        'Referer': 'http://www.ddlvalley.me/search/',
                         'Accept':
                         'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
                         'Accept-Encoding': 'gzip, deflate', 'Accept-Language': 'en-US,en;q=0.9',
                         'User-Agent':
-                        'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'}
+                        'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:66.0) Gecko/20100101 Firefox/66.0'}
                     r = self.scraper.get(url, headers=headers).content
                     links = dom_parser2.parse_dom(r, 'a', req=['href', 'rel', 'data-wpel-link'])
                     links = [i.attrs['href'] for i in links]

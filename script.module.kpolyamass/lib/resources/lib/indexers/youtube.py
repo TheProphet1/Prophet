@@ -8,9 +8,9 @@
  # ----------------------------------------------------------------------------
 #######################################################################
 
-# Addon Name: Eggman
-# Addon id: Eggmans
-# Addon Provider: Eggman
+# Addon Name: Kpolyamass
+# Addon id: Kpolyamasss
+# Addon Provider: The Prophet
 
 
 from resources.lib.modules import log_utils

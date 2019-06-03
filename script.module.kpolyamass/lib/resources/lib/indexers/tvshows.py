@@ -913,7 +913,7 @@ class tvshows:
         self.meta = []
         total = len(self.list)
 
-        self.fanart_tv_headers = {'api-key': 'ZDY5NTRkYTk2Yzg4ODFlMzdjY2RkMmQyNTlmYjk1MzQ='.decode('base64')}
+        self.fanart_tv_headers = {'api-key': 'OGI1MWZmOGU5ZmM1YjYwYmU5MGI5N2NjZTU0ZGU3MjE='.decode('base64')}
         if not self.fanart_tv_user == '':
             self.fanart_tv_headers.update({'client-key': self.fanart_tv_user})
 

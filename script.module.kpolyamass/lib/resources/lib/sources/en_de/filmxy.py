@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-    eggman Add-on
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -29,7 +27,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['filmxy.me']
-        self.base_link = 'https://www.filmxy.one/'
+        self.base_link = 'https://www.filmxy.ws/'
         self.search_link = 'search/%s/feed/rss2/'
         self.post = 'https://cdn.filmxy.one/asset/json/posts.json'
 
@@ -38,7 +36,7 @@ class source:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urllib.urlencode(url)
             return url
-        except BaseException:
+        except Exception:
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -53,20 +51,10 @@ class source:
             tit = cleantitle.geturl(title + ' ' + year)
             query = urlparse.urljoin(self.base_link, tit)
 
-            # r = self.scraper.get(query).content
             r = client.request(query, referer=self.base_link, redirect=True)
             if not data['imdb'] in r:
                 return sources
-            # r = client.parseDOM(r, 'item')
-            # links = [(client.parseDOM(i, 'title')[0], client.parseDOM(i, 'link')[0]) for i in r if i]
-            # links = [(i[0], i[1]) for i in links if cleantitle.get_simple(i[0].split('(')[0]) in cleantitle.get_simple(title)]
-            # links = [i[1] for i in links if year in i[0]]
-            # urls = []
-            # for i in links:
-            #     #r = self.scraper.get(i).content
-            #     r = client.request(i, referer=)
-            #     url = client.parseDOM(r, 'a', ret='href', attrs={'id':'main-down'})[0]
-            #     urls.append(url)
+
             links = []
 
             try:
@@ -78,7 +66,7 @@ class source:
                 for i in frames:
                     links.append(i)
 
-            except BaseException:
+            except Exception:
                 pass
             try:
                 streams = client.parseDOM(r, 'div', attrs={'id': 'tab-stream'})[0]
@@ -86,7 +74,7 @@ class source:
                                      re.I | re.DOTALL)
                 for i in streams:
                     links.append(i)
-            except BaseException:
+            except Exception:
                 pass
 
             for url in links:
@@ -112,10 +100,10 @@ class source:
                             {'source': host, 'quality': '1080p', 'language': 'en', 'url': url,
                              'direct': False,
                              'debridonly': False})
-                except BaseException:
+                except Exception:
                     pass
             return sources
-        except BaseException:
+        except Exception:
             return sources
 
     def resolve(self, url):

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Eggman Add-on
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -39,7 +37,7 @@ class source:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urllib.urlencode(url)
             return url
-        except Exception:
+        except BaseException:
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -54,6 +52,12 @@ class source:
             data = urlparse.parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
+            # query = '%s %s' % (data['title'], data['year'])
+            # query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
+            #
+            # url = urlparse.urljoin(self.base_link, self.post_link)
+            #
+            # post = 'do=search&subaction=search&search_start=0&full_search=0&result_from=1&story=%s' % urllib.quote_plus(query)
             post = {'query': data['imdb']}
             url = urlparse.urljoin(self.base_link, 'engine/ajax/search.php')
             r = client.request(url, post=post)
@@ -68,7 +72,7 @@ class source:
                     data = re.findall('</iframe>(.+?)QuoteEEnd--><br /><br', data, re.DOTALL)[0]
                     links += re.findall('''start--><b>(.+?)</b>.+?<b><a href=['"](.+?)['"]''', data, re.DOTALL)
 
-                except Exception:
+                except BaseException:
                     pass
             links = [(i[0], i[1]) for i in links if not 'vip' in i[0].lower()]
             for name, url in links:
@@ -110,11 +114,11 @@ class source:
 
                         sources.append({'source': host, 'quality': quality, 'language': 'en',
                                         'url': url, 'info': info, 'direct': direct, 'debridonly': True})
-                    except Exception:
+                    except BaseException:
                         pass
 
             return sources
-        except Exception:
+        except BaseException:
             return sources
 
 
