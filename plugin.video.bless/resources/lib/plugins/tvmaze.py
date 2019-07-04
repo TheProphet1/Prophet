@@ -19,6 +19,8 @@
     -------------------------------------------------------------
 
     Version:
+        2019-05-17
+            Fixed calendar code
         2018-08-19
             - TV Calendar added. See example below
         2018-05-14
@@ -633,12 +635,13 @@ def tvmaze_list(url):
     xml = ""
     url = url.split('|')[0]
     try:
-        result = requests.get(url).content
-        items = json.loads(result)
+        #result = requests.get(url).content
+        result = requests.get(url).json()
+        #items = json.loads(result)
     except:
         return
-
-    for item in items:
+    #for item in items:
+    for item in result:    
         try:
             title = item['name']
             title = remove_non_ascii(title)
@@ -698,7 +701,9 @@ def tvmaze_list(url):
                 premiered = '0'
             premiered = premiered.encode('utf-8')
 
-            final_title = '{0} - {1}x{2} - {3}' .format(tvshowtitle, season, episode, title)
+            #final_title = '{0} - {1}x{2} - {3}' .format(tvshowtitle, season, episode, title)
+            final_title = str(tvshowtitle) + str(season) + str(episode) + str(title)
+
             xml += "<item>" \
                    "<title>%s</title>"\
                    "<meta>" \

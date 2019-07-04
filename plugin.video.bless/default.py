@@ -310,13 +310,7 @@ def clear_cache():
     if skip_prompt == 'false':
         if dialog.yesno(addon_name, _("Clear Metadata?")):
             koding.Remove_Table("meta")
-            koding.Remove_Table("episode_meta")
-        if dialog.yesno(addon_name, _("Clear Scraper Cache?")):
-            import universalscrapers
-            try:
-                universalscrapers.clear_cache()
-            except:
-                pass    
+            koding.Remove_Table("episode_meta")  
         if dialog.yesno(addon_name, _("Clear GIF Cache?")):
             dest_folder = os.path.join(
                 xbmc.translatePath(xbmcaddon.Addon().getSetting("cache_folder")),
@@ -336,12 +330,7 @@ def clear_cache():
                 koding.Remove_Table(table_nm)                                        
     else:
         koding.Remove_Table("meta")
-        koding.Remove_Table("episode_meta")
-        import universalscrapers
-        try:
-            universalscrapers.clear_cache()
-        except:
-            pass    
+        koding.Remove_Table("episode_meta")   
         dest_folder = os.path.join(
             xbmc.translatePath(xbmcaddon.Addon().getSetting("cache_folder")),
             "artcache")
@@ -366,6 +355,42 @@ def clear_cache():
     run_hook("clear_cache")
     xbmcgui.Dialog().notification('Clear Cache', 'Cache has been cleared',xbmcaddon.Addon().getAddonInfo("icon"), 4000)
 
+@route('clearScraperCache')
+def clear_scraper_cache():
+    import xbmcgui
+    dialog = xbmcgui.Dialog()
+    try:
+        import universalscrapers
+        universalscrapers.clear_cache()
+    except:
+        pass    
+    db = sqlite3.connect('%s' % (database_loc))        
+    cursor = db.cursor()
+    db.execute("vacuum")
+    db.commit()
+    db.close()
+    xbmc.log("running hook: clear cache", xbmc.LOGNOTICE)
+    run_hook("clear_cache")
+    xbmcgui.Dialog().notification('Clear Scraper Cache', 'Scraper Cache has been cleared',xbmcaddon.Addon().getAddonInfo("icon"), 4000)
+
+@route('clear_main')
+def Clear_Main():
+            res = koding.Get_All_From_Table("Table_names")
+            for results in res:
+                table_nm = results['name']
+                print table_nm
+                koding.Remove_Table(table_nm)
+            db = sqlite3.connect('%s' % (database_loc))        
+            cursor = db.cursor()
+            db.execute("vacuum")
+            db.commit()
+            db.close()
+
+@route('refresh_main')
+def Refresh_Main():
+            Clear_Main()
+            koding.Refresh(r_mode=['skin'])
+            xbmcgui.Dialog().notification('Refresh Main', 'Completed',xbmcaddon.Addon().getAddonInfo("icon"), 4000)
 
 def get_addon_url(mode, url=""):
     import urllib

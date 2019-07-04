@@ -44,6 +44,7 @@ def __replace_gif(url):
         base_folder = xbmcaddon.Addon().getSetting("cache_folder")
         dest_folder = os.path.join(xbmc.translatePath(base_folder), "artcache")
         xbmcvfs.mkdirs(dest_folder)
+        url = url.replace("\\","/")
         parts = url.split("/")
         dest = xbmc.makeLegalFilename(
             # TODO make sure this is unique

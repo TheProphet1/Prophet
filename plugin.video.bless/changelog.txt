@@ -1,3 +1,13 @@
+v2.0.2
+    - Fixed clear main cache issue after first install
+    - Created 'Clear Scraper Cache' in settings cache  tab	
+    - Fixed gif issue.
+    - Added clear main cache to context menu, thanks to Aaron Kay.
+    - Fixed calendar function in the tvmaze plugin.
+	
+v2.0.1
+    - Added the new sources.py that enables the use of direct torrent and magnet links 
+          in xml's.  
 v2.0
     - Added main cache and plugins cache.
     - Main cache is for any xml's outside of plugins including menu xml's.

@@ -133,7 +133,8 @@ class AIRTABLE(Plugin):
                     'icon': item.get("thumbnail", addon_icon),
                     'fanart': item.get("fanart", addon_fanart),
                     'mode': "247",
-                    'url': item.get("Airtable", ""),
+                    #'url': item.get("Airtable", ""),
+                    'url': "",
                     'folder': True,
                     'imdb': "0",
                     'season': "0",
@@ -267,8 +268,9 @@ def new_releases(url):
     display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 
-@route(mode='247',args=["url"])
-def twenty_four_seven(url):
+
+@route(mode='247')
+def twenty_four_seven():    
     pins = "PLuginairtable247"
     Items = fetch_from_db2(pins)
     if Items: 
@@ -312,7 +314,7 @@ def get_channels2(url):
     else:    
         xml = ""
         at = Airtable('appycq5PhSS0tygok', 'TV_channels2', api_key='keyikW1exArRfNAWj')
-        match = at.get_all(maxRecords=1200, sort=['channel'])
+        match = at.get_all(maxRecords=700, sort=['channel'])
         for field in match:
             try:
                 res = field['fields']
