@@ -13,29 +13,24 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 '''
 
 import re
-
-from resources.lib.modules import cleantitle
-from resources.lib.modules import client
-from resources.lib.modules import source_utils
+from resources.lib.modules import cleantitle, source_utils, cfscrape
 
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['123movies4u.pro', '123movies4u.ch', '123movies4u.me']
-        self.base_link = 'https://123movies4u.pro'
-        self.movie_link = '/movie/%s'
-        self.tv_link = '/show/%s/season/%s/episode/%s'
+        self.domains = ['1putlocker.io']
+        self.base_link = 'https://www13.1putlocker.io'
+        self.scraper = cfscrape.create_scraper()
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             title = cleantitle.geturl(title)
-            url = self.base_link + self.movie_link % title
+            url = self.base_link + '/%s/' % title
             return url
         except:
             return
@@ -49,33 +44,29 @@ class source:
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
-            if not url: return
-            url = self.base_link + self.tv_link % (url, season, episode)
+            if url is None:
+                return
+            tvshowtitle = url
+            url = self.base_link + '/episode/%s-season-%s-episode-%s/' % (tvshowtitle, season, episode)
             return url
         except:
             return
 
     def sources(self, url, hostDict, hostprDict):
-        sources = []
-        if 'movie' in url:
-            quality = '720p'
-        if 'show' in url:
-            quality = 'SD'
         try:
-            r = client.request(url)
+            sources = []
+            if url is None:
+                return sources
+            r = self.scraper.get(url).content
             try:
-                match = re.compile('<IFRAME style="z-index:9999;WIDTH:100%; " SRC="(.+?)://(.+?)/(.+?)"').findall(r)
-                for http, host, url in match:
-                    url = '%s://%s/%s' % (http, host, url)
-                    host = host.replace('www.', '')
-                    valid, host = source_utils.is_host_valid(host, hostDict)
-                    if valid:
-                        sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
-                match2 = re.compile('onclick="window.open\("(.+?)://(.+?)/(.+?)"\)').findall(r)
-                for http, host, url in match2:
-                    url = '%s://%s/%s' % (http, host, url)
-                    host = host.replace('www.', '')
-                    valid, host = source_utils.is_host_valid(host, hostDict)
+                match = re.compile('<iframe src="(.+?)"').findall(r)
+                for url in match:
+                    if url in str(sources):
+                        continue
+                    quality = source_utils.check_url(url)
+                    valid, host = source_utils.is_host_valid(url, hostDict)
+                    if host in str(sources):
+                        continue
                     if valid:
                         sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
             except:
@@ -86,4 +77,3 @@ class source:
 
     def resolve(self, url):
         return url
-

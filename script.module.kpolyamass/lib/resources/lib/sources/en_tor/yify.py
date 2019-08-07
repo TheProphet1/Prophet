@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
+'''
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+'''
 
 
 import re
@@ -29,7 +29,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['yts.am']
-        self.base_link = 'https://yts.am/'
+        self.base_link = 'https://yts.lt/'
         self.search_link = '/browse-movies/%s/all/all/0/latest'
         self.min_seeders = int(control.setting('torrent.min.seeders'))
 
@@ -42,8 +42,6 @@ class source:
             url = urllib.urlencode(url)
             return url
         except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('YTSAM - Exception: \n' + str(failure))
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -106,14 +104,10 @@ class source:
                     except Exception:
                         continue
                 except Exception:
-                    failure = traceback.format_exc()
-                    log_utils.log('YTSAM - Exception: \n' + str(failure))
                     continue
 
             return sources
         except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('YTSAM - Exception: \n' + str(failure))
             return sources
 
     def resolve(self, url):

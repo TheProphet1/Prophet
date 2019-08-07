@@ -19,7 +19,6 @@ import re,urllib,urlparse
 
 from resources.lib.modules import client
 from resources.lib.modules import debrid
-from resources.lib.modules import cfscrape
 from resources.lib.modules import source_utils
 
 
@@ -27,10 +26,9 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['0daywarez.us']
-        self.base_link = 'https://0dayddl.com'
-        self.search_link = '?s=%s'
-        self.scraper = cfscrape.create_scraper()
+        self.domains = ['max-rls.com']
+        self.base_link = 'http://max-rls.com'
+        self.search_link = '/?s=%s&submit=Find'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -50,7 +48,8 @@ class source:
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
-            if url == None: return
+            if url is None:
+                return
 
             url = urlparse.parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
@@ -64,9 +63,11 @@ class source:
         try:
             sources = []
 
-            if url == None: return sources
+            if url is None:
+                return sources
 
-            if debrid.status() == False: raise Exception()
+            if debrid.status() is False:
+                raise Exception()
 
             data = urlparse.parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
@@ -76,66 +77,56 @@ class source:
             query = '%s S%02dE%02d' % (
                 data['tvshowtitle'], int(data['season']), int(data['episode'])) \
                 if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
-            url = self.search_link % urllib.quote_plus(query)
-            url = urlparse.urljoin(self.base_link, url).replace('-', '+')
 
-            r = self.scraper.get(url).content
-            if r == None and 'tvshowtitle' in data:
+            url = self.search_link % urllib.quote_plus(query)
+            url = urlparse.urljoin(self.base_link, url).replace('%3A+', '+')
+
+            r = client.request(url)
+            if r is None and 'tvshowtitle' in data:
                 season = re.search('S(.*?)E', hdlr)
                 season = season.group(1)
                 url = title
 
-                r = self.scraper.get(url).content
+                r = client.request(url)
 
-            for loopCount in range(0,2):
-                if loopCount == 1 or (r == None and 'tvshowtitle' in data):
+            for loopCount in range(0, 2):
+                if loopCount == 1 or (r is None and 'tvshowtitle' in data):
 
-                    r = self.scraper.get(url).content
+                    r = client.request(url)
 
-                posts = client.parseDOM(r, "h2")
+                posts = client.parseDOM(r, "h2", attrs={"class": "postTitle"})
                 hostDict = hostprDict + hostDict
                 items = []
                 for post in posts:
                     try:
                         u = client.parseDOM(post, 'a', ret='href')
                         for i in u:
-                            try:
-                                name = str(i)
-                                items.append(name)
-                            except:
-                                pass
+                            name = str(i)
+                            items.append(name)
                     except:
                         pass
 
-                if len(items) > 0: break
+                if len(items) > 0:
+                    break
 
             for item in items:
                 try:
-                    info = []
-
                     i = str(item)
-                    r = self.scraper.get(i).content
-                    u = client.parseDOM(r, "div", attrs={"class": "entry-content"})
+                    r = client.request(i)
+                    u = client.parseDOM(r, "div", attrs={"class": "postContent"})
                     for t in u:
-                        r = re.compile('a href="(.+?)">.+?<').findall(t)
-                        query = query.replace(' ', '.')
+                        r = client.parseDOM(t, 'a', ret='href')
                         for url in r:
-                            if not query in url:
-                                continue
-                            if any(x in url for x in ['.rar', '.zip', '.iso']): raise Exception()
                             quality, info = source_utils.get_release_quality(url)
+                            if 'SD' in quality:
+                                continue
                             valid, host = source_utils.is_host_valid(url, hostDict)
                             sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True})
-
                 except:
                     pass
-            check = [i for i in sources if not i['quality'] == 'CAM']
-            if check: sources = check
-
             return sources
         except:
-            return
+            return sources
 
     def resolve(self, url):
         return url
-

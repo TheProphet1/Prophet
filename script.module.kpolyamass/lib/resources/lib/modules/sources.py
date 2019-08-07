@@ -23,7 +23,7 @@ import sys
 import time
 import urllib
 import urlparse
-import eggscrapers
+
 
 from resources.lib.modules import (cleantitle, client, control, debrid,
                                    log_utils, source_utils, trakt, tvmaze,
@@ -1460,8 +1460,7 @@ class sources:
 
         self.metaProperty = 'plugin.video.kpolyamass.container.meta'
 
-    #from resources.lib.sources import sources
-        from eggscrapers import sources
+        from resources.lib.sources import sources
 
         self.sourceDict = sources()
 

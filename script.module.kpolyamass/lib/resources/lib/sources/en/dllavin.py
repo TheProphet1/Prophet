@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
 '''
-    Eggman Add-on
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -15,11 +12,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 '''
 
-import re
+import re, requests
+
 from resources.lib.modules import cleantitle
-from resources.lib.modules import cfscrape
 from resources.lib.modules import source_utils
 
 
@@ -27,14 +25,18 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['playmovies.es']
-        self.base_link = 'http://playmovies.es'
-        self.search_link = '/%s'
+        self.domains = ['dl.lavinmovie.net']
+        self.base_link = 'http://dl.lavinmovie.net/'
+        self.search_link = 'movie/%s/'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
-            title = cleantitle.geturl(title)
-            url = self.base_link + self.search_link % title
+            title = cleantitle.get_query(title)
+            self.title = '%s.%s' % (title, year)
+            print self.title
+            self.year = year
+            url = self.base_link + self.search_link % self.year
+            print url
             return url
         except:
             return
@@ -42,25 +44,22 @@ class source:
     def sources(self, url, hostDict, hostprDict):
         try:
             sources = []
-            scraper = cfscrape.create_scraper()
-            r = scraper.get(url).content
-            try:
-                qual = re.compile('class="quality">(.+?)<').findall(r)
-                print qual
-                for i in qual:
-                    if 'HD' in i:
-                        quality = '1080p'
-                    else:
-                        quality = 'SD'
-                match = re.compile('<iframe src="(.+?)"').findall(r)
-                for url in match:
-                    valid, host = source_utils.is_host_valid(url, hostDict)
-                    sources.append({'source': host,'quality': quality,'language': 'en','url': url,'direct': False,'debridonly': False})
-            except:
-                return
-        except Exception:
+            r = requests.get(url).content
+            r = re.compile('a href="(.+?)"').findall(r)
+            for u in r:
+                if not self.title in u:
+                    continue
+                if 'Trailer' in u:
+                    continue
+                if 'Dubbed' in u:
+                    continue
+                url = self.base_link + self.search_link % self.year + u
+                print url
+                quality = source_utils.check_sd_url(url)
+                sources.append({'source': 'Direct', 'quality': quality, 'language': 'en', 'url': url, 'direct': True, 'debridonly': False})
+            return sources
+        except:
             return
-        return sources
 
     def resolve(self, url):
         return url
