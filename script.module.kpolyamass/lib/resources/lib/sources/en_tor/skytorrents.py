@@ -14,10 +14,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, urllib, urlparse
-from resources.lib.modules import cleantitle, debrid, source_utils
+import re
+import urllib
+import urlparse
 from resources.lib.modules import client
 from resources.lib.modules import control
+from resources.lib.modules import debrid
+from resources.lib.modules import source_utils
 
 
 class source:
@@ -64,7 +67,6 @@ class source:
                 return sources
             if debrid.status() is False:
                 raise Exception()
-
             data = urlparse.parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
@@ -72,27 +74,18 @@ class source:
 
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
-            query = '%s s%02de%02d' % (
-            data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (
-            data['title'], data['year'])
+            query = '%s s%02de%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode']))if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
             url = self.search_link % urllib.quote_plus(query)
             url = urlparse.urljoin(self.base_link, url)
 
+            r = client.request(url)
+
             try:
-                r = client.request(url)
-                posts = client.parseDOM(r, 'tbody')[0]
-                posts = client.parseDOM(posts, 'tr')
+                posts = client.parseDOM(r, 'tbody', attrs={'id': 'results'})
                 for post in posts:
                     link = re.findall('a href="(magnet:.+?)" title="(.+?)"', post, re.DOTALL)
-                    try:
-                        size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
-                        div = 1 if size.endswith('GB') else 1024
-                        size = float(re.sub('[^0-9|/.|/,]', '', size.replace(',', '.'))) / div
-                        size = '%.2f GB' % size
-                    except BaseException:
-                        size = '0'
                     for url, data in link:
                         if hdlr not in data:
                             continue
@@ -100,16 +93,14 @@ class source:
                         quality, info = source_utils.get_release_quality(data)
                         if any(x in url for x in ['FRENCH', 'Ita', 'italian', 'TRUEFRENCH', '-lat-', 'Dublado']):
                             continue
-                        info.append(size)
                         info = ' | '.join(info)
-                        sources.append(
-                            {'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                             'direct': False, 'debridonly': True})
+                        sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True})
             except:
                 return
             return sources
-        except:
+        except :
             return sources
 
     def resolve(self, url):
         return url
+
