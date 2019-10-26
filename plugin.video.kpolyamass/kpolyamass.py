@@ -535,4 +535,4 @@ elif action == 'service':
 
 elif action == 'ShowChangelog':
     from resources.lib.modules import changelog
-    changelog.get()    
+    changelog.get()

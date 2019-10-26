@@ -942,21 +942,6 @@ class sources:
         except Exception:
             pass
 
-     def uniqueSourcesGen(self, sources):# remove duplicate links code by doko-desuka
-        uniqueURLs = set()
-        for source in sources:
-            url = json.dumps(source['url'])
-            if 'magnet:' in url:
-                url = url.lower()[:60]
-            if isinstance(url, basestring):
-                if url not in uniqueURLs:
-                    uniqueURLs.add(url)
-                    yield source # Yield the unique source.
-                else:
-                    pass # Ignore duped sources.
-            else:
-                yield source # Always yield non-string url sources.           
-
     def sourcesFilter(self):
         provider = control.setting('hosts.sort.provider')
         if provider == '':
@@ -985,40 +970,21 @@ class sources:
         if provider == 'true':
             self.sources = sorted(self.sources, key=lambda k: k['provider'])
 
-        if not HEVC == 'true':
-            self.sources = [i for i in self.sources if not any(value in str(i['url']).lower() for value in ['hevc', 'h265', 'h.265', 'x265', 'x.265'])]
 
-#        for i in self.sources:
-#            if 'checkquality' in i and i['checkquality'] is True:
-#                if not i['source'].lower() in self.hosthqDict and i['quality'] not in ['SD', 'SCR', 'CAM']:
-#                    i.update({'quality': 'SD'})
+        for i in self.sources:
+            if 'checkquality' in i and i['checkquality'] is True:
+                if not i['source'].lower() in self.hosthqDict and i['quality'] not in ['SD', 'SCR', 'CAM']:
+                    i.update({'quality': 'SD'})
 
         local = [i for i in self.sources if 'local' in i and i['local'] is True]
         for i in local:
             i.update({'language': self._getPrimaryLang() or 'en'})
         self.sources = [i for i in self.sources if i not in local]
 
-#        filter = []
-#        filter += [i for i in self.sources if i['direct'] is True]
-#        filter += [i for i in self.sources if i['direct'] is False]
-#        self.sources = filter
-
-        ''' Filter-out duplicate links'''
-        try:
-            if control.setting('remove.dups') == 'true':
-                stotal = len(self.sources)
-                self.sources = list(self.uniqueSourcesGen(self.sources))
-                dupes = int(stotal - len(self.sources))
-                control.infoDialog(control.lang(32089).encode('utf-8').format(dupes), icon='INFO')
-            else:
-                self.sources
-        except:
-            import traceback
-            failure = traceback.format_exc()
-            log_utils.log('DUP - Exception: ' + str(failure))
-            control.infoDialog('Dupes filter failed', icon='INFO')
-            self.sources
-        '''END'''
+        filter = []
+        filter += [i for i in self.sources if i['direct'] is True]
+        filter += [i for i in self.sources if i['direct'] is False]
+        self.sources = filter
 
         filter = []
 

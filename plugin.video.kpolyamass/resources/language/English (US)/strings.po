@@ -327,14 +327,6 @@ msgctxt "#32074"
 msgid "[B]HELP[/B]"
 msgstr ""
 
-msgctxt "#32089"
-msgid "{0} duplicate links removed"
-msgstr ""
-
-msgctxt "#32090"
-msgid "Filter-out duplicate links"
-msgstr ""
-
 msgctxt "#32301"
 msgid "Enabled"
 msgstr ""

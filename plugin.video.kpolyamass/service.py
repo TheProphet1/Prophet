@@ -24,7 +24,6 @@ control.execute('RunPlugin(plugin://%s)' % control.get_plugin_url({'action': 'se
 try:
     ModuleVersion = control.addon('script.module.kpolyamass').getAddonInfo('version')
     AddonVersion = control.addon('plugin.video.kpolyamass').getAddonInfo('version')
-    RepoVersion = control.addon('repository.eggman').getAddonInfo('version')
 
 except:
     
