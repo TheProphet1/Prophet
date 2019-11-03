@@ -3,7 +3,7 @@
     OTB Redneck Sports
     Copyright (C) 2018,
     Version 1.0.1
-    Team OTB
+    OTB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,13 +48,15 @@ CACHE_TIME = 86400  # change to wanted cache time in seconds
 """
 ----------------------------------------------------------
 """
-table_id = "appvaa6ddtJ89p0t1"
+table_id = "appmxoGYrMhO3QZR3"
 table_name = "OTB Redneck Sports"
 workspace_api_key = "keyikW1exArRfNAWj"
 """
 ----------------------------------------------------------
 """
 
+bec = base64.b64encode
+bdc = base64.b64decode
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -64,6 +66,10 @@ user_data_folder = os.path.join(home_folder, 'userdata')
 addon_data_folder = os.path.join(user_data_folder, 'addon_data')
 database_path = os.path.join(addon_data_folder, addon_id)
 database_loc = os.path.join(database_path, 'database.db')
+yai = bec(AddonName)
+tid = bdc('YXBwa0dYVEdMSXhrNEpWMmY=')
+tnm = bdc('b3RiXyxyZWRuZWNrX3Nwb3J0c19pZHM=')
+atk = bdc('a2V5T0hheHNUR3pIVTlFRWg=')
 
 
 class OTB_Redneck_Sports(Plugin):
@@ -121,7 +127,18 @@ def open_otb_redneck_sports_shows():
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()    
         xml = ""
         at = Airtable(table_id, table_name, api_key=workspace_api_key)
         match = at.get_all(maxRecords=1200, sort=['name'])
@@ -161,7 +178,18 @@ def open_selected_show(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:     
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()     
         xml = ""
         title = url.split("|")[-2]
         key = url.split("|")[-1]

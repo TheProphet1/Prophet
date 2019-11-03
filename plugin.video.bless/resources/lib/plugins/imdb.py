@@ -2,12 +2,6 @@
 """
     imdb.py --- Jen Plugin for accessing iMDB data
     Copyright (C) 2018, Mister-X
-    Version 2.0.0
-
-    --August 14, 2018 Added calendar support for upcoming releases by country
-
-    --June 16, 2018 Added try and except to next page code to fix results not being displayed
-    if there was only one page--
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,71 +15,207 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    
+    Version:
+        July 18, 2019
+            - Added customizable settings for 2 colors (COLOR1 for Movie/Show titles; COLOR2 for Season/Episode numbers as well as for "Next Page >>")
+            - Updated the display for seasons (added ":" between season and season number) as well as for episodes (added season & episode number to title)
+            - Updated so that season and episode numbers less than 10 are displayed as double digits with a leading "0" (example: Season 1, Episode 9 ==> S01E09)
+            - Added thumbnail for "Next Page >>" (same as tmdb.py)
+            - Categorized and added several Usage Examples
 
+        August 14, 2018
+            - Added calendar support for upcoming releases by country
+
+        June 16, 2018
+            - Added try and except to next page code to fix results not being displayed if there was only one page--
+
+    -------------------------------------------------------------
+
+    *** COLORS ***
+        Set your desired colors for the COLOR1 & COLOR2 variables within "" on lines 238 & 239 below.
+        COLOR1 is for Movie/Show titles; COLOR2 is for Season/Episode numbers as well as for "Next Page >>".
+        The color values can be alphanumeric (example: red, limegreen) or Hex (example: ffff0000, FF00FF00).
+        If colors are left blank, they will display as the default color set within the skin you're using.
+        
+        -- Note:  In order for the Color settings to work as intended, Metadata must be DISABLED in the addon settings!!!
+
+    -------------------------------------------------------------
 
     Usage Examples:
+
+	### Search ###
+	
+	** Returns a list of Movies searched for from IMDB
     <dir>
-        <title>Search</title>
-        <imdburl>searchseries</imdburl>
-        <thumbnail></thumbnail>
+      <title>Search IMDB Movies</title>
+      <imdburl>searchmovies</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+	
+	** Returns a list of TV Shows searched for from IMDB
+    <dir>
+      <title>Search IMDB TV Shows</title>	
+      <imdburl>searchseries</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
-    ####TV
+
+	### Movies ###
+
+	** Returns a list of the IMDB Trending Movies
     <dir>
-        <title>Newest</title>
-        <imdburl>tvshows/new</imdburl>
-        <thumbnail></thumbnail>
+      <title>IMDB Trending Movies</title>
+      <imdburl>movies/trending</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
+	** Returns a list of the IMDB Box Office Movies
     <dir>
-        <title>Best Ratings</title>
-        <imdburl>tvshows/rating</imdburl>
-        <thumbnail></thumbnail>
+      <title>IMDB Box Office Movies</title>
+      <imdburl>movies/boxoffice</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
+	** Returns a list of the IMDB Most Popular Movies
     <dir>
-        <title>Most Viewed</title>
-        <imdburl>tvshows/mostviews</imdburl>
-        <thumbnail></thumbnail>
+      <title>IMDB Most Popular Movies</title>
+      <imdburl>movies/popular</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
-    ###charts
+	** Returns a list of the IMDB Most Voted Movies
     <dir>
-        <title>Chart Best Rated</title>
-        <imdburl>charttv/toptv</imdburl>
+      <title>IMDB Most Voted Movies</title>
+      <imdburl>movies/voted</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
-    ###Genres
+	** Returns a list of IMDB Movies by a specific Year.  Change Year at the end of the Second Tag as desired.
     <dir>
-        <title>IMDB Action TV Shows</title>
-        <imdburl>genres/action</imdburl>
-        <thumbnail></thumbnail>
+      <title>IMDB 2018 Movies</title>
+      <imdburl>years/2018</imdburl>                       * other Years found in movies_years-imdb.xml
+      <thumbnail></thumbnail>
     </dir>
 
-    ### Movies
+
+	### TV Shows ###
+
+	** Returns a list of the IMDB Newest TV Shows
     <dir>
-        <title>IMDB Trending</title>
-        <imdburl>movies/trending</imdburl>
+      <title>IMDB Newest TV Shows</title>
+      <imdburl>tvshows/new</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
+	** Returns a list of the IMDB Most Viewed TV Shows
     <dir>
-    <title>2016</title>
-        <imdburl>years/2016</imdburl>
-        <thumbnail></thumbnail>
+      <title>IMDB Most Viewed TV Shows</title>
+      <imdburl>tvshows/mostviews</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
-    ###For user list
+	** Returns a list of the IMDB Best User Rated TV Shows
     <dir>
-        <title>IMDB TOP 100 Gangster List</title>
-        <imdburl>list/ls001818278</imdburl>
+      <title>IMDB Best User Rated TV Shows</title>
+      <imdburl>tvshows/rating</imdburl>
+      <thumbnail></thumbnail>
     </dir>
 
-    ###For upcoming release list by country
+	** Returns a list of the IMDB Most Popular TV Shows	
     <dir>
-        <title>IMDB Upcoming Releases in the US</title>
+      <title>IMDB Most Popular TV Shows</title>
+      <imdburl>tvshows/popular</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+
+	** Returns a list of the IMDB Box Office TV Shows	
+    <dir>
+      <title>IMDB Box Office TV Shows</title>
+      <imdburl>tvshows/boxoffice</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+
+	** Returns a list of IMDB TV Shows in Alphabetical order
+    <dir>
+      <title>IMDB A to Z TV Shows</title>
+      <imdburl>tvshows/alphabetical</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+	
+	
+	### Charts ###
+
+	** Returns a list of the IMDB Top Rated TV Shows
+    <dir>
+      <title>IMDB Top Rated TV Shows</title>
+      <imdburl>charttv/toptv</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+
+
+	### Genres ###
+
+	** Returns a list of IMDB Movies by a specific Genre.  Switch out "action" Genre as desired at the end Of the Second Tag.
+    <dir>
+      <title>IMDB Action Movies</title>
+      <imdburl>genres/action</imdburl>                     * other Genres found in movies_genres-imdb.xml
+      <thumbnail></thumbnail>
+    </dir>
+
+	** Returns a list of IMDB TV Shows by a specific Genre.  Switch out "history" Genre as desired at the end Of the Second Tag.
+    <dir>
+      <title>IMDB History TV Shows</title>
+      <imdburl>genrestv/history</imdburl>                  * other Genres found in tvshows_genres-imdb.xml
+      <thumbnail></thumbnail>
+    </dir>
+		
+		
+	### User Lists ###
+    
+	** Returns ALL public IMDB Lists from a specific user
+    <dir>
+      <title>Someone's IMDB Lists</title>
+	  <imdburl>user/ur19947955/lists</imdburl>             # If you have a IMDB account with lists, add YOUR user ID like this and it will 
+	  <thumbnail></thumbnail>							     return all public lists on YOUR account
+    </dir>
+	
+	** Returns a SINGLE public IMDB List from a specific user
+    <dir>
+      <title>Someone's IMDB List</title>
+      <imdburl>/list/ls068927829/</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+	
+	** Returns a specific user's IMDB Top 100 Gangster Movies public list
+    <dir>
+      <title>IMDB TOP 100 Gangster Movies</title>
+      <imdburl>list/ls001818278</imdburl>
+      <thumbnail></thumbnail>
+    </dir>
+		
+		
+	### Calendar ###
+    
+	** Returns a List of Upcoming Releases by Country.
+    <dir>
+        <title>IMDB Upcoming Releases in the United States</title>
         <imdburl>moviecalendar/US</imdburl>
     </dir>
+    
+	** Returns a List of Upcoming Releases by Country
+    <dir>
+        <title>IMDB Upcoming Releases in the United Kingdom</title>
+        <imdburl>moviecalendar/GB</imdburl>
+    </dir>
+    
+	** Returns a List of Upcoming Releases by Country
+    <dir>
+        <title>IMDB Upcoming Releases in Mexico</title>
+        <imdburl>moviecalendar/MX</imdburl>
+    </dir>
 
+	-------------------------------------------------------------
 """
 
 import urllib, urllib2, os, base64, xbmcplugin, xbmcgui, xbmcvfs, traceback, cookielib, xbmc, sys
@@ -101,11 +231,12 @@ from resources.lib.util.context import get_context_items
 from resources.lib.util.xml import JenItem, JenList, display_list
 from unidecode import unidecode
 
-
 CACHE_TIME = 3600  # change to wanted cache time in seconds
 
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
+COLOR1 = ""
+COLOR2 = ""
 
 
 class IMDB(Plugin):
@@ -549,6 +680,8 @@ def imdbmovies(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -568,11 +701,15 @@ def imdbmovies(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
@@ -598,6 +735,8 @@ def imdbseries(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<dir>"\
                "<title>%s</title>"\
                "<meta>"\
@@ -616,11 +755,15 @@ def imdbseries(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
@@ -640,13 +783,17 @@ def imdbseason(url):
     match2 = re.compile(
             '<h4 class="float-left">Years</h4><hr />\n.+?</div>\n.+?<br class="clear" />\n.+?<div>\n.+?<a href="/title/(.+?)/episodes.+?season=.+?&ref_=tt_eps_sn_.+?"\n>(.+?)</a>&nbsp;&nbsp;',
             re.IGNORECASE | re.DOTALL).findall(listhtml)
+    #match3 = re.compile('<div id="main">\n.+?<div class=seasonAndYearNav>.+?<select id="bySeason".+?tconst="(.+?)".+?<option.+?value="(.+?)"',re.IGNORECASE | re.DOTALL).findall(listhtml)
     for imdb, season in match2:
         thumbnail = re.compile(
                         '<img alt=".+?Poster" title=".+?Poster"\nsrc="(.+?)"',
                         re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
         thumbnail = thumbnail.replace("@._V1_UY268_CR16,0,182,268_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
         episodeURL = 'http://www.imdb.com/title/' + imdb + '/episodes?season=' + season
-        name = "Season: [COLOR dodgerblue]" + season + "[/COLOR]"
+        if not COLOR1 == "" and not COLOR2 == "":
+            name = "[COLOR %s]Season: [COLOR %s]%s[/COLOR]" % (COLOR1, COLOR2, season)
+        else:
+            name = "Season: %s" % (season)
         xml +=  "<dir>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -671,7 +818,10 @@ def imdbseason(url):
                         re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
             thumbnail = thumbnail.replace("@._V1_UY268_CR16,0,182,268_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
             episodeURL = 'http://www.imdb.com/title/' + imdb + '/episodes?season=' + season
-            name = "Season: [COLOR dodgerblue]" + season + "[/COLOR]"
+            if not COLOR1 == "" and not COLOR2 == "":
+                name = "[COLOR %s]Season: [COLOR %s]%s[/COLOR]" % (COLOR1, COLOR2, season)
+            else:
+                name = "Season: %s" % (season)
             xml +=  "<dir>"\
                     "<title>%s</title>"\
                     "<meta>"\
@@ -708,7 +858,18 @@ def imdbepisode(url):
                             '<meta itemprop="name" content=".+?TV Series ([^"]+).+? .+?"/>',
                             re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
             thumbnail = thumbnail.replace("@._V1_UX200_CR0,0,200,112_AL_.jpg","@._V1_UX600_CR0,0,600,400_AL_.jpg")
-            name = "[COLOR dodgerblue]%sx%s[/COLOR] . %s" % (season, episode, title)
+            if int(season) > 0 and int(season) < 10:
+                mySeason = "0" + str(season)
+            else:
+                mySeason = str(season)
+            if int(episode) > 0 and int(episode) < 10:
+                myEpisode = "0" + str(episode)
+            else:
+                myEpisode = str(episode)
+            if not COLOR1 == "" and not COLOR2 == "":
+                name = "[COLOR %s]S%sE%s[/COLOR] - [COLOR %s]%s[/COLOR]" % (COLOR2, mySeason, myEpisode, COLOR1, title)
+            else:
+                name = "S%sE%s - %s" % (mySeason, myEpisode, title)
             xml +=  "<item>"\
                     "<title>%s</title>"\
                     "<meta>"\
@@ -732,6 +893,7 @@ def imdbepisode(url):
     jenlist = JenList(xml)
     display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
+
 @route(mode='imdbepisodeTwo', args=["url"])
 def imdbepisodeTwo(url):
     pins = ""
@@ -748,7 +910,18 @@ def imdbepisodeTwo(url):
                 Year = re.compile(
                                 '<meta itemprop="name" content=".+?TV Series ([^"]+).+? .+?"/>',
                                 re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
-                name = "[COLOR yellow]Episode: " + season + "[/COLOR]"
+                if int(season) > 0 and int(season) < 10:
+                    mySeason = "0" + str(season)
+                else:
+                    mySeason = str(season)
+                if int(episode) > 0 and int(episode) < 10:
+                    myEpisode = "0" + str(episode)
+                else:
+                    myEpisode = str(episode)
+                if not COLOR1 == "" and not COLOR2 == "":
+                    name = "[COLOR %s]S%sE%s[/COLOR] - [COLOR %s]%s[/COLOR]" % (COLOR2, mySeason, myEpisode, COLOR1, title)
+                else:
+                    name = "S%sE%s - %s" % (mySeason, myEpisode, title)
                 xml +=  "<item>"\
                         "<title>%s</title>"\
                         "<meta>"\
@@ -786,6 +959,8 @@ def imdblists(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UY209_CR3,0,140,209_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -819,6 +994,8 @@ def imdbyears(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -838,15 +1015,20 @@ def imdbyears(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
     display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+
 
 @route(mode='imdbyearstv', args=["url"])
 def imdbyearstv(url):
@@ -862,6 +1044,8 @@ def imdbyearstv(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<dir>"\
                "<title>%s</title>"\
                "<meta>"\
@@ -880,11 +1064,15 @@ def imdbyearstv(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
@@ -905,6 +1093,8 @@ def imdbgenres(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","").replace(" TV Movie","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -924,11 +1114,15 @@ def imdbgenres(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
@@ -949,6 +1143,8 @@ def imdbgenrestv(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<dir>"\
                "<title>%s</title>"\
                "<meta>"\
@@ -967,16 +1163,19 @@ def imdbgenrestv(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)
     display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
-
 
 
 @route(mode='imdbactors', args=["url"])
@@ -992,6 +1191,8 @@ def imdbactors(url):
     for thumbnail, imdb, name in match:
         thumbnail = thumbnail.replace("@._V1_UY209_CR10,0,140,209_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
         thumbnail = thumbnail.replace("._V1_UY209_CR5,0,140,209_AL_.jpg","._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<dir>"\
                "<title>%s</title>"\
                "<imdburl>name/%s</imdburl>"\
@@ -1003,17 +1204,22 @@ def imdbactors(url):
                     re.IGNORECASE | re.DOTALL).findall(listhtml)
         for url in next_page:
             try:
+                if not COLOR2 == "":
+                    myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+                else:
+                    myPage = "Next Page >>"
                 xml += "<dir>"\
-                       "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+                       "<title>%s</title>"\
                        "<imdburl>actor%s</imdburl>"\
                        "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-                       "</dir>" % (url)
+                       "</dir>" % (myPage, url)
             except:
                 pass
     except:
         pass
     jenlist = JenList(xml)
     display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+
 
 @route(mode='imdbactorspage', args=["url"])
 def imdbactorspage(url):
@@ -1026,6 +1232,8 @@ def imdbactorspage(url):
             re.IGNORECASE | re.DOTALL).findall(listhtml)
     for year, imdb, title in match:
         name = title + " (" + year + ")"
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -1058,6 +1266,8 @@ def imdbchart(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UY67_CR0,0,45,67_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -1091,6 +1301,8 @@ def imdbcharttv(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UY67_CR0,0,45,67_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<dir>"\
                "<title>%s</title>"\
                "<meta>"\
@@ -1143,6 +1355,8 @@ def moviecalendar(url):
 
             entries = re.compile('<a href="/title/(.+?)/\?ref_=rlm">(.+?)</a>', re.IGNORECASE | re.DOTALL).findall(listcont)
             for imdb, title in entries:
+                if not COLOR1 == "":
+                    name = "[COLOR %s]%s[/COLOR]" % (COLOR1, title)
                 xml += "<item>"\
                        "<title>%s</title>"\
                        "<meta>"\
@@ -1154,7 +1368,7 @@ def moviecalendar(url):
                        "<link></link>"\
                        "<thumbnail></thumbnail>"\
                        "<fanart></fanart>"\
-                       "</item>" % (title, imdb, title, year)
+                       "</item>" % (name, imdb, title, year)
         except:
             continue
 
@@ -1177,6 +1391,8 @@ def imdbNextPage(url):
         name = title + " " + year
         year = year.replace("(","").replace(")","")
         thumbnail = thumbnail.replace("@._V1_UX67_CR0,0,67,98_AL_.jpg","@._V1_UX520_CR0,0,520,700_AL_.jpg")
+        if not COLOR1 == "":
+            name = "[COLOR %s]%s[/COLOR]" % (COLOR1, name)
         xml += "<item>"\
                 "<title>%s</title>"\
                 "<meta>"\
@@ -1196,11 +1412,15 @@ def imdbNextPage(url):
         next_page = re.compile(
                     '<a href="([^"]+)"\nclass="lister-page-next next-page" ref-marker=adv_nxt>Next &#187;</a>\n.+?</div>\n.+?<br class="clear" />',
                     re.DOTALL | re.IGNORECASE).findall(listhtml)[0]
+        if not COLOR2 == "":
+            myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+        else:
+            myPage = "Next Page >>"
         xml += "<dir>"\
-               "<title>[COLOR dodgerblue]Next Page >>[/COLOR]</title>"\
+               "<title>%s</title>"\
                "<imdburl>http://www.imdb.com/search/title%s</imdburl>"\
                "<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>"\
-               "</dir>" % (next_page)
+               "</dir>" % (myPage, next_page)
     except:
         pass
     jenlist = JenList(xml)

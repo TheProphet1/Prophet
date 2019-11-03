@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     OTB Radio.py
-    Copyright (C) 2018, Team OTB
+    Copyright (C) 2018, OTB
     Version 1.1.0
     Jen 2x plugin
 
@@ -105,6 +105,8 @@ from unidecode import unidecode
 
 CACHE_TIME = 86400  # change to wanted cache time in seconds
 
+bec = base64.b64encode
+bdc = base64.b64decode
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -114,6 +116,10 @@ user_data_folder = os.path.join(home_folder, 'userdata')
 addon_data_folder = os.path.join(user_data_folder, 'addon_data')
 database_path = os.path.join(addon_data_folder, addon_id)
 database_loc = os.path.join(database_path, 'database.db')
+yai = bec(AddonName)
+tid = bdc('YXBwTzZqamU0cHlzOEJ6WFc=')
+tnm = bdc('b3RiXyxyYWRpb19pZHM=')
+atk = bdc('a2V5T0hheHNUR3pIVTlFRWg=')
 
 
 class OTB_Radio_List(Plugin):
@@ -281,8 +287,19 @@ def open_movies():
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
-        at = Airtable('appJh8Kyj5UkERsUT', 'Radio Stations', api_key='keyikW1exArRfNAWj')
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()     
+        at = Airtable('appEQMKxvYhvxB6fY', 'Radio Stations', api_key='keyikW1exArRfNAWj')
         match = at.get_all(maxRecords=1200, sort=['name'])
         for field in match:
             try:
@@ -302,7 +319,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)                    
             except:
                 pass    
-        at2 = Airtable('appkEDsIy1skg0rBH', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
+        at2 = Airtable('appjrEMH0kEoM8GeQ', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
         match2 = at2.get_all(maxRecords=1200, sort=['name'])      
         for field2 in match2:
             try:
@@ -322,7 +339,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)      
             except:
                 pass
-        at3 = Airtable('appNcFWTkprAJiizT', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
+        at3 = Airtable('appgveAIgb4kfsMoe', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
         match3 = at3.get_all(maxRecords=1200, sort=['name'])      
         for field3 in match3:
             try:
@@ -342,7 +359,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)      
             except:
                 pass
-        at4 = Airtable('appKUY6MYlvQQO51W', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
+        at4 = Airtable('appWZAAh8GXRyo6SN', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
         match4 = at4.get_all(maxRecords=1200, sort=['name'])      
         for field4 in match4:
             try:
@@ -362,7 +379,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)      
             except:
                 pass
-        at5 = Airtable('appfWHupyJXhgvaum', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
+        at5 = Airtable('appgqVj0DBZjvGtrt', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
         match5 = at5.get_all(maxRecords=1200, sort=['name'])      
         for field5 in match5:
             try:
@@ -382,7 +399,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)      
             except:
                 pass
-        at6 = Airtable('appODokGNYAShltUj', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
+        at6 = Airtable('appWSAjWWuFRZ2cZb', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
         match6 = at6.get_all(maxRecords=1200, sort=['name'])      
         for field6 in match6:
             try:
@@ -402,7 +419,7 @@ def open_movies():
                 xml += display_xml(name,summary,thumbnail,fanart,link1,link2,link3,link4,link5)      
             except:
                 pass
-        at7 = Airtable('appFvuCrqLynvzDup', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
+        at7 = Airtable('app41uxtTRva32pvc', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
         match7 = at7.get_all(maxRecords=1200, sort=['name'])      
         for field7 in match7:
             try:
@@ -434,8 +451,19 @@ def open_action_movies(url):
     if Items: 
         display_data(Items) 
     else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit() 
         if genre == "UK1":     
-            at = Airtable('appJh8Kyj5UkERsUT', 'Radio Stations', api_key='keyikW1exArRfNAWj')
+            at = Airtable('appEQMKxvYhvxB6fY', 'Radio Stations', api_key='keyikW1exArRfNAWj')
             try:
                 match = at.search('type', genre, sort=['name'])
                 for field in match:
@@ -456,7 +484,7 @@ def open_action_movies(url):
             except:
                 pass
         elif genre == "UK2":       
-            at2 = Airtable('appkEDsIy1skg0rBH', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
+            at2 = Airtable('appjrEMH0kEoM8GeQ', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
             try:
                 match2 = at2.search('type', genre, sort=['name'])
                 for field2 in match2:
@@ -477,7 +505,7 @@ def open_action_movies(url):
             except:
                 pass
         elif genre == "USA1":        
-            at3 = Airtable('appNcFWTkprAJiizT', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
+            at3 = Airtable('appgveAIgb4kfsMoe', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
             match3 = at3.search('type', genre, sort=['name'])      
             for field3 in match3:
                 try:
@@ -498,7 +526,7 @@ def open_action_movies(url):
                 except:
                     pass
         elif genre == "USA2":            
-            at4 = Airtable('appKUY6MYlvQQO51W', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
+            at4 = Airtable('appWZAAh8GXRyo6SN', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
             match4 = at4.search('type', genre, sort=['name'])     
             for field4 in match4:
                 try:
@@ -519,7 +547,7 @@ def open_action_movies(url):
                 except:
                     pass
         elif genre == "USA3":            
-            at5 = Airtable('appfWHupyJXhgvaum', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
+            at5 = Airtable('appgqVj0DBZjvGtrt', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
             match5 = at5.search('type', genre, sort=['name'])     
             for field5 in match5:
                 try:
@@ -540,7 +568,7 @@ def open_action_movies(url):
                 except:
                     pass
         elif genre == "USA4":            
-            at6 = Airtable('appODokGNYAShltUj', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
+            at6 = Airtable('appWSAjWWuFRZ2cZb', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
             match6 = at6.search('type', genre, sort=['name'])     
             for field6 in match6:
                 try:
@@ -561,7 +589,7 @@ def open_action_movies(url):
                 except:
                     pass
         elif genre == "USA5":            
-            at7 = Airtable('appFvuCrqLynvzDup', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
+            at7 = Airtable('app41uxtTRva32pvc', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
             match7 = at7.search('type', genre, sort=['name'])     
             for field7 in match7:
                 try:
@@ -591,43 +619,43 @@ def open_bml_search():
     pins = ""
     show = koding.Keyboard(heading='Station Name or Number')
     movie_list = []
-    at = Airtable('appJh8Kyj5UkERsUT', 'Radio Stations', api_key='keyikW1exArRfNAWj')
+    at = Airtable('appEQMKxvYhvxB6fY', 'Radio Stations', api_key='keyikW1exArRfNAWj')
     match = at.get_all(maxRecords=1200, sort=['name'])
     for field in match:
         res = field['fields']        
         name = res['name']
         movie_list.append(name)
-    at2 = Airtable('appkEDsIy1skg0rBH', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
+    at2 = Airtable('appjrEMH0kEoM8GeQ', 'Radio Stations 2', api_key='keyikW1exArRfNAWj')
     match2 = at2.get_all(maxRecords=1200, sort=['name'])  
     for field2 in match2:       
         res2 = field2['fields']        
         name2 = res2['name']
         movie_list.append(name2)
-    at3 = Airtable('appNcFWTkprAJiizT', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
+    at3 = Airtable('appgveAIgb4kfsMoe', 'Radio Stations 3', api_key='keyikW1exArRfNAWj')
     match3 = at3.get_all(maxRecords=1200, sort=['name'])  
     for field3 in match3:       
         res3 = field3['fields']        
         name3 = res3['name']
         movie_list.append(name3)
-    at4 = Airtable('appKUY6MYlvQQO51W', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
+    at4 = Airtable('appWZAAh8GXRyo6SN', 'Radio Stations 4', api_key='keyikW1exArRfNAWj')
     match4 = at4.get_all(maxRecords=1200, sort=['name'])  
     for field4 in match4:       
         res4 = field4['fields']        
         name4 = res4['name']
         movie_list.append(name4)
-    at5 = Airtable('appfWHupyJXhgvaum', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
+    at5 = Airtable('appgqVj0DBZjvGtrt', 'Radio Stations 5', api_key='keyikW1exArRfNAWj')
     match5 = at5.get_all(maxRecords=1200, sort=['name'])  
     for field5 in match5:       
         res5 = field5['fields']        
         name5 = res5['name']
         movie_list.append(name5)
-    at6 = Airtable('appODokGNYAShltUj', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
+    at6 = Airtable('appWSAjWWuFRZ2cZb', 'Radio Stations 6', api_key='keyikW1exArRfNAWj')
     match6 = at6.get_all(maxRecords=1200, sort=['name'])  
     for field6 in match6:       
         res6 = field6['fields']        
         name6 = res6['name']
         movie_list.append(name6)
-    at7 = Airtable('appFvuCrqLynvzDup', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
+    at7 = Airtable('app41uxtTRva32pvc', 'Radio Stations 7', api_key='keyikW1exArRfNAWj')
     match7 = at7.get_all(maxRecords=1200, sort=['name'])  
     for field7 in match7:       
         res7 = field7['fields']        

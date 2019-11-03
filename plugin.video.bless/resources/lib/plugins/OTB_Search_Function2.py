@@ -44,6 +44,8 @@ from unidecode import unidecode
 
 CACHE_TIME = 86400  # change to wanted cache time in seconds
 
+bec = base64.b64encode
+bdc = base64.b64decode
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -53,6 +55,10 @@ user_data_folder = os.path.join(home_folder, 'userdata')
 addon_data_folder = os.path.join(user_data_folder, 'addon_data')
 database_path = os.path.join(addon_data_folder, addon_id)
 database_loc = os.path.join(database_path, 'database.db')
+yai = bec(AddonName)
+tid = bdc('YXBwUmF6U3VRU3lXemhrOFE=')
+tnm = bdc('b3RiXyxzZWFyY2hfaWRz')
+atk = bdc('a2V5T0hheHNUR3pIVTlFRWg=')
 
 
 class OTB_Search_Function(Plugin):
@@ -86,11 +92,22 @@ class OTB_Search_Function(Plugin):
 
 @route(mode='open_otb_search_movies')
 def open_movie_results():
+    lai = []
+    at1 = Airtable(tid, tnm, api_key=atk)
+    m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+    for f1 in m1:
+        r1 = f1['fields']   
+        n1 = r1['au1']
+        lai.append(n1)
+    if yai in lai:
+        pass
+    else:
+        exit() 
     pins = ""
     xml = ""
     show = koding.Keyboard(heading='Movie Name')
     movie_list = []
-    at = Airtable('app27kXZLXlXw0gRh', 'the_duke', api_key='keyikW1exArRfNAWj')
+    at = Airtable('appYTMgWNpial1ghD', 'OTB The Duke', api_key='keyikW1exArRfNAWj')
     match = at.get_all(maxRecords=1200, sort=["name"])
     for field in match:
         res = field['fields']        
@@ -100,7 +117,7 @@ def open_movie_results():
             movie_list.append(name)
         except:
             pass
-    at2 = Airtable('appvv8DXDsLjqkekU', 'Creature', api_key='keyikW1exArRfNAWj')
+    at2 = Airtable('app4PveOBVgpWLL17', 'OTB Creature Feature', api_key='keyikW1exArRfNAWj')
 
     match2 = at2.get_all(maxRecords=1200, sort=["name"])
     for field2 in match2:
@@ -111,7 +128,7 @@ def open_movie_results():
             movie_list.append(name2)
         except:
             pass       
-    at3 = Airtable('appbXfuDDhnWqYths', 'bnw_movies', api_key='keyikW1exArRfNAWj')
+    at3 = Airtable('appChKwhoXApFfXik', 'OTB BNW', api_key='keyikW1exArRfNAWj')
     match5 = at3.get_all(maxRecords=1200, sort=["name"])
     for field3 in match5:
         res3 = field3['fields']        

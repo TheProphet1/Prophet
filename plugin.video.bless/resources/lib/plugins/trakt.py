@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     trakt.py --- Jen Plugin for accessing trakt data
     Copyright (C) 2017, Jen
@@ -16,6 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Version:
+        2019-07-18
+            - Added customizable settings for 2 colors (COLOR1 for Movie/Show titles; COLOR2 for Season/Episode numbers as well as for "Next Page >>")
+            - Updated the display for seasons (added ":" between season and season number) as well as for episodes (added season & episode number to title)
+            - Updated so that season and episode numbers less than 10 are displayed as double digits with a leading "0" (example: Season 1, Episode 9 ==> S01E09).
+            - Added thumbnail for "Next Page >>" (same as tmdb.py)
+            - Categorized and added several Usage Examples
         2018-08-19
             - Added next page option for trakt limits urls
                 http://api.trakt.tv/movies/trending?limit=25&page=1
@@ -24,76 +31,171 @@
         2018-05-14
             Latest version to include with a Jen Release
 
+    -------------------------------------------------------------
+
+    *** COLORS ***
+        Set your desired colors for the COLOR1 & COLOR2 variables within "" on lines 228 & 229 below.
+        COLOR1 is for Movie/Show titles; COLOR2 is for Season/Episode numbers as well as for "Next Page >>".
+        The color values can be alphanumeric (example: red, limegreen) or Hex (example: ffff0000, FF00FF00).
+        If colors are left blank, they will display as the default color set within the skin you're using.
+        
+        -- Note:  In order for the Color settings to work as intended, Metadata must be DISABLED in the addon settings!!!
+
+    -------------------------------------------------------------
+
     Usage Examples:
-    <dir>
-      <title>Trending Movies</title>
-      <trakt>https://api.trakt.tv/movies/trending</trakt>
-    </dir>
-
-    <dir>
-      <title>Popular Movies</title>
-      <trakt>https://api.trakt.tv/movies/popular</trakt>
-    </dir>
-
-    <dir>
-      <title>Movie Watchlist</title>
-      <trakt>https://api.trakt.tv/sync/watchlist/movies</trakt>
-    </dir>
-
-    <dir>
-      <title>Movie Collection</title>
-      <trakt>https://api.trakt.tv/sync/collection/movies</trakt>
-    </dir>
-
-    <dir>
-      <title>Trending Shows</title>
-      <trakt>https://api.trakt.tv/shows/trending</trakt>
-    </dir>
-
-    <dir>
-      <title>Popular Shows</title>
-      <trakt>https://api.trakt.tv/shows/popular</trakt>
-    </dir>
-
-    <dir>
-      <title>TV Watchlist</title>
-      <trakt>https://api.trakt.tv/sync/watchlist/shows</trakt>
-    </dir>
-
-    <dir>
-      <title>TV Collection</title>
-      <trakt>https://api.trakt.tv/sync/collection/shows</trakt>
-    </dir>
-
-    <dir>
-      <title>My lists</title>
-      <trakt>https://api.trakt.tv/users/me/lists/</trakt>
-    </dir>
-
-    <dir>
-      <title>My Liked Lists</title>
-      <trakt>https://api.trakt.tv/users/likes/lists</trakt>
-    </dir>
-
-    <dir>
-      <title>Reddit Top 250 (2017 Edition)</title>
-      <trakt>https://api.trakt.tv/users/philrivers/lists/reddit-top-250-2017-edition/items</trakt>
-    </dir>
-
-    <dir>
-      <title>Bryan Cranston Movies Trakt</title>
-      <trakt>https://api.trakt.tv/people/bryan-cranston/movies</trakt>
-    </dir>
-
-    <dir>
-      <title>Bryan Cranston shows Trakt</title>
-      <trakt>https://api.trakt.tv/people/bryan-cranston/shows</trakt>
-    </dir>
-
+	
+	### Search ###
+	
+	** Returns A List Of Items Searched For From Trakt
     <dir>
       <title>Search Trakt</title>
       <trakt>search</trakt>
     </dir>
+	
+	
+	### Movies ###
+	
+	** Returns A List Of Your Personal Trakt Movie Watchlist (Requires Trakt Authorization)
+    <dir>
+      <title>My Trakt Movie Watchlist (Authorize)</title>
+      <trakt>https://api.trakt.tv/sync/watchlist/movies</trakt>
+    </dir>
+
+	** Returns A List Of Your Personal Trakt Movie Collection (Requires Trakt Authorization)
+    <dir>
+      <title>My Trakt Movie Collection (Authorize)</title>
+      <trakt>https://api.trakt.tv/sync/collection/movies</trakt>
+    </dir>
+	
+	** Returns The Trakt Trending Movies List
+    <dir>
+      <title>Trakt Trending Movies</title>
+      <trakt>https://api.trakt.tv/movies/trending?limit=25&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Popular Movies List
+    <dir>
+      <title>Trakt Popular Movies</title>
+      <trakt>https://api.trakt.tv/movies/popular?limit=25&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Box Office Top 10 Movies List
+    <dir>
+      <title>Trakt Box Office Top 10 Movies</title>
+      <trakt>https://api.trakt.tv/movies/boxoffice</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Watched Movies (Last Week) List
+    <dir>
+      <title>Trakt Most Watched Movies (Last Week)</title>
+      <trakt>https://api.trakt.tv/movies/watched/weekly?limit=25&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Collected Movies (Last Week) List
+    <dir>
+      <title>Trakt Most Collected Last Week</title>
+      <trakt>https://api.trakt.tv/movies/collected/weekly?limit=25&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Anticipated Movies List
+    <dir>
+      <title>Trakt Most Anticipated</title>
+      <trakt>https://api.trakt.tv/movies/anticipated?limit=25&page=1</trakt>
+    </dir>
+	
+	** Returns A List Of Trakt Movies By Actor
+    <dir>
+      <title>Trakt: Bryan Cranston Movies</title>
+      <trakt>https://api.trakt.tv/people/bryan-cranston/movies</trakt>			
+    </dir>
+	
+	** Returns A List Of Trakt Movies By Actress  
+    <dir>
+      <title>Angelina Jolie</title>
+      <trakt>https://api.trakt.tv/people/Angelina-Jolie/movies</trakt>
+    </dir>
+
+	
+	### TV Shows ###
+
+	** Returns A List Of Your Personal Trakt TV Show Watchlist (Requires Trakt Authorization)
+    <dir>
+      <title>My Trakt TV Show Watchlist (Authorize)</title>
+      <trakt>https://api.trakt.tv/sync/watchlist/shows</trakt>
+    </dir>
+
+	** Returns A List Of Your Personal Trakt TV Show Collection (Requires Trakt Authorization)
+    <dir>
+      <title>My Trakt TV Show Collection (Authorize)</title>
+      <trakt>https://api.trakt.tv/sync/collection/shows</trakt>
+    </dir>
+	
+	** Returns The Trakt Trending TV Shows List
+    <dir>
+      <title>Trakt Trending Shows</title>
+      <trakt>https://api.trakt.tv/shows/trending?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Popular TV Shows List
+    <dir>
+      <title>Trakt Most Popular Shows</title>
+      <trakt>https://api.trakt.tv/shows/popular?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Watched TV Shows (Last Week) List
+    <dir>
+      <title>Trakt Most Watched TV Shows (Last Week)</title>
+      <trakt>https://api.trakt.tv/shows/watched/weekly?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Collected TV Shows (Last Week) List
+    <dir>
+      <title>Trakt Most Collected TV Shows (Last Week)</title>
+      <trakt>https://api.trakt.tv/shows/collected/weekly?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns The Trakt Most Anticipated TV Shows List
+    <dir>
+      <title>Trakt Most Anticipated TV Shows</title>
+      <trakt>https://api.trakt.tv/shows/anticipated?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns A List Of Trakt TV Shows By Actor
+
+    <dir>
+      <title>Trakt: Bryan Cranston Shows</title>
+      <trakt>https://api.trakt.tv/people/bryan-cranston/shows</trakt>
+    </dir>
+
+	
+	### Lists ###
+	
+	** Returns A List Of Your Personal Trakt Lists
+	<dir>
+      <title>My Trakt Lists</title>
+      <trakt>https://api.trakt.tv/users/me/lists/</trakt>
+    </dir>
+	
+	** Returns A List Of Your Personal Trakt Liked Lists
+    <dir>
+      <title>My Trakt Liked Lists</title>
+      <trakt>https://api.trakt.tv/users/likes/lists</trakt>
+    </dir>
+	
+	** Returns A List Of The Reddit Top 250 Movies
+    <dir>
+      <title>Reddit Top 250 (2017 Edition)</title>
+      <trakt>https://api.trakt.tv/users/philrivers/lists/reddit-top-250-2017-edition/items?limit=50&page=1</trakt>
+    </dir>
+	
+	** Returns A List Of The Rotten Tomatoes Best Movies Of 2017
+    <dir>
+      <title>Rotten Tomatoes: Best of 2017</title>
+      <trakt>https://api.trakt.tv/users/lish408/lists/rotten-tomatoes-best-of-2017/items?limit=50&page=1</trakt>
+    </dir>
+
+    -------------------------------------------------------------
 """
 
 import __builtin__
@@ -123,6 +225,8 @@ TRAKT_SECRET = __builtin__.trakt_client_secret
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
 addon_name = xbmcaddon.Addon().getAddonInfo('name')
+COLOR1 = ""
+COLOR2 = ""
 
 
 class Trakt(Plugin):
@@ -233,6 +337,7 @@ class Trakt(Plugin):
         else:
             koding.Remove_Table("trakt_plugin")
 
+
 @route(mode='trakt', args=["url"])
 def trakt(url):
     pins = ""
@@ -328,16 +433,20 @@ def trakt(url):
                     page = 1
                     next_url = urlparse.urljoin(splitted[0], "?page=2")
 
+            if not COLOR2 == "":
+                myPage = "[COLOR %s]Next Page >>[/COLOR]" % COLOR2
+            else:
+                myPage = "Next Page >>"
             xml += "<dir>\n"\
-                   "\t<title>Next Page >></title>\n"\
+                   "\t<title>%s</title>\n"\
                    "\t<trakt>%s</trakt>\n"\
+                   "\t<thumbnail>https://image.ibb.co/gtsNjw/next.png</thumbnail>\n"\
                    "\t<summary>Go To Page %s</summary>\n"\
-                   "</dir>" % (next_url, page + 1)
+                   "</dir>" % (myPage, next_url, page + 1)
         xml = remove_non_ascii(xml)
         save_to_db((xml, __builtin__.content_type), url)
 
     jenlist = JenList(xml)
-    #display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
     display_list(jenlist.get_list(), __builtin__.content_type, pins)
 
 
@@ -410,7 +519,6 @@ def trakt_season(slug):
 def get_movie_xml(item):
     if "movie" in item:
         item = item["movie"]
-
     title = remove_non_ascii(item["title"])
     year = item["year"]
     imdb = item["ids"]["imdb"]
@@ -434,6 +542,11 @@ def get_movie_xml(item):
         fanart = "https://image.tmdb.org/t/p/w1280/" + info["backdrop_path"]
     else:
         fanart = ""
+    #name = title + " (" + year + ")"
+    if not COLOR1 == "":
+        name = "[COLOR %s]%s[/COLOR]" % (COLOR1, title)
+    else:
+        name = title
     xml = "<item>" \
           "<title>%s</title>" \
           "<meta>" \
@@ -448,7 +561,7 @@ def get_movie_xml(item):
           "</link>" \
           "<thumbnail>%s</thumbnail>" \
           "<fanart>%s</fanart>" \
-          "</item>" % (title, imdb, title, year, thumbnail, fanart)
+          "</item>" % (name, imdb, title, year, thumbnail, fanart)
     return xml
 
 
@@ -480,6 +593,11 @@ def get_show_xml(item):
                      info["backdrop_path"])
     else:
         fanart = ""
+    #name = title + " (" + year + ")"
+    if not COLOR1 == "":
+        name = "[COLOR %s]%s[/COLOR]" % (COLOR1, title)
+    else:
+        name = title
     xml = "<dir>"\
           "<title>%s</title>"\
           "<meta>"\
@@ -491,7 +609,7 @@ def get_show_xml(item):
           "<link>trakt_tv_show(%s, %s, %s, %s, %s)</link>"\
           "<thumbnail>%s</thumbnail>" \
           "<fanart>%s</fanart>" \
-          "</dir>" % (title, imdb, title, year, trakt_id, year, title, tmdb,
+          "</dir>" % (name, imdb, title, year, trakt_id, year, title, tmdb,
                       imdb, thumbnail, fanart)
     return xml
 
@@ -524,8 +642,12 @@ def get_season_xml(item, trakt_id, year, tvtitle, tmdb, imdb):
         fanart = "https://image.tmdb.org/t/p/w1280/" + info["backdrop_path"]
     else:
         fanart = ""
+    if not COLOR1 == "" and not COLOR2 == "":
+        name = "[COLOR %s]Season: [COLOR %s]%s[/COLOR]" % (COLOR1, COLOR2, season)
+    else:
+        name = "Season: %s" % (season)
     xml = "<dir>"\
-          "<title>Season %s</title>"\
+          "<title>%s</title>"\
           "<meta>"\
           "<imdb>%s</imdb>"\
           "<content>season</content>"\
@@ -534,7 +656,7 @@ def get_season_xml(item, trakt_id, year, tvtitle, tmdb, imdb):
           "<link>trakt_season(%s,%s, %s, %s, %s, %s)</link>"\
           "<thumbnail>%s</thumbnail>" \
           "<fanart>%s</fanart>" \
-          "</dir>" % (season, imdb, season, trakt_id, season, year,
+          "</dir>" % (name, imdb, season, trakt_id, season, year,
                       tvtitle, tmdb,
                       imdb, thumbnail, fanart)
     return xml
@@ -572,6 +694,18 @@ def get_episode_xml(item, trakt_id, year, tvtitle, tmdb, imdb):
         fanart = "https://image.tmdb.org/t/p/w1280/" + info["backdrop_path"]
     else:
         fanart = ""
+    if int(season) > 0 and int(season) < 10:
+        mySeason = "0" + str(season)
+    else:
+        mySeason = str(season)
+    if int(episode) > 0 and int(episode) < 10:
+        myEpisode = "0" + str(episode)
+    else:
+        myEpisode = str(episode)
+    if not COLOR1 == "" and not COLOR2 == "":
+        name = "[COLOR %s]S%sE%s[/COLOR] - [COLOR %s]%s[/COLOR]" % (COLOR2, mySeason, myEpisode, COLOR1, title)
+    else:
+        name = "S%sE%s - %s" % (mySeason, myEpisode, title)
     xml = "<item>"\
           "<title>%s</title>"\
           "<meta>"\
@@ -588,12 +722,10 @@ def get_episode_xml(item, trakt_id, year, tvtitle, tmdb, imdb):
           "<sublink>search</sublink>"\
           "<sublink>searchsd</sublink>"\
           "</link>"\
-          "<thumbnail>%s</thumbnail>" \
-          "<fanart>%s</fanart>" % (
-              title, imdb, tvtitle, year, title,
-              premiered, season, episode,
-              thumbnail, fanart)
-    xml += "</item>"
+          "<thumbnail>%s</thumbnail>"\
+          "<fanart>%s</fanart>"\
+          "</item>" % (name, imdb, tvtitle, year, title,
+                                   premiered, season, episode, thumbnail, fanart)
     return xml
 
 

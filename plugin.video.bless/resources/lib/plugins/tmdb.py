@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     tmdb.py --- Jen Plugin for accessing tmdb data
     Copyright (C) 2017, Jen
@@ -14,8 +15,11 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+    
     Version:
+        2019-07-18
+            - Updated so that season and episode numbers less than 10 are displayed as double digits with a leading "0" (example: Season 1, Episode 9 ==> S01E09) (same as trakt.py)
+            - Categorized Usage Examples
         2018-07-02
             - Updated Clear Cache Hook
         2018-06-26
@@ -25,148 +29,164 @@
             - Added thumbnail for "Next Page >>" (same as imdb.py)
         2018-05-14
             Latest version to include with a Jen Release
-            
+
+    -------------------------------------------------------------
 
     *** COLORS ***
-        Set your desired colors for COLOR1 & COLOR2 within "" on lines 189 & 190.
+        Set your desired colors for the COLOR1 & COLOR2 variables within "" on lines 210 & 211 below.
         COLOR1 is for Movie/Show titles; COLOR2 is for Season/Episode numbers as well as for "Next Page >>".
         The color values can be alphanumeric (example: red, limegreen) or Hex (example: ffff0000, FF00FF00).
         If colors are left blank, they will display as the default color set within the skin you're using.
+        
+        -- Note:  In order for the Color settings to work as intended, Metadata must be DISABLED in the addon settings!!!
+
+    -------------------------------------------------------------
 
     Usage Examples:
-    Returns The TMDB Popular Movies List
-    <dir>
-      <title>TMDB Popular</title>
-      <tmdb>movies/popular</tmdb>
-    </dir>
 
-    Returns Upcoming Movies Then Trailers For The Movies.  Second Tag Must Be movie/upcoming
-    <dir>
-      <title>TMDB Upcoming</title>
-      <tmdb>movie/upcoming</tmdb>
-      <summary>Shows Trailers For Upcoming Movies</summary>
-    </dir>
 
-    Returns A List Of Now Playing Movies
-    <dir>
-      <title>TMDB Now Playing</title>
-      <tmdb>movies/now_playing</tmdb>
-    </dir>
+	### Search ###
+	
+	** Returns a list of items Searched for from TMDB
+	<dir>
+	  <title>Search TMDB</title>
+	  <tmdb>search</tmdb>
+	</dir>
 
-    Returns A List Of TMDB Top Rated Movies
-    <dir>
-      <title>TMDB Top Rated</title>
-      <tmdb>movies/top_rated</tmdb>
-    </dir>
 
-    Returns A List Of Movies By A Specific Genre.  Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB Action Movies</title>
-      <tmdb>genre/movies/28</tmdb>
-    </dir>
+	### Movies ###
+	
+	** Returns a list of Now Playing Movies
+	<dir>
+	  <title>TMDB Movies Now Playing</title>
+	  <tmdb>movies/now_playing</tmdb>
+	</dir>
 
-    Returns A List Of Movies By Specific Years. Must Change Year At The End Of The Second Tag
-    <dir>
-      <title>Movies Released In 2014</title>
-      <tmdb>year/movies/2014</tmdb>
-    </dir>
+	** Returns a list of the TMDB Most Popular Movies
+	<dir>
+	  <title>TMDB Popular Movies</title>
+	  <tmdb>movies/popular</tmdb>
+	</dir>
 
-    Returns A List Of Movies By Production Companies. Must Change Id At The End Of The Second Tag
-    <dir>
-        <title>Pixar Animation</title>
-        <tmdb>company/movies/3</tmdb>
-    </dir>
+	** Returns a list of the TMDB Top Rated Movies
+	<dir>
+	  <title>TMDB Top Rated Movies</title>
+	  <tmdb>movies/top_rated</tmdb>
+	</dir>
 
-    Returns A List Of Movies By A Specific Keyword. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB Army Movies</title>
-      <tmdb>keyword/movies/6092</tmdb>
-    </dir>
+	** Returns upcoming movies, then Trailers for the movies.  Second Tag must be movie/upcoming
+	<dir>
+	  <title>TMDB Upcoming Movies</title>
+	  <tmdb>movie/upcoming</tmdb>
+	  <summary>Shows Trailers For Upcoming Movies</summary>
+	</dir>
 
-    Returns A List Of A Specific Collection. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB Star Wars Collection</title>
-      <tmdb>collection/10</tmdb>
-    </dir>
+	** Returns a list of the TMDB Popular People Movies.  Results show only Movie Titles currently.
+	<dir>
+	  <title>TMDB Popular People Movies</title>
+	  <tmdb>people/popular</tmdb>
+	</dir>
 
-    Returns The TMDB Popular TV Shows List
-    <dir>
-      <title>TMDB Popular</title>
-      <tmdb>tv/popular</tmdb>
-    </dir>
+	** Returns a list of the TMDB Movies by a specific Year.  Must change Year at the end Of the Second Tag.
+	<dir>
+	  <title>Movies Released In 2018</title>
+	  <tmdb>year/movies/2018</tmdb>
+	</dir>
 
-    Returns The TMDB Top Rated TV Shows List
-    <dir>
-      <title>TMDB Top Rated</title>
-      <tmdb>tv/top_rated</tmdb>
-    </dir>
+	** Returns a list of Movies by a specific Genre.  Must change Genre ID at the end Of the Second Tag.
+	<dir>
+	  <title>TMDB Action Movies</title>
+	  <tmdb>genre/movies/28</tmdb>
+	</dir>
 
-    Returns A List Of Shows Airing Today
-    <dir>
-      <title>TMDB Airing Today</title>
-      <tmdb>tv/today</tmdb>
-    </dir>
+	** Returns a list of Movies by a Specific Actor.  Must change Actor ID at the end Of the Second Tag.
+	<dir>
+	  <title>Al Pacino</title>
+	  <tmdb>person/movies/1158</tmdb>
+	</dir>
 
-    Returns A List Of Shows Airing In The Next 7 Days
-    <dir>
-      <title>TMDB On The Air</title>
-      <tmdb>tv/on_the_air</tmdb>
-    </dir>
+	** Returns a list of Movies by a Production Companies.  Must change Production Company ID at the end Of the Second Tag.
+	<dir>
+		<title>Pixar Animation</title>
+		<tmdb>company/movies/3</tmdb>
+	</dir>
 
-    Returns A List Of Shows By Genre. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB Animation Shows</title>
-      <tmdb>genre/shows/16</tmdb>
-    </dir>
+	** Returns a list of a specific Movie Collection.  Must change Movie Collection ID at the end Of the Second Tag.
+	<dir>
+	  <title>TMDB Star Wars Collection</title>
+	  <tmdb>collection/10</tmdb>
+	</dir>
 
-    Returns A List Of TV Shows By Network. Must Change Id At The End Of The Second Tag
-    <dir>
-        <title>ABC</title>
-        <tmdb>network/shows/2</tmdb>
-    </dir>
+	** Returns a list of Movies by a specific Keyword.  Must change Keyword ID at the end of the Second Tag.
+	<dir>
+	  <title>TMDB Army Movies</title>
+	  <tmdb>keyword/movies/6092</tmdb>
+	</dir>
 
-    Returns A List By A Specific Keyword. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB King Shows</title>
-      <tmdb>keyword/shows/13084</tmdb>
-    </dir>
+	** Returns the Trailer for a specific Movie.   Must change Movie Trailer ID at the end of the Second Tag.
+	<dir>
+	  <title>Star Wars: The Last Jedi TRAILER</title>
+	  <tmdb>trailer/181808</tmdb>
+	</dir>
 
-    Returns A Specific TMDB List. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>TMDB List: Animal Kingdom</title>
-      <tmdb>list/13488</tmdb>
-    </dir>
 
-    Returns The TMDB Popular People List.  Results Show Only Movie Titles Currently
-    <dir>
-      <title>Popular People</title>
-      <tmdb>people/popular</tmdb>
-    </dir>
+	### TV Shows ###
+	
+	** Returns a list of TV Shows Airing Today
+	<dir>
+	  <title>TMDB Shows Airing Today</title>
+	  <tmdb>tv/today</tmdb>
+	</dir>
 
-    Returns A List Of Shows By A Person. Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>Bryan Cranston Shows TMDB</title>
-      <tmdb>person/shows/17419</tmdb>
-    </dir>
+	** Returns a list of the TMDB Popular TV Shows
+	<dir>
+	  <title>TMDB Popular Shows</title>
+	  <tmdb>tv/popular</tmdb>
+	</dir>
 
-    Returns A List Of Movies By A Person.  Must Change Id At The End Of The Second Tag
-    <dir>
-      <title>Bryan Cranston Movies TMDB</title>
-      <tmdb>person/movies/17419</tmdb>
-    </dir>
+	** Returns a list of the TMDB Top Rated TV Shows
+	<dir>
+	  <title>TMDB Top Rated Shows</title>
+	  <tmdb>tv/top_rated</tmdb>
+	</dir>
 
-    Returns Movie Trailers For Any Movies You Want.  You Must Change The Id At The End Of The Second Tag
-   <dir>
-      <title>Star Wars: The Last Jedi TRAILER</title>
-      <tmdb>trailer/181808</tmdb>
-    </dir>
+	** Returns a list of the TMDB TV Shows Airing in the Next 7 Days
+	<dir>
+	  <title>TMDB Shows On The Air</title>
+	  <tmdb>tv/on_the_air</tmdb>
+	</dir>
 
-    Returns A List Of Items Searched For From TMDB
-    <dir>
-      <title>Search TMDB</title>
-      <tmdb>search</tmdb>
-    </dir>
-    
+	** Returns a list of the TMDB TV Shows by Genre.  Must change Genre ID at the end of the second Tag
+	<dir>
+	  <title>TMDB Animation Shows</title>
+	  <tmdb>genre/shows/16</tmdb>
+	</dir>
+
+	** Returns a list of the TMDB TV Shows by Network.  Must change Network ID at the end of the second Tag
+	<dir>
+		<title>ABC</title>
+		<tmdb>network/shows/2</tmdb>
+	</dir>
+
+	** Returns a list of the TMDB TV Shows by Actor.  Must change Actor ID at the end of the second Tag
+	<dir>
+	  <title>TMDB Bryan Cranston Shows</title>
+	  <tmdb>person/shows/17419</tmdb>
+	</dir>
+
+	** Returns a list of the TMDB TV Shows by a specific Keyword.  Must change Keyword ID At The End Of The Second Tag
+	<dir>
+	  <title>TMDB King Shows</title>
+	  <tmdb>keyword/shows/13084</tmdb>
+	</dir>
+
+	** Returns a list of the TMDB Animal Kingdom TV Shows.  Must change List ID at the end of the second Tag
+	<dir>
+	  <title>TMDB List: Animal Kingdom</title>
+	  <tmdb>list/13488</tmdb>
+	</dir>
+
+    -------------------------------------------------------------
 """
 
 import __builtin__
@@ -176,13 +196,12 @@ import time
 
 import koding
 import resources.lib.external.tmdbsimple as tmdbsimple
-import xbmcaddon,xbmcgui
+import xbmcaddon, xbmcgui
 from koding import route
 from resources.lib.plugin import Plugin
 from resources.lib.util.context import get_context_items
 from resources.lib.util.xml import JenItem, JenList, display_list
 from unidecode import unidecode
-
 
 CACHE_TIME = 3600  # change to wanted cache time in seconds
 
@@ -190,7 +209,7 @@ addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
 COLOR1 = ""
 COLOR2 = ""
-pins = ""
+
 
 class TMDB(Plugin):
     name = "tmdb"
@@ -770,11 +789,18 @@ def get_episode_xml(item, tmdb_id, year, tvtitle):
         fanart = "https://image.tmdb.org/t/p/w1280/" + item["backdrop_path"]
     else:
         fanart = ""
-    if not COLOR1 == "" and not COLOR2 == "":
-        name = "[COLOR %s]S%sE%s[/COLOR] - [COLOR %s]%s[/COLOR]" % (COLOR2, season, episode, COLOR1, title)
+    if int(season) > 0 and int(season) < 10:
+        mySeason = "0" + str(season)
     else:
-        name = "S%sE%s - %s" % (season, episode, title)
-    
+        mySeason = str(season)
+    if int(episode) > 0 and int(episode) < 10:
+        myEpisode = "0" + str(episode)
+    else:
+        myEpisode = str(episode)
+    if not COLOR1 == "" and not COLOR2 == "":
+        name = "[COLOR %s]S%sE%s[/COLOR] - [COLOR %s]%s[/COLOR]" % (COLOR2, mySeason, myEpisode, COLOR1, title)
+    else:
+        name = "S%sE%s - %s" % (mySeason, myEpisode, title)
     xml = "<item>"\
           "<title>%s</title>"\
           "<meta>"\
@@ -859,8 +885,6 @@ def save_to_db(item, url):
                             "item": base64.b64encode(pickle.dumps(item)),
                             "created": time.time()
                         })
-
-           
 
 
 def fetch_from_db(url):

@@ -461,14 +461,14 @@ def display_list(items, content_type, pins):
         if Items:
             import xbmcplugin
             import sys
-            display_code(items, content_type)                                                 
+            #display_code(items, content_type) 
+            display_code(Items, content_type)                                                
         elif not Items:
             import xbmcplugin
             import sys
             hook_result = run_hook("display_list", items, content_type, pins)
             if hook_result:       
-                return
-            pins = pins.lower()     
+                return     
             save_to_db(items, pins)
             display_code(items, content_type)           
     else:
@@ -564,7 +564,8 @@ def fetch_from_db(url):
             db.execute("vacuum")
             db.commit()
             db.close()
-            return result
+            #return result
+            return None
         else:
             return result                
         return result

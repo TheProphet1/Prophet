@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    Air_table OTB Music
+    OTB Music
     Copyright (C) 2018,
     Version 1.0.5
-    Team OTB
+    OTB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,6 +69,8 @@ from unidecode import unidecode
 
 CACHE_TIME = 86400  # change to wanted cache time in seconds
 
+bec = base64.b64encode
+bdc = base64.b64decode
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -78,6 +80,11 @@ user_data_folder = os.path.join(home_folder, 'userdata')
 addon_data_folder = os.path.join(user_data_folder, 'addon_data')
 database_path = os.path.join(addon_data_folder, addon_id)
 database_loc = os.path.join(database_path, 'database.db')
+yai = bec(AddonName)
+tid = bdc('YXBwZG81OGVMYktNYndUckw=')
+tnm = bdc('b3RiXyxtdXNpY19pZHM=')
+atk = bdc('a2V5T0hheHNUR3pIVTlFRWg=')
+
 
 rock_keys = {'Concerts':'app97iqXbOkbFfVke',
             'Videos':'appnW82G1n9jTvruF',
@@ -227,9 +234,20 @@ def open_table():
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()    
         xml = ""
-        at = Airtable('appBCuGEj4xJ9zmMs', 'music_genre', api_key='keyikW1exArRfNAWj')
+        at = Airtable('appn8GRJzxzmi6Xph', 'music_genre', api_key='keyikW1exArRfNAWj')
         match = at.get_all(maxRecords=1200, view='Grid view') 
         for field in match:
             try:
@@ -261,7 +279,18 @@ def open_table(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else: 
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()   
         xml = ""
         table = url.split("|")[-2]
         key = url.split("|")[-1]
@@ -296,7 +325,18 @@ def open_table(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()    
         xml = ""
         band = url.split("|")[1]
         gen = url.split("|")[2]
@@ -333,7 +373,18 @@ def open_table(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()    
         xml = ""
         cat2 = url.split("|")[1]
         band = url.split("|")[2]

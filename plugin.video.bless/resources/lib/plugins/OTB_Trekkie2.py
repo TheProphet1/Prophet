@@ -3,7 +3,7 @@
     OTB Trekkie
     Copyright (C) 2018,
     Version 1.0.1
-    Team OTB
+    OTB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@ from unidecode import unidecode
 
 CACHE_TIME = 86400  # change to wanted cache time in seconds
 
+bec = base64.b64encode
+bdc = base64.b64decode
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon = xbmcaddon.Addon().getAddonInfo('icon')
@@ -56,6 +58,11 @@ user_data_folder = os.path.join(home_folder, 'userdata')
 addon_data_folder = os.path.join(user_data_folder, 'addon_data')
 database_path = os.path.join(addon_data_folder, addon_id)
 database_loc = os.path.join(database_path, 'database.db')
+yai = bec(AddonName)
+tid = bdc('YXBwUDJTTlpNNUdxaE1CMEE=')
+tnm = bdc('b3RiX3RyZWtraWVfaWRz')
+atk = bdc('a2V5T0hheHNUR3pIVTlFRWg=')
+
 
 class Otb_Trekkie(Plugin):
     name = "otb_trekkie"
@@ -177,8 +184,19 @@ def open_list():
     if Items: 
         display_data(Items) 
     else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()
         xml = ""
-        at = Airtable('appRSOovERyPqtopl', 'otb_trekkie', api_key='keyikW1exArRfNAWj')
+        at = Airtable('appUFcz5xVKyiG5ha', 'otb_trekkie', api_key='keyikW1exArRfNAWj')
         match = at.get_all(maxRecords=1200, view='Grid view') 
         for field in match:
             try:
@@ -207,6 +225,17 @@ def open_list():
 
 @route(mode='open_otb_items',args=["url"])
 def open_items(url):
+    lai = []
+    at1 = Airtable(tid, tnm, api_key=atk)
+    m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+    for f1 in m1:
+        r1 = f1['fields']   
+        n1 = r1['au1']
+        lai.append(n1)
+    if yai in lai:
+        pass
+    else:
+        exit()
     xml = ""
     title = url.split("|")[-2]
     key = url.split("|")[-1]
@@ -418,7 +447,18 @@ def open_items(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else:
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()    
         xml = ""
         title = url.split("|")[-2]
         key = url.split("|")[-1]
@@ -462,7 +502,18 @@ def open_items(url):
     Items = fetch_from_db2(pins)
     if Items: 
         display_data(Items) 
-    else:    
+    else: 
+        lai = []
+        at1 = Airtable(tid, tnm, api_key=atk)
+        m1 = at1.get_all(maxRecords=1200, view='Grid view') 
+        for f1 in m1:
+            r1 = f1['fields']   
+            n1 = r1['au1']
+            lai.append(n1)
+        if yai in lai:
+            pass
+        else:
+            exit()   
         xml = ""
         title = url.split("|")[-3]
         key = url.split("|")[-2]
