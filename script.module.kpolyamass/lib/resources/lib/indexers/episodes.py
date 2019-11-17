@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Kpolyamass Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -157,7 +156,7 @@ class seasons:
             data = urllib2.urlopen(url, timeout=30).read()
 
             zip = zipfile.ZipFile(StringIO.StringIO(data))
-            result = zip.read('%s.xml' % 'en')
+            result = zip.read('%s.zip.xml' % 'en')
             artwork = zip.read('banners.xml')
             zip.close()
 
@@ -171,7 +170,7 @@ class seasons:
                 data = urllib2.urlopen(url, timeout=30).read()
 
                 zip = zipfile.ZipFile(StringIO.StringIO(data))
-                result = zip.read('%s.xml' % 'en')
+                result = zip.read('%s.zip.xml' % 'en')
                 artwork = zip.read('banners.xml')
                 zip.close()
 
@@ -180,7 +179,7 @@ class seasons:
                 data = urllib2.urlopen(url, timeout=30).read()
 
                 zip = zipfile.ZipFile(StringIO.StringIO(data))
-                result2 = zip.read('%s.xml' % lang)
+                result2 = zip.read('%s.zip.xml' % lang)
                 zip.close()
             else:
                 result2 = result
@@ -1090,7 +1089,7 @@ class episodes:
                 data = urllib2.urlopen(url, timeout=10).read()
 
                 zip = zipfile.ZipFile(StringIO.StringIO(data))
-                result = zip.read('%s.xml' % lang)
+                result = zip.read('%s.zip.xml' % lang)
                 zip.close()
 
                 result = result.split('<Episode>')
