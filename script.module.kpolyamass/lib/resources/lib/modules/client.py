@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 '''
-
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +17,6 @@
 
 import re, sys, cookielib, urllib, urllib2, urlparse, gzip, StringIO, HTMLParser, time, random, base64
 
-import xbmc
 from resources.lib.modules import cache, dom_parser, log_utils, utils, control
 
 
@@ -143,12 +140,11 @@ def request(
         try:
             response = urllib2.urlopen(request, timeout=int(timeout))
         except urllib2.HTTPError as response:
-
             if response.code == 503:
                 cf_result = response.read()
                 try:
                     encoding = response.info().getheader('Content-Encoding')
-                except Exception:
+                except:
                     encoding = None
                 if encoding == 'gzip':
                     cf_result = gzip.GzipFile(fileobj=StringIO.StringIO(cf_result)).read()
@@ -178,15 +174,15 @@ def request(
                 log_utils.log('Request-Error (%s): %s' % (str(response.code), url), log_utils.LOGDEBUG)
                 if error is False:
                     return
-       
+
         if output == 'cookie':
             try:
                 result = '; '.join(['%s=%s' % (i.name, i.value) for i in cookies])
-            except Exception:
+            except:
                 pass
             try:
                 result = cf
-            except Exception:
+            except:
                 pass
             if close is True:
                 response.close()
@@ -205,18 +201,17 @@ def request(
         elif output == 'chunk':
             try:
                 content = int(response.headers['Content-Length'])
-            except Exception:
+            except:
                 content = (2049 * 1024)
-            if content < (2048 * 1024):
-                return
+            if content < (2048 * 1024): return
             result = response.read(16 * 1024)
-            if close is True:
-                response.close()
+            if close is True: response.close()
             return result
+
         elif output == 'file_size':
             try:
                 content = int(response.headers['Content-Length'])
-            except Exception:
+            except:
                 content = '0'
             response.close()
             return content
@@ -230,7 +225,7 @@ def request(
 
         try:
             encoding = response.info().getheader('Content-Encoding')
-        except Exception:
+        except:
             encoding = None
         if encoding == 'gzip':
             result = gzip.GzipFile(fileobj=StringIO.StringIO(result)).read()
@@ -254,7 +249,7 @@ def request(
 
             try:
                 encoding = response.info().getheader('Content-Encoding')
-            except Exception:
+            except:
                 encoding = None
             if encoding == 'gzip':
                 result = gzip.GzipFile(fileobj=StringIO.StringIO(result)).read()
@@ -269,16 +264,16 @@ def request(
         if output == 'extended':
             try:
                 response_headers = dict([(item[0].title(), item[1]) for item in response.info().items()])
-            except Exception:
+            except:
                 response_headers = response.headers
             response_code = str(response.code)
             try:
                 cookie = '; '.join(['%s=%s' % (i.name, i.value) for i in cookies])
-            except Exception:
+            except:
                 pass
             try:
                 cookie = cf
-            except Exception:
+            except:
                 pass
             if close is True: response.close()
             return (result, response_code, response_headers, _headers, cookie)
@@ -294,14 +289,14 @@ def _basic_request(url, headers=None, post=None, timeout='30', limit=None):
     try:
         try:
             headers.update(headers)
-        except Exception:
+        except:
             headers = {}
 
         request = urllib2.Request(url, data=post)
         _add_request_header(request, headers)
         response = urllib2.urlopen(request, timeout=int(timeout))
         return _get_result(response, limit)
-    except Exception:
+    except:
         return
 
 
@@ -312,16 +307,15 @@ def _add_request_header(_request, headers):
 
         try:
             scheme = _request.get_type()
-        except Exception:
+        except:
             scheme = 'http'
 
         referer = headers.get('Referer') if 'Referer' in headers else '%s://%s/' % (scheme, _request.get_host())
 
         _request.add_unredirected_header('Host', _request.get_host())
         _request.add_unredirected_header('Referer', referer)
-        for key in headers:
-            _request.add_header(key, headers[key])
-    except Exception:
+        for key in headers: _request.add_header(key, headers[key])
+    except:
         return
 
 
@@ -335,7 +329,7 @@ def _get_result(response, limit=None):
 
     try:
         encoding = response.info().getheader('Content-Encoding')
-    except Exception:
+    except:
         encoding = None
     if encoding == 'gzip':
         result = gzip.GzipFile(fileobj=StringIO.StringIO(result)).read()
@@ -360,7 +354,7 @@ def parseDOM(html, name='', attrs=None, ret=False):
 
 
 def replaceHTMLCodes(txt):
-    txt = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", txt)
+    # txt = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", txt)
     txt = HTMLParser.HTMLParser().unescape(txt)
     txt = txt.replace("&quot;", "\"")
     txt = txt.replace("&amp;", "&")
@@ -369,9 +363,6 @@ def replaceHTMLCodes(txt):
     txt = txt.strip()
     return txt
 
-def replaceEscapeCodes(txt):
-    txt = HTMLParser.HTMLParser().unescape(txt)
-    return txt
 
 def randomagent():
 
@@ -437,7 +428,7 @@ class cfcookie:
                 val = int(
                     eval(s.replace('!+[]', '1').replace('!![]', '1').replace('[]', '0').replace('(', 'str(')[offset:]))
                 return val
-            except Exception:
+            except:
                 pass
 
         cookies = cookielib.LWPCookieJar()
@@ -450,7 +441,7 @@ class cfcookie:
             result = response.read()
             try:
                 encoding = response.info().getheader('Content-Encoding')
-            except Exception:
+            except:
                 encoding = None
             if encoding == 'gzip':
                 result = gzip.GzipFile(fileobj=StringIO.StringIO(result)).read()
@@ -523,9 +514,8 @@ class bfcookie:
             headers['Cookie'] = 'rcksid=%s' % match[0]
             result = _basic_request(url, headers=headers, timeout=timeout)
             return self.getCookieString(result, headers['Cookie'])
-        except Exception:
+        except:
             return
-
 
     # not very robust but lazieness...
     def getCookieString(self, content, rcksid):
@@ -571,19 +561,9 @@ class sucuri:
             self.cookie = '%s=%s' % (self.cookie[0], self.cookie[1])
 
             return self.cookie
-        except Exception:
+        except:
             pass
 
-def setup_headers(UA=None, referer=None, cookie=None):
-    headers = {}
-    if UA is None:
-        headers.update({'User-Agent': randomagent()})
-    if not referer is None:
-        headers.update({'Referer': referer})
-    if not cookie is None:
-        headers.update({'Cookie': cookie})
-
-    return headers
 
 def _get_keyboard(default="", heading="", hidden=False):
 
