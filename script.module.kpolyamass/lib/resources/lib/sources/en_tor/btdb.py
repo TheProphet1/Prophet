@@ -25,7 +25,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['btdb.eu']
-        self.base_link = 'https://btdb.eu/'
+        self.base_link = 'https://btdb.eu'
         self.search_link = '?search=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

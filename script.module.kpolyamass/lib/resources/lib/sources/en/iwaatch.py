@@ -27,7 +27,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['iwaatch.com']
-        self.base_link = 'https://iwaatch.com/'
+        self.base_link = 'https://iwaatch.com'
         self.search_link = 'api/api.php?page=moviesearch&q={0}'
 
     def movie(self, imdb, title, localtitle, aliases, year):

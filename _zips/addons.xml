@@ -58,7 +58,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.kpolyamass" version="1.0.8" name="Kpolyamass" provider-name="The Prophet">
+<addon id="plugin.video.kpolyamass" version="1.0.9" name="Kpolyamass" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.python" version="2.19.0" />
 		<import addon="script.module.kpolyamass" />
@@ -168,7 +168,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.2.0" provider-name="The Prophet">
+<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.2.1" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 	</requires>

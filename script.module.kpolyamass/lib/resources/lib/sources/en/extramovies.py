@@ -43,8 +43,8 @@ class source:
     def __init__(self):
         self.priority = 0
         self.language = ['en']
-        self.domains = ['extramovies.trade', 'extramovies.host']
-        self.base_link = 'http://extramovies.guru'
+        self.domains = ['extramovies.trade', 'extramovies.pink']
+        self.base_link = 'https://extramovies.pink'
         self.search_link = '/?s=%s'
         self.scraper = cfscrape.create_scraper()
 

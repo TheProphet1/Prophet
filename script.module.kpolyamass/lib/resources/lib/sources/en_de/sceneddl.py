@@ -28,7 +28,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['sceneddl.online']
+        self.domains = ['sceneddl.me']
         self.base_link = 'http://www.sceneddl.me'
         self.search_link = '/?s=%s'
 

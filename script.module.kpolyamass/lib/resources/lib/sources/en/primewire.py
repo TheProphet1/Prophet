@@ -32,8 +32,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['primewire.ac', 'primewire.ink']
-        self.base_link = 'https://primewire.ink/'
+        self.domains = ['primewire.ink']
+        self.base_link = 'https://primewire.ink'
         self.moviesearch_link = '?keywords=%s&type=movie'
         self.tvsearch_link = '?keywords=%s&type=tv'
         self.search_link = '?search_keywords=%s'

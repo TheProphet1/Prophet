@@ -84,9 +84,8 @@
         <setting id="provider.cartoonhd" type="bool" label="CARTOONHD" default="false" />
         <setting id="provider.cmovieshd" type="bool" label="CMOVIESHD" default="false" />  
         <setting id="provider.divxcrawler" type="bool" label="DIVXCRAWLER" default="true" />
-        <setting id="provider.dllavin" type="bool" label="DLLAVIN" default="true" /> 
         <setting id="provider.extramovies" type="bool" label="EXTRAMOVIES" default="true" />
-        <setting id="provider.freefmovies" type="bool" label="FREEFMOVIES" default="true" />
+        <setting id="provider.filmxy" type="bool" label="FILMXY" default="true" />
         <setting id="provider.genvideos" type="bool" label="GENVIDEOS" default="true" />
         <setting id="provider.gomovies" type="bool" label="GOMOVIES" default="true" />
         <setting id="provider.gowatchseries" type="bool" label="GOWATCHSERIES" default="true" />
@@ -94,6 +93,7 @@
         <setting id="provider.iwaatch" type="bool" label="IWAATCH" default="true" />
         <setting id="provider.iwannawatch" type="bool" label="IWANNAWATCH" default="true" />
         <setting id="provider.primewire" type="bool" label="PRIMEWIRE" default="true" />
+        <setting id="provider.projectfreetv" type="bool" label="PROJECTFREETV" default="true" />
         <setting id="provider.s1dl" type="bool" label="S1DL" default="true" />
         <setting id="provider.seehd" type="bool" label="SEEHD" default="true" />
         <setting id="provider.series9" type="bool" label="SERIES9" default="true" />
@@ -111,10 +111,10 @@
     <category label="70001">
         <setting label="70001" type="lsep" />
         <setting id="provider.0day" type="bool" label="$NUMBER[0]DAY" default="true" />  
-        <setting id="provider.300mbdownload" type="bool" label="$NUMBER[300]MBDOWNLOAD" default="true" />
         <setting id="provider.300mbfilms" type="bool" label="$NUMBER[300]MBFILMS" default="true" />         
         <setting id="provider.ddlspot" type="bool" label="DDLSPOT" default="true" />
-        <setting id="provider.downduck" type="bool" label="DOWNDUCK" default="true" /> 
+        <setting id="provider.downduck" type="bool" label="DOWNDUCK" default="true" />
+        <setting id="provider.ganool" type="bool" label="GANOOL" default="true" />  
         <setting id="provider.maxrls" type="bool" label="MAXRLS" default="true" />
         <setting id="provider.mvrls" type="bool" label="MVRLS" default="true" />  
         <setting id="provider.onlineseries" type="bool" label="ONLINESERIES" default="true" />
@@ -123,27 +123,28 @@
         <setting id="provider.rlslog" type="bool" label="RLSLOG" default="true" /> 
         <setting id="provider.sceneddl" type="bool" label="SCENEDDL" default="true" />
         <setting id="provider.scenerls" type="bool" label="SCENERLS" default="true" />
-        <setting id="provider.warezmovies" type="bool" label="WAREZMOVIES" default="true" />
     </category>
     <category label="70002">
         <setting label="70002" type="lsep" /> 
         <setting id="provider.1337x" type="bool" label="$NUMBER[1337]" default="true" />
         <setting id="provider.btdb" type="bool" label="BTDB" default="true" />
         <setting id="provider.btscene" type="bool" label="BTSCENE" default="true" /> 
-        <setting id="provider.digbt" type="bool" label="DIGBT" default="true" /> 
         <setting id="provider.doublr" type="bool" label="DOUBLR" default="true" />                 
         <setting id="provider.eztv" type="bool" label="EZTV" default="true" /> 
         <setting id="provider.glodls" type="bool" label="GLODLS" default="true" /> 
         <setting id="provider.kickass2" type="bool" label="KICKASS2" default="true" /> 
         <setting id="provider.limetorrents" type="bool" label="LIMETORRENTS" default="true" />
-        <setting id="provider.magnetdl" type="bool" label="MAGNETDL" default="true" /> 
+        <setting id="provider.magnetdl" type="bool" label="MAGNETDL" default="true" />
+        <setting id="provider.mkvcagetor" type="bool" label="MKVCAGETOR" default="true" />  
         <setting id="provider.piratebay" type="bool" label="PIRATEBAY" default="true" />
         <setting id="provider.skytorrents" type="bool" label="SKYTORRENTS" default="true" />  
         <setting id="provider.torrentapi" type="bool" label="TORRENTAPI" default="true" /> 
         <setting id="provider.torrentdownloads" type="bool" label="TORRENTDOWNLOADS" default="true" /> 
+        <setting id="provider.torrentgalaxy" type="bool" label="TORRENTGALAXY" default="true" />
+        <setting id="provider.torrentquest" type="bool" label="TORRENTQUEST" default="true" /> 
         <setting id="provider.yify" type="bool" label="YIFY" default="true" /> 
         <setting id="provider.yifyddl" type="bool" label="YIFYDDL" default="true" />
-        <setting id="provider.zoogle" type="bool" label="ZOOGLE" default="true" />
+        <setting id="provider.zoogle" type="bool" label="ZOOGLE" default="true" /> 
     </category>
     <category label="32346">
         <setting type="lsep" label="FANART.TV" />

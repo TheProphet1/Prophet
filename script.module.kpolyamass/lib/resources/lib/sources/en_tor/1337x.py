@@ -30,7 +30,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['1337x.to']
-        self.base_link = 'https://1337x.to/'
+        self.base_link = 'https://1337x.to'
         self.tvsearch = 'https://1337x.to/sort-category-search/{0}/TV/seeders/desc/{1}/'
         self.moviesearch = 'https://1337x.to/sort-category-search/{0}/Movies/size/desc/{1}/'
 

@@ -28,8 +28,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['seriesonline.io']
-        self.base_link = 'https://www2.seriesonline8.co'
+        self.domains = ['www2.seriesonline8.co','123movies123.io']
+        self.base_link = 'https://123movies123.io'
         self.search_link = '/movie/search/%s'
 
     def matchAlias(self, title, aliases):

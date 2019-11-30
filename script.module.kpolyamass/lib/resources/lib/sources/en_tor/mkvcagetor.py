@@ -28,8 +28,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['mkvcage.site', 'www.mkvcage.ws', 'mkvcage.fun']
-        self.base_link = 'https://www.mkvcage.site'
+        self.domains = ['mkvcage.site']
+        self.base_link = 'http://www.mkvcage.site'
         self.search_link = '/?s=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

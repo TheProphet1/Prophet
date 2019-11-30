@@ -25,7 +25,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['watchepisodes.com', 'watchepisodes.unblocked.nz']
+        self.domains = ['watchepisodes.com', 'watchepisodes.unblocked.earth']
         self.base_link = 'https://www.watchepisodes4.com'
         self.search_link = 'search/ajax_search?q=%s'
 

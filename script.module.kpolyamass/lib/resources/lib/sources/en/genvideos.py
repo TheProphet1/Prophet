@@ -28,7 +28,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['genvideos.io']
-        self.base_link = 'https://genvideos.io/'
+        self.base_link = 'https://genvideos.io'
         self.search_link = 'results?q=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

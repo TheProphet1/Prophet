@@ -27,8 +27,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['yifyddl.movie']
-        self.base_link = 'https://yifyddl.movie/'
+        self.domains = ['yts.ws']
+        self.base_link = 'https://yts.ws'
         self.search_link = '/movie/%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

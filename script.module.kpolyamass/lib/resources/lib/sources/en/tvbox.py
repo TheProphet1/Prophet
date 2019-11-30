@@ -27,7 +27,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['tvbox.ag']
-        self.base_link = 'https://tvbox.ag/'
+        self.base_link = 'https://tvbox.ag'
         self.search_link = 'search?q=%s'
         self.search_link_movie = 'https://tvbox.ag/movies'
 
