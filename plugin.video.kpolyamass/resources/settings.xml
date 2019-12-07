@@ -81,8 +81,8 @@
     </category>
     <category label="32345">
         <setting label="English" type="lsep" />
-        <setting id="provider.cartoonhd" type="bool" label="CARTOONHD" default="false" />
-        <setting id="provider.cmovieshd" type="bool" label="CMOVIESHD" default="false" />  
+        <setting id="provider.cartoonhd" type="bool" label="CARTOONHD" default="true" />
+        <setting id="provider.cmovieshd" type="bool" label="CMOVIESHD" default="true" />  
         <setting id="provider.divxcrawler" type="bool" label="DIVXCRAWLER" default="true" />
         <setting id="provider.extramovies" type="bool" label="EXTRAMOVIES" default="true" />
         <setting id="provider.filmxy" type="bool" label="FILMXY" default="true" />
@@ -119,7 +119,7 @@
         <setting id="provider.mvrls" type="bool" label="MVRLS" default="true" />  
         <setting id="provider.onlineseries" type="bool" label="ONLINESERIES" default="true" />
         <setting id="provider.rapidmoviez" type="bool" label="RAPIDMOVIEZ" default="true" /> 
-        <setting id="provider.rlsbb" type="bool" larapidmoviezbel="RLSBB" default="true" /> 
+        <setting id="provider.rlsbb" type="bool" label="RLSBB" default="true" /> 
         <setting id="provider.rlslog" type="bool" label="RLSLOG" default="true" /> 
         <setting id="provider.sceneddl" type="bool" label="SCENEDDL" default="true" />
         <setting id="provider.scenerls" type="bool" label="SCENERLS" default="true" />
