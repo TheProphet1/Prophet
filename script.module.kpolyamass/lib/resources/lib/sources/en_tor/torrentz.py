@@ -19,7 +19,6 @@ import re
 import urllib
 import urlparse
 
-from resources.lib.modules import cfscrape
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import debrid
@@ -30,11 +29,9 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['scene-rls.com', 'scene-rls.net']
-		self.base_link = 'http://scene-rls.net'
-		# self.search_link = '/search/%s'
-		self.search_link = '/?s=%s'
-		self.scraper = cfscrape.create_scraper()
+		self.domains = ['torrentz2.eu']
+		self.base_link = 'https://torrentz2.eu'
+		self.search_link = '/search?f=%s'
 
 
 	def movie(self, imdb, title, localtitle, aliases, year):
@@ -69,16 +66,13 @@ class source:
 
 
 	def sources(self, url, hostDict, hostprDict):
+		sources = []
 		try:
-			sources = []
-
 			if url is None:
 				return sources
 
 			if debrid.status() is False:
 				return sources
-
-			hostDict = hostprDict + hostDict
 
 			data = urlparse.parse_qs(url)
 			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
@@ -91,76 +85,60 @@ class source:
 			query = '%s %s' % (title, hdlr)
 			query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
+			url = self.search_link % urllib.quote_plus(query)
+			url = urlparse.urljoin(self.base_link, url)
+			# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
+
 			try:
-				url = self.search_link % urllib.quote_plus(query)
-				url = urlparse.urljoin(self.base_link, url)
-				# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
+				r = client.request(url)
 
-				r = self.scraper.get(url).content
-
-				posts = client.parseDOM(r, 'div', attrs={'class': 'post'})
-
-				items = [];
-				dupes = []
+				posts = client.parseDOM(r, 'div', attrs={'class': 'results'})[0]
+				posts = client.parseDOM(posts, 'dl')
 
 				for post in posts:
-					try:
-						u = client.parseDOM(post, "div", attrs={"class": "postContent"})
-						u = client.parseDOM(u, "h2")
-						u = client.parseDOM(u, 'a', ret='href')
-						u = [(i.strip('/').split('/')[-1], i) for i in u]
-						items += u
-					except:
-						source_utils.scraper_error('SCENERLS')
-						pass
+					links = re.findall('<dt><a href=/(.+)</a>', post, re.DOTALL)
+
+					for link in links:
+						magnet = link.split('</a>')[0]
+						hash = 'magnet:?xt=urn:btih:' + magnet.split('>')[0]
+						dn = '&dn=' + magnet.split('>')[1]
+						url = hash + dn
+
+						if any(x in url.lower() for x in ['french', 'italian', 'spanish', 'truefrench', 'dublado', 'dubbed']):
+							continue
+
+						name = url.split('&dn=')[1]
+						t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and')
+						if cleantitle.get(t) != cleantitle.get(title):
+							continue
+
+						if hdlr not in name:
+							continue
+
+						quality, info = source_utils.get_release_quality(name, url)
+
+						try:
+							size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
+							div = 1 if size.endswith('GB') else 1024
+							size = float(re.sub('[^0-9|/.|/,]', '', size.replace(',', '.'))) / div
+							size = '%.2f GB' % size
+							info.append(size)
+						except:
+							pass
+
+						info = ' | '.join(info)
+
+						sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
+												'info': info, 'direct': False, 'debridonly': True})
+
+				return sources
 
 			except:
-				source_utils.scraper_error('SCENERLS')
-				pass
-
-			for item in items:
-				try:
-					name = item[0]
-					name = client.replaceHTMLCodes(name)
-
-					t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and')
-					if cleantitle.get(t) != cleantitle.get(title):
-						continue
-
-					tit = name.replace('.', ' ')
-
-					if hdlr not in tit:
-						continue
-
-					quality, info = source_utils.get_release_quality(name, item[1])
-					info = ' | '.join(info)
-
-					url = item[1]
-
-					if any(x in url for x in ['.rar', '.zip', '.iso']):
-						continue
-
-					url = client.replaceHTMLCodes(url)
-					url = url.encode('utf-8')
-
-					host = re.findall('([\w]+[.][\w]+)$', urlparse.urlparse(url.strip().lower()).netloc)[0]
-
-					if not host in hostDict:
-						continue
-
-					host = client.replaceHTMLCodes(host)
-					host = host.encode('utf-8')
-
-					sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-									'direct': False, 'debridonly': True})
-				except:
-					source_utils.scraper_error('SCENERLS')
-					pass
-
-			return sources
+				source_utils.scraper_error('TORRENTZ')
+				return
 
 		except:
-			source_utils.scraper_error('SCENERLS')
+			source_utils.scraper_error('TORRENTZ')
 			return sources
 
 

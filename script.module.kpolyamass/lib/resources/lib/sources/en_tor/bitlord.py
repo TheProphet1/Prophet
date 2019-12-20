@@ -19,7 +19,6 @@ import re
 import urllib
 import urlparse
 
-from resources.lib.modules import cfscrape
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import debrid
@@ -28,13 +27,11 @@ from resources.lib.modules import source_utils
 
 class source:
 	def __init__(self):
-		self.priority = 1
+		self.priority = 0
 		self.language = ['en']
-		self.domains = ['scene-rls.com', 'scene-rls.net']
-		self.base_link = 'http://scene-rls.net'
-		# self.search_link = '/search/%s'
-		self.search_link = '/?s=%s'
-		self.scraper = cfscrape.create_scraper()
+		self.domain = ['bitlordsearch.com']
+		self.base_link = 'http://www.bitlordsearch.com'
+		self.search_link = '/search?q=%s'
 
 
 	def movie(self, imdb, title, localtitle, aliases, year):
@@ -69,16 +66,13 @@ class source:
 
 
 	def sources(self, url, hostDict, hostprDict):
+		sources = []
 		try:
-			sources = []
-
 			if url is None:
 				return sources
 
 			if debrid.status() is False:
 				return sources
-
-			hostDict = hostprDict + hostDict
 
 			data = urlparse.parse_qs(url)
 			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
@@ -91,76 +85,57 @@ class source:
 			query = '%s %s' % (title, hdlr)
 			query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
+			url = self.search_link % urllib.quote_plus(query)
+			url = urlparse.urljoin(self.base_link, url)
+			# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
+
 			try:
-				url = self.search_link % urllib.quote_plus(query)
-				url = urlparse.urljoin(self.base_link, url)
-				# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
+				r = client.request(url)
+				links = zip(client.parseDOM(r, 'a', attrs={'class': 'btn btn-default magnet-button stats-action banner-button'}, ret='href'), client.parseDOM(r, 'td', attrs={'class': 'size'}))
 
-				r = self.scraper.get(url).content
+				for link in links:
+					url = link[0].replace('&amp;', '&')
+					url = re.sub(r'(&tr=.+)&dn=', '&dn=', url) # some links on bitlord &tr= before &dn=
+					url = url.split('&tr=')[0]
+					if 'magnet' not in url:
+						continue
 
-				posts = client.parseDOM(r, 'div', attrs={'class': 'post'})
+					size = int(link[1])
 
-				items = [];
-				dupes = []
+					if any(x in url.lower() for x in ['french', 'italian', 'spanish', 'truefrench', 'dublado', 'dubbed']):
+						continue
 
-				for post in posts:
-					try:
-						u = client.parseDOM(post, "div", attrs={"class": "postContent"})
-						u = client.parseDOM(u, "h2")
-						u = client.parseDOM(u, 'a', ret='href')
-						u = [(i.strip('/').split('/')[-1], i) for i in u]
-						items += u
-					except:
-						source_utils.scraper_error('SCENERLS')
-						pass
-
-			except:
-				source_utils.scraper_error('SCENERLS')
-				pass
-
-			for item in items:
-				try:
-					name = item[0]
-					name = client.replaceHTMLCodes(name)
-
+					name = url.split('&dn=')[1]
 					t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and')
 					if cleantitle.get(t) != cleantitle.get(title):
 						continue
 
-					tit = name.replace('.', ' ')
-
-					if hdlr not in tit:
+					if hdlr not in name:
 						continue
 
-					quality, info = source_utils.get_release_quality(name, item[1])
+					quality, info = source_utils.get_release_quality(name, url)
+
+					try:
+						if size < 5.12: raise Exception()
+						size = float(size) / 1024
+						size = '%.2f GB' % size
+						info.append(size)
+					except:
+						pass
+
 					info = ' | '.join(info)
 
-					url = item[1]
+					sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
+												'info': info, 'direct': False, 'debridonly': True})
 
-					if any(x in url for x in ['.rar', '.zip', '.iso']):
-						continue
+				return sources
 
-					url = client.replaceHTMLCodes(url)
-					url = url.encode('utf-8')
-
-					host = re.findall('([\w]+[.][\w]+)$', urlparse.urlparse(url.strip().lower()).netloc)[0]
-
-					if not host in hostDict:
-						continue
-
-					host = client.replaceHTMLCodes(host)
-					host = host.encode('utf-8')
-
-					sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-									'direct': False, 'debridonly': True})
-				except:
-					source_utils.scraper_error('SCENERLS')
-					pass
-
-			return sources
+			except:
+				source_utils.scraper_error('BITLORD')
+				return sources
 
 		except:
-			source_utils.scraper_error('SCENERLS')
+			source_utils.scraper_error('BITLORD')
 			return sources
 
 

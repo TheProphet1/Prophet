@@ -27,44 +27,31 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['hdm.to']
-		self.base_link = 'https://hdm.to'
-		self.search_link = '/search/%s+%s'
+		self.domains = ['coolmoviezone.xyz']
+		self.base_link = 'https://coolmoviezone.xyz'
 
 	def movie(self, imdb, title, localtitle, aliases, year):
 		try:
-			title = cleantitle.geturl(title).replace('-', '+').replace('++', '+')
-			url = self.base_link + self.search_link % (title, year)
-			r = client.request(url)
-			u = client.parseDOM(r, "div", attrs={"class": "col-md-2 col-sm-2 mrgb"})
-			for i in u:
-				t = re.compile('<a href="(.+?)"').findall(i)
-				for url in t:
-					if not cleantitle.get(title) in cleantitle.get(url):
-						continue
-					return url
+			mtitle = cleantitle.geturl(title)
+			url = self.base_link + '/%s-%s' % (mtitle, year)
+			return url
 		except:
 			return
 
 	def sources(self, url, hostDict, hostprDict):
 		try:
-			hostDict = hostDict + hostprDict
 			sources = []
-
-			if url is None:
-				return sources
-
-			t = client.request(url)
-
-			r = re.compile('<iframe.+?src="(.+?)"').findall(t)
-
-			for url in r:
+			hostDict = hostprDict + hostDict
+			r = client.request(url)
+			match = re.compile('<td align="center"><strong><a href="(.+?)"').findall(r)
+			for url in match:
 				valid, host = source_utils.is_host_valid(url, hostDict)
 				if valid:
-					sources.append({'source': host, 'quality': 'HD', 'language': 'en', 'url': url, 'direct': False,
-					                'debridonly': False})
+					quality, info = source_utils.get_release_quality(url, url)
+					sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info,
+					                'direct': False, 'debridonly': False})
 			return sources
-		except:
+		except Exception:
 			return sources
 
 	def resolve(self, url):
