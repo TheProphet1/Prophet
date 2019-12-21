@@ -30,8 +30,8 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['btdb.eu']
-		self.base_link = 'https://btdb.eu/'
+		self.domains = ['btdb.eu','btdb.io']
+		self.base_link = 'https://btdb.io'
 		# self.search_link = '?search=%s'
 		self.search_link = '/?s=%s'
 		self.scraper = cfscrape.create_scraper()

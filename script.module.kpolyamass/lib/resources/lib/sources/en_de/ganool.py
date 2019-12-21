@@ -26,8 +26,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['ganool.ws', 'ganol.si', 'ganool123.com']
-        self.base_link = 'https://ww.123movie.nu'
+        self.domains = ['ganool.ws','ganool123.com','123-putlockers.com']
+        self.base_link = 'https://123-putlockers.com'
         self.search_link = '/search/?q=%s'
         self.scraper = cfscrape.create_scraper()
 

@@ -28,8 +28,8 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['pirateiro.unblocked.earth']
-		self.base_link = 'https://pirateiro.unblocked.earth'
+		self.domains = ['pirateiro.unblocked.earth','pirateiro.unblockit.ca']
+		self.base_link = 'https://pirateiro.unblockit.ca'
 		self.search_link = '/torrents/?search=%s'
 		self.scraper = cfscrape.create_scraper()
 

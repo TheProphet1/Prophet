@@ -26,8 +26,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['www.ddlspot.com']
-        self.base_link = 'http://www.ddlspot.com/'
+        self.domains = ['ddlspot.com']
+        self.base_link = 'http://www.ddlspot.com'
         self.search_link = 'search/?q=%s&m=1&x=0&y=0'
 
     def movie(self, imdb, title, localtitle, aliases, year):

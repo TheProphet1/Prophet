@@ -23,8 +23,8 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['yesmovies.fm', 'yesmovies.gg']
-		self.base_link = 'https://www6.yesmovies.fm'
+		self.domains = ['yesmovies.fm','yesmovies.movie','yesmovies.gg']
+		self.base_link = 'https://yesmovies.movie'
 		self.movie_link = '/film/%s/watching.html?ep=0'
 		self.tvshow_link = '/film/%s-season-%s/watching.html?ep=%s'
 

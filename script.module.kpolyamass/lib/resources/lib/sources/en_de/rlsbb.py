@@ -30,7 +30,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['rlsbb.ru','rlsbb.to','rlsbb.com','rlsbb.unblocked.cx']
+        self.domains = ['rlsbb.ru','rlsbb.to','rlsbb.com']
         self.base_link = 'http://rlsbb.ru'
         self.search_base_link = 'http://search.rlsbb.ru'
         self.search_cookie = 'serach_mode=rlsbb'
