@@ -15,8 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-import re
-from resources.lib.modules import client,cleantitle,source_utils
+from resources.lib.modules import cleantitle
+from resources.lib.modules import getSum
+from resources.lib.modules import source_utils
 
 
 class source:
