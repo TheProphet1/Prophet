@@ -236,7 +236,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.2.6" provider-name="The Prophet">
+<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.2.7" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 	</requires>
