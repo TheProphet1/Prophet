@@ -97,6 +97,7 @@
         <setting id="provider.seriesonline" type="bool" label="SERIESONLINE" default="true" /> 
         <setting id="provider.solarmoviefree" type="bool" label="SOLARMOVIEFREE" default="true" />
         <setting id="provider.swatchseries" type="bool" label="SWATCHSERIES" default="true" />
+        <setting id="provider.vikv" type="bool" label="VIKV" default="true" />
         <setting id="provider.wannahd" type="bool" label="WANNAHD" default="true" />
         <setting id="provider.watch32" type="bool" label="WATCH32" default="true" />
         <setting id="provider.watchepisodes" type="bool" label="WATCHEPISODES" default="true" />  
@@ -120,6 +121,7 @@
         <setting id="provider.sceneddl" type="bool" label="SCENEDDL" default="true" />
         <setting id="provider.scenerls" type="bool" label="SCENERLS" default="true" />
         <setting id="provider.scnsrc" type="bool" label="SCNSRC" default="true" />
+        <setting id="provider.ultrahd" type="bool" label="ULTRAHD" default="true" />
     </category>
     <category label="70002">
         <setting label="70002" type="lsep" /> 
