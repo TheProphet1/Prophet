@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 
-    Copyright (C) 2018
-    Version 2.1.1
+    Copyright (C) 2018 TonyH
+    Version 2.1.2 
+
+    2-8-20
+    -- Added resolver to the plugin. No longer needs sports devil to play the links --
+    -- New xml tags are needed for this version, they are listed below --
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,55 +29,55 @@
     Display only Tv Shows:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>shows</arconaitv>
+<arconaitv>main/shows</arconaitv>
 </dir>
 
 -------------
     Display only Networks:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>networks</arconaitv>
+<arconaitv>main/networks</arconaitv>
 </dir>    
 
 -------------
     Display only Movies:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>movies</arconaitv>
+<arconaitv>main/movies</arconaitv>
 </dir>     
 
 -------------
     Display Tv Shows and Networks:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>shows/networks</arconaitv>
+<arconaitv>main/shows/networks</arconaitv>
 </dir>
 
 ------------
     Display Tv Shows and Movies:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>shows/movies</arconaitv>
+<arconaitv>main/shows/movies</arconaitv>
 </dir>
 
 ------------
     Display Networks and Movies:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>networks/movies</arconaitv>
+<arconaitv>main/networks/movies</arconaitv>
 </dir>
 
 ------------
     Display Tv Shows and Networks and Movies:
 <dir>
 <title>Arconaitv 24-7</title>
-<arconaitv>shows/networks/movies</arconaitv>
+<arconaitv>main/shows/networks/movies</arconaitv>
 </dir>                 
  
 
 """    
 
-import requests,re,os,xbmc,xbmcaddon
+import requests,re,os,xbmc,xbmcaddon,xbmcgui
 import base64,pickle,koding,time,sqlite3
 from koding import route
 from ..plugin import Plugin
@@ -101,28 +105,50 @@ class ARCONAITV(Plugin):
     def process_item(self, item_xml):
         if "<arconaitv>" in item_xml:
             item = JenItem(item_xml)
-            result_item = {
-                'label': item["title"],
-                'icon': item.get("thumbnail", addon_icon),
-                'fanart': item.get("fanart", addon_fanart),
-                'mode': "get_shows",
-                'url': item.get("arconaitv", ""),
-                'folder': True,
-                'imdb': "0",
-                'content': "files",
-                'season': "0",
-                'episode': "0",
-                'info': {},
-                'year': "0",
-                'context': get_context_items(item),
-                "summary": item.get("summary", None)
-            }
-            result_item["properties"] = {
-                'fanart_image': result_item["fanart"]
-            }
-            result_item['fanart_small'] = result_item["fanart"]
-            return result_item
-          
+            if "main" in item.get("arconaitv",""):
+                result_item = {
+                    'label': item["title"],
+                    'icon': item.get("thumbnail", addon_icon),
+                    'fanart': item.get("fanart", addon_fanart),
+                    'mode': "get_shows",
+                    'url': item.get("arconaitv", ""),
+                    'folder': True,
+                    'imdb': "0",
+                    'content': "files",
+                    'season': "0",
+                    'episode': "0",
+                    'info': {},
+                    'year': "0",
+                    'context': get_context_items(item),
+                    "summary": item.get("summary", None)
+                }
+                result_item["properties"] = {
+                    'fanart_image': result_item["fanart"]
+                }
+                result_item['fanart_small'] = result_item["fanart"]
+                return result_item
+            elif "ArcLink" in item.get("arconaitv",""):
+                result_item = {
+                    'label': item["title"],
+                    'icon': item.get("thumbnail", addon_icon),
+                    'fanart': item.get("fanart", addon_fanart),
+                    'mode': "get_arconaitv_links",
+                    'url': item.get("arconaitv", ""),
+                    'folder': False,
+                    'imdb': "0",
+                    'content': "files",
+                    'season': "0",
+                    'episode': "0",
+                    'info': {},
+                    'year': "0",
+                    'context': get_context_items(item),
+                    "summary": item.get("summary", None)
+                }
+                result_item["properties"] = {
+                    'fanart_image': result_item["fanart"]
+                }
+                result_item['fanart_small'] = result_item["fanart"]
+                return result_item          
 
 @route(mode='get_shows', args=["url"])
 def get_shows(url):
@@ -132,27 +158,27 @@ def get_shows(url):
         url2 = "https://www.arconaitv.us/"
         headers = {'User_Agent':User_Agent}
         html = requests.get(url2,headers=headers).content
-        if url == "shows":
+        if url == "main/shows":
             tv_shows(html)
-        elif url == "networks":
+        elif url == "main/networks":
             networks(html)
-        elif url == "movies":
+        elif url == "main/movies":
             movies(html)
-        elif url == "shows/networks":
+        elif url == "main/shows/networks":
             tv_shows(html)        
             networks(html)
-        elif url == "shows/movies":
+        elif url == "main/shows/movies":
             tv_shows(html)
             movies(html)
-        elif url == "networks/movies":
+        elif url == "main/networks/movies":
             networks(html)
             movies(html)
-        elif url == "shows/networks/movies":
+        elif url == "main/shows/networks/movies":
             tv_shows(html)
             networks(html)
             movies(html)
-        elif url == "":
-            pass                                                                                
+        # elif url == "":
+        #     pass                                                                                
     except:
         pass
  
@@ -177,39 +203,34 @@ def tv_shows(html):
                 name = name.replace("\\'","")
                 name = remove_non_ascii(name)
                 link = link.replace("\\'","")
-                link = "plugin://plugin.video.SportsDevil/?mode=1&amp;item=catcher%3dstreams%26url=https://www.arconaitv.us/"+link
+                link = "https://www.arconaitv.us/"+link
                 image2 = get_thumb(name,html)            
                 if image2:
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>https://lerablog.org/wp-content/uploads/2014/05/tv-series.jpg</fanart>"\
                            "<summary>Random Episodes</summary>"\
-                           "</plugin>" % (name,link,image2)                       
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image2,link,name,image2)                       
                 elif not image2:
                     image3 = get_other(name,html)
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>https://lerablog.org/wp-content/uploads/2014/05/tv-series.jpg</fanart>"\
                            "<summary>Random Episodes</summary>"\
-                           "</plugin>" % (name,link,image3)
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image3,link,name,image3)
         except:
             pass               
         jenlist = JenList(xml)
-        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)                        
+        display_list(jenlist.get_list(), "movies", pins)                        
 
 def networks(html):
     pins = "PLuginarconaitvnetworks"
     Items = fetch_from_db2(pins)
-    if Items:
-        print "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" 
+    if Items: 
         display_data(Items) 
     else:     
         xml = ""
@@ -226,18 +247,16 @@ def networks(html):
                 name = name.replace("\\'","")
                 name = remove_non_ascii(name)
                 link = link.replace("\\'","")
-                link = "plugin://plugin.video.SportsDevil/?mode=1&amp;item=catcher%3dstreams%26url=https://www.arconaitv.us/"+link
+                link = "https://www.arconaitv.us/"+link
                 image2 = get_thumb(name,html)            
                 if image2:
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>http://static.wixstatic.com/media/7217cd_6b6840f1821147ffa0380918a2110cdd.jpg</fanart>"\
                            "<summary>Random TV Shows</summary>"\
-                           "</plugin>" % (name,link,image2)                       
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image2,link,name,image2)                       
                 elif not image2:
                     image3 = get_other(name,html)
                     if name == "ABC":
@@ -256,20 +275,25 @@ def networks(html):
                         image3 = "https://crunchbase-production-res.cloudinary.com/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1442500192/vzcordlt6w0xsnhcsloa.png"
                     elif name == "WWOR-TV":
                         image3 = "https://i.ytimg.com/vi/TlhcM0jciZo/hqdefault.jpg"
-                                                                                                                                                                    
+                    elif name == "BBC America":
+                        image3 = "https://watchuktvabroad.net/dev/wp-content/uploads/2014/05/bbc1-icon.png"
+                    elif name == "MavTV":
+                        image3 = "https://yt3.ggpht.com/a-/ACSszfGbltb7pvCn52Ojd3vEHPk_2v_1_HJosa_h=s900-mo-c-c0xffffffff-rj-k-no"
+                    elif name == "MSNBC":
+                        image3 = "https://upload.wikimedia.org/wikipedia/commons/7/74/MSNBC_logo.png"
+                    elif name == "NASA HD":
+                        image3 = "http://pluspng.com/img-png/nasa-logo-png-nasa-logo-3400.png"                                                                                                                                                
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>http://static.wixstatic.com/media/7217cd_6b6840f1821147ffa0380918a2110cdd.jpg</fanart>"\
                            "<summary>Random TV Shows</summary>"\
-                           "</plugin>" % (name,link,image3)
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image3,link,name,image3)
         except:
             pass                   
         jenlist = JenList(xml)
-        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+        display_list(jenlist.get_list(), "movies", pins)
 
 def movies(html):
     pins = "PLuginarconaitvmovies"
@@ -291,64 +315,61 @@ def movies(html):
                 name = name.replace("\\'","")
                 name = remove_non_ascii(name)
                 link = link.replace("\\'","")
-                link = "plugin://plugin.video.SportsDevil/?mode=1&amp;item=catcher%3dstreams%26url=https://www.arconaitv.us/"+link
+                link = "https://www.arconaitv.us/"+link
                 image3 = get_other(name,html)                                                                                      
                 if image3:
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>http://listtoday.org/wallpaper/2015/12/movies-in-theaters-1-desktop-background.jpg</fanart>"\
                            "<summary>Random Movies</summary>"\
-                           "</plugin>" % (name,link,image3)
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image3,link,name,image3)
                 elif not image3:
-                    image3 = "http://www.userlogos.org/files/logos/nickbyalongshot/film.png"
-                    if name == "Action":
-                        image3 = "http://icons.iconarchive.com/icons/sirubico/movie-genre/256/Action-3-icon.png"
-                    if name == "Animation Movies":
-                        image3 = "http://www.filmsite.org/images/animated-genre.jpg"
-                    if name == "Christmas Movies":
-                        image3 = "http://img.sj33.cn/uploads/allimg/201009/20100926224051989.png"
-                    if name == "Comedy Movies":
-                        image3 = "https://thumb9.shutterstock.com/display_pic_with_logo/882263/116548462/stock-photo-clap-film-of-cinema-comedy-genre-clapperboard-text-illustration-116548462.jpg"
-                    if name == "Documentaries ":
-                        image3 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc8s5haFPMPgDNmfetzNm06V3BB918tV8TG5JiJe7FaEqn-Cgx"
-                    if name == "Harry Potter and Lord of the Rings":
-                        image3 = "https://pre00.deviantart.net/b9cd/th/pre/f/2012/043/0/4/the_lord_of_the_rings_golden_movie_logo_by_freeco-d4phvpy.jpg"
-                    if name == "Horror Movies":
-                        image3 = "http://www.filmsite.org/images/horror-genre.jpg"
-                    if name == "Mafia Movies":
-                        image3 = "https://cdn.pastemagazine.com/www/blogs/lists/2012/04/05/godfather-lead.jpg"
-                    if name == "Movie Night":
-                        image3 = "http://jesseturri.com/wp-content/uploads/2013/03/Movie-Night-Logo.jpg"
-                    if name == "Musical Movies":
-                        image3 = "http://ww1.prweb.com/prfiles/2016/03/18/13294162/Broadway_Movie_Musical_Logo.jpg"
-                    if name == "Mystery Movies":
-                        image3 = "http://icons.iconarchive.com/icons/limav/movie-genres-folder/256/Mystery-icon.png"
-                    if name == "Random Movies":
-                        image3 = "https://is1-ssl.mzstatic.com/image/thumb/Purple118/v4/a2/93/b8/a293b81e-9781-5129-32e9-38fb63ff52f8/source/256x256bb.jpg"
-                    if name == "Romance Movies":
-                        image3 = "http://icons.iconarchive.com/icons/limav/movie-genres-folder/256/Romance-icon.png"
-                    if name == "Star Wars and Star Trek":
-                        image3 = "http://icons.iconarchive.com/icons/aaron-sinuhe/tv-movie-folder/256/Star-Wars-2-icon.png"
-                    if name == "Studio Ghibli":
-                        image3 = "https://orig00.deviantart.net/ec8a/f/2017/206/5/a/studio_ghibli_collection_folder_icon_by_dahlia069-dbho9mx.png"                                      
+                    #image3 = "http://www.userlogos.org/files/logos/nickbyalongshot/film.png"
+                    image3 = "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/0d920358-1c79-4669-b107-2b22e0dd7dcd/d8nntky-04e9b7c7-1d09-44d8-8c24-855a19988294.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzBkOTIwMzU4LTFjNzktNDY2OS1iMTA3LTJiMjJlMGRkN2RjZFwvZDhubnRreS0wNGU5YjdjNy0xZDA5LTQ0ZDgtOGMyNC04NTVhMTk5ODgyOTQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.To4Xk896HVjziIt-LjTSotZR0x7NVCbroAIkiSpik84"
+                    # if name == "Action":
+                    #     image3 = "http://icons.iconarchive.com/icons/sirubico/movie-genre/256/Action-3-icon.png"
+                    # if name == "Animation Movies":
+                    #     image3 = "http://www.filmsite.org/images/animated-genre.jpg"
+                    # if name == "Christmas Movies":
+                    #     image3 = "http://img.sj33.cn/uploads/allimg/201009/20100926224051989.png"
+                    # if name == "Comedy Movies":
+                    #     image3 = "https://thumb9.shutterstock.com/display_pic_with_logo/882263/116548462/stock-photo-clap-film-of-cinema-comedy-genre-clapperboard-text-illustration-116548462.jpg"
+                    # if name == "Documentaries ":
+                    #     image3 = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc8s5haFPMPgDNmfetzNm06V3BB918tV8TG5JiJe7FaEqn-Cgx"
+                    # if name == "Harry Potter and Lord of the Rings":
+                    #     image3 = "https://pre00.deviantart.net/b9cd/th/pre/f/2012/043/0/4/the_lord_of_the_rings_golden_movie_logo_by_freeco-d4phvpy.jpg"
+                    # if name == "Horror Movies":
+                    #     image3 = "http://www.filmsite.org/images/horror-genre.jpg"
+                    # if name == "Mafia Movies":
+                    #     image3 = "https://cdn.pastemagazine.com/www/blogs/lists/2012/04/05/godfather-lead.jpg"
+                    # if name == "Movie Night":
+                    #     image3 = "http://jesseturri.com/wp-content/uploads/2013/03/Movie-Night-Logo.jpg"
+                    # if name == "Musical Movies":
+                    #     image3 = "http://ww1.prweb.com/prfiles/2016/03/18/13294162/Broadway_Movie_Musical_Logo.jpg"
+                    # if name == "Mystery Movies":
+                    #     image3 = "http://icons.iconarchive.com/icons/limav/movie-genres-folder/256/Mystery-icon.png"
+                    # if name == "Random Movies":
+                    #     image3 = "https://is1-ssl.mzstatic.com/image/thumb/Purple118/v4/a2/93/b8/a293b81e-9781-5129-32e9-38fb63ff52f8/source/256x256bb.jpg"
+                    # if name == "Romance Movies":
+                    #     image3 = "http://icons.iconarchive.com/icons/limav/movie-genres-folder/256/Romance-icon.png"
+                    # if name == "Star Wars and Star Trek":
+                    #     image3 = "http://icons.iconarchive.com/icons/aaron-sinuhe/tv-movie-folder/256/Star-Wars-2-icon.png"
+                    # if name == "Studio Ghibli":
+                    #     image3 = "https://orig00.deviantart.net/ec8a/f/2017/206/5/a/studio_ghibli_collection_folder_icon_by_dahlia069-dbho9mx.png"                                      
                                                                                                                                                                                                                                                                     
                     xml += "<plugin>"\
                            "<title>%s</title>"\
-                           "<link>"\
-                           "<sublink>%s</sublink>"\
-                           "</link>"\
                            "<thumbnail>%s</thumbnail>"\
                            "<fanart>http://listtoday.org/wallpaper/2015/12/movies-in-theaters-1-desktop-background.jpg</fanart>"\
                            "<summary>Random Movies</summary>"\
-                           "</plugin>" % (name,link,image3)
+                           "<arconaitv>ArcLink**%s**%s**%s</arconaitv>"\
+                           "</plugin>" % (name,image3,link,name,image3)
         except:
             pass                   
         jenlist = JenList(xml)
-        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)                                                  
+        display_list(jenlist.get_list(), "movies", pins)                                                  
             
 def get_thumb(name,html):
     block2 = re.compile('<div class="content">(.+?)<div class="stream-nav shows" id="shows">',re.DOTALL).findall(html)
@@ -368,6 +389,110 @@ def get_other(name,html):
             image3 = "https://www.arconaitv.us"+image3
             return image3            
   
+@route(mode='get_arconaitv_links', args=["url"])  
+def get_link(url):
+    koding.Show_Busy(status=True)
+    url2 = url.split("**")[-3]
+    name = url.split("**")[-2]
+    image = url.split("**")[-1]
+    html = requests.get(url2).content
+    match = re.compile('eval\(function(.+?)</script>',re.DOTALL).findall(html)
+    
+
+    def _filterargs(source):
+        """Juice from a source file the four args needed by decoder."""
+        argsregex = (r"}\s*\('(.*)',\s*(.*?),\s*(\d+),\s*'(.*?)'\.split\('\|'\)")
+        args = re.search(argsregex, source, re.DOTALL).groups()
+
+        try:
+            payload, radix, count, symtab = args
+            radix = 36 if not radix.isdigit() else int(radix)
+            return payload, symtab.split('|'), radix, int(count)
+        except ValueError:
+            raise UnpackingError('Corrupted p.a.c.k.e.r. data.')
+
+    def _replacestrings(source):
+        """Strip string lookup table (list) and replace values in source."""
+        match = re.search(r'var *(_\w+)\=\["(.*?)"\];', source, re.DOTALL)
+
+        if match:
+            varname, strings = match.groups()
+            startpoint = len(match.group(0))
+            lookup = strings.split('","')
+            variable = '%s[%%d]' % varname
+            for index, value in enumerate(lookup):
+                source = source.replace(variable % index, '"%s"' % value)
+            return source[startpoint:]
+        return source
+
+    def unpack(source):
+        """Unpacks P.A.C.K.E.R. packed js code."""
+        payload, symtab, radix, count = _filterargs(source)
+
+        if count != len(symtab):
+            raise UnpackingError('Malformed p.a.c.k.e.r. symtab.')
+
+        try:
+            unbase = Unbaser(radix)
+        except TypeError:
+            raise UnpackingError('Unknown p.a.c.k.e.r. encoding.')
+
+        def lookup(match):
+            """Look up symbols in the synthetic symtab."""
+            word = match.group(0)
+            return symtab[unbase(word)] or word
+
+        source = re.sub(r'\b\w+\b', lookup, payload)
+        return _replacestrings(source)
+
+    class Unbaser(object):
+        """Functor for a given base. Will efficiently convert
+        strings to natural numbers."""
+        ALPHABET = {
+            62: '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            95: (' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                 '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~')
+        }
+
+        def __init__(self, base):
+            self.base = base
+
+            # If base can be handled by int() builtin, let it do it for us
+            if 2 <= base <= 36:
+                self.unbase = lambda string: int(string, base)
+            else:
+                if base < 62:
+                    self.ALPHABET[base] = self.ALPHABET[62][0:base]
+                elif 62 < base < 95:
+                    self.ALPHABET[base] = self.ALPHABET[95][0:base]
+                # Build conversion dictionary cache
+                try:
+                    self.dictionary = dict((cipher, index) for index, cipher in enumerate(self.ALPHABET[base]))
+                except KeyError:
+                    raise TypeError('Unsupported base encoding.')
+
+                self.unbase = self._dictunbaser
+
+        def __call__(self, string):
+            return self.unbase(string)
+
+        def _dictunbaser(self, string):
+            """Decodes a  value to an integer."""
+            ret = 0
+            for index, cipher in enumerate(string[::-1]):
+                ret += (self.base ** index) * self.dictionary[cipher]
+            return ret
+
+    test = "eval(function"+match[0]
+    res = (unpack(test))
+    link = re.compile("src:(.+?),",re.DOTALL).findall(res)
+    link = link[0].replace("\\'", "")
+    User_Agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'
+    flink = link +"|User-Agent="+User_Agent
+    koding.Show_Busy(status=False )
+    info = xbmcgui.ListItem(name, thumbnailImage=image)
+    xbmc.Player().play(flink,info)
+    stop()
 
 def remove_non_ascii(text):
     return unidecode(text)

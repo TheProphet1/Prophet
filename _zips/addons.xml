@@ -28,7 +28,7 @@
     </extension>
 </addon>
 
-<addon id="plugin.video.bless" name="Bless" version="2.0.2" provider-name="The Prophet">
+<addon id="plugin.video.bless" name="Bless" version="2.0.3" provider-name="The Prophet">
     <requires>
         <import addon="xbmc.python" version="2.19.0" />
         <import addon="script.module.universalscrapers" version="1.0.0" />
