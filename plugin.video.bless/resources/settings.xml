@@ -90,8 +90,8 @@
         <setting label="Cache Location" id="cache_folder" type="folder" default="special://profile/addon_data/plugin.video.bless/" visible="false"/>
         <setting label="TVDB API Key" type="text" id="tvdb_api_key" option="hidden" default="75RVRPQZX5QGEECQ" visible="eq(-3,true)"/>
         <setting label="TMDB API Key" type="text" id="tmdb_api_key" option="hidden" default="68128451d921ff3b7f1b7610b3cbead0" visible="eq(-4,true)"/>
-        <setting label="Trakt Client ID" type="text" id="trakt_api_client_id" option="hidden" default="1e9dc884ff27ac17fb957fef76e7170ca2e3056a6000c849ed9e9e2d92de7854" visible="eq(-5,true)"/>
-        <setting label="Trakt Client Secret" type="text" id="trakt_api_client_secret" option="hidden" visible="!eq(-1,true) + eq(-6,true)" default="80b5aa9efff2151f6a960501e435c80c3913f9d39d2d0b560f39f6b6c8b11122"/>
+        <setting label="Trakt Client ID" type="text" id="trakt_api_client_id" option="hidden" default="0bc7528377402f47a0b151025d7a4ef2a651f39a1cac507083bec4924f9bdf36" visible="eq(-5,true)"/>
+        <setting label="Trakt Client Secret" type="text" id="trakt_api_client_secret" option="hidden" visible="!eq(-1,true) + eq(-6,true)" default="71eb97e5de9b263203be1647abd1072b3e6ca889daacb3aa9b7b2835bf2c4cb0"/>
         <setting label="Last.fm API Key" type="text" id="lastfm_api_key" option="hidden" default="0bb47496f155349dce774617118a5e07" visible="eq(-7,true)"/>
         <setting label="Last.fm Secret" type="text" id="lastfm_secret" option="hidden" visible="!eq(-1,true) + eq(-8,true)" default="2f3a72579a5894b7accb2ea197d187cd"/>
         <setting id="TRAKT_ACCESS_TOKEN" label="" type="text" visible="false"/>
