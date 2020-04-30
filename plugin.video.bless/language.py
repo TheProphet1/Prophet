@@ -1,4 +1,33 @@
 #! /usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+    language.py for Jen Template
+    Copyright (C) 2018
+    Version 2.1.1
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    -------------------------------------------------------------
+
+    Changelog:
+        2020-04-20:
+            - Replaced openload string with uptobox
+        2019-07-29:
+            - Added new strings (flashx, videoshare)
+            - Added missings strings (account/login, root xml, search db)
+
+"""
 
 _strings = {}
 
@@ -2505,6 +2534,19 @@ _strings['unlimited'] = 37030
 _strings['gpu accelerated'] = 38010
 
 #GENERATED
+_strings['user account'] = 30200
+_strings['username'] = 30201
+_strings['password'] = 30202
+_strings['hide successful login messages'] = 30203
+_strings['login url'] = 30204
+_strings['login verified message'] = 30205
+_strings['username form name'] = 30206
+_strings['password form name'] = 30207
+_strings['session length (in hours)'] = 30208
+_strings['login notification style'] = 30209
+_strings['text to display on successful login'] = 30210
+_strings['text to display on failed login'] = 30211
+_strings['text to display if no login provided'] = 30212
 _strings['[color teal]are you sure?[/color]'] = 30401
 _strings['[color teal]process complete[/color]'] = 30402
 _strings['this view is now default'] = 30491
@@ -2542,7 +2584,7 @@ _strings['opening image'] = 30732
 _strings['scraper settings'] = 30733
 _strings['open scraper settings'] = 30734
 _strings['filtering options'] = 30735
-_strings['allow openload links'] = 30736
+_strings['allow uptobox links'] = 30736
 _strings['allow thevideo.me links'] = 30737
 _strings['allow vidup.me links'] = 30738
 _strings['try searching for alternate spelling if present (slower)'] = 30739
@@ -2552,9 +2594,11 @@ _strings['open resolver settings'] = 30742
 _strings['enable debrid'] = 30743
 _strings['enable link selection dialog'] = 30744
 _strings['enable link selection fallthrough'] = 30745
+_strings['allow flashx links'] = 30746
+_strings['allow videoshare links'] = 30747
 _strings['scoreboard'] = 30751
 _strings['archived games'] = 30752
-_strings['live games , requires some modifications to get working visit forum.'] = 30753
+_strings['live games requires some modifications to get working, please visit forum.'] = 30753
 _strings['if list returns blank, feed is not up yet.'] = 30754
 _strings['feed not available yet'] = 30755
 _strings['pick a bandwidth'] = 30756
@@ -2603,15 +2647,15 @@ _strings['there is no test version available for this add-on at this time.'] = 3
 _strings['error'] = 30965
 _strings['sorry there was an error trying to retrieve the latest test version, the developer may be working on pushing a new update.'] = 30966
 _strings['repository required'] = 30967
-_strings['one of the addons required are hosted on a third party repository. if you don\'t have this installed you may miss out on important updates from the developer. do you want to install:'] = 30968
+_strings['one of the addons required are hosted on a third party repository. if you don\'t have this installed you may miss out on important updates from the developer. do you want to install?:'] = 30968
 _strings['installing repository'] = 30969
 _strings['please wait...'] = 30970
 _strings['checking updates'] = 30971
 _strings['just checking for any updates on the repo.'] = 30972
-_strings['unable to install repo'] = 30973
+_strings['unable to install repo!'] = 30973
 _strings['sorry there was an error trying to install this repository, please let the team at noobsandnerds.com know so they can update the add-on portal. thank you.'] = 30974
 _strings['update available'] = 30975
-_strings['the noobsandnerds add-on portal is showing a newer version of [color=gold]%s[/color] is available. would you like to update to version: [color=dodgerblue]%s[/color]'] = 30976
+_strings['the noobsandnerds add-on portal is showing a newer version of [color=gold]%s[/color] is available. would you like to update to version: [color=dodgerblue]%s ?[/color]'] = 30976
 _strings['addon required'] = 30977
 _strings['the following third party add-on is required, if you don\'t have this installed you may find certain features fail to work. do you want to install?'] = 30978
 _strings['installing updates'] = 30979
@@ -2624,8 +2668,8 @@ _strings['select language'] = 32506
 _strings['metadata provider'] = 32507
 _strings['movie metadata provider'] = 32508
 _strings['tv metadata provider'] = 32509
-_strings['choose default link'] = 32510
-_strings['select link'] = 32511
+_strings['link selection'] = 32510
+_strings['select default link'] = 32511
 _strings['choose jen theme'] = 32512
 _strings['select theme'] = 32513
 _strings['gifs'] = 32514
@@ -2690,3 +2734,5 @@ _strings['queue item'] = 30056
 _strings['processing metadata'] = 30057
 _strings['set season view'] = 30058
 _strings['all episodes'] = 30059
+_strings['root xml location'] = 30060
+_strings['search db location'] = 30061

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    air_table.py
-    Copyright (C) 2018,
-    Version 2.0.2
+    air_table.py for Jen Template
+    Copyright (C) 2018
+    Version 2.1
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+    Changelog:
+        2019-07-29
+            - Fixed all instances of UnboundLocalError causing "local variable 'xml' reference before assignment" errors
+
     -------------------------------------------------------------
 
     Usage Examples:
-
 
     Returns the Tv Channels-
 
@@ -227,8 +230,8 @@ def new_releases(url):
                         "</item>" % (channel,thumbnail,fanart,table_key,table_name,channel)
             except:
                 pass                
-    jenlist = JenList(xml)
-    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+        jenlist = JenList(xml)
+        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 
 @route(mode='Sports_channels',args=["url"])
@@ -264,8 +267,8 @@ def new_releases(url):
 
             except:
                 pass                
-    jenlist = JenList(xml)
-    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+        jenlist = JenList(xml)
+        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 
 
@@ -302,8 +305,8 @@ def twenty_four_seven():
 
             except:
                 pass                
-    jenlist = JenList(xml)
-    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)        
+        jenlist = JenList(xml)
+        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)        
 
 @route(mode='channels2',args=["url"])
 def get_channels2(url):
@@ -339,8 +342,8 @@ def get_channels2(url):
                         "</item>" % (channel,channel,thumbnail,fanart,link)
             except:
                 pass                
-    jenlist = JenList(xml)
-    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+        jenlist = JenList(xml)
+        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 @route(mode='show_category_channels',args=["url"])
 def get_channels2(url):
@@ -471,8 +474,8 @@ def get_channels2(url):
 
             except:
                 pass                
-    jenlist = JenList(xml)
-    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+        jenlist = JenList(xml)
+        display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 def fetch_from_db2(url):
     koding.reset_db()

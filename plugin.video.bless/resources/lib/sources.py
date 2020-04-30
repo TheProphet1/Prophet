@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    sources.py ---
+    sources.py for Jen Template
     Copyright (C) 2017, Jen
+    Version 2.1.1
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,18 +17,35 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
- Update :2019-3-11
- Version 2.0 Jen
-    Updated to include torrent and magnet links in xml
+    -------------------------------------------------------------
 
-<title>[/COLOR]</title>
-<link>
-<sublink>magnet:?xt=urn:btih:9CA50DA836B52A6BCB06AAA91BB2478FD96F5DD0&dn=A+Beautiful+Mind+%282001%29+1080p+BrRip+x264+-+YIFY</sublink>
-</link>
-<thumbnail></thumbnail>
-<fanart></fanart>
-</item>
+    Changelog:
+        2020-4-20
+            - Updated __check_skip_pairing
+                - added uptobox
+				- removed openload
+                - expanded on flashx.tv, vshare.eu
+        2019-7-29
+            - Updated __check_skip_pairing
+                - added flashx, vshare.eu
+                - corrected setting for vidup.me to match setting in settings.xml
+                - expanded on openload, thevideo.me, vidup.me
 
+        2019-3-11
+            - Updated to include torrent and magnet links in xml
+
+    -------------------------------------------------------------
+
+    Usage Examples:
+
+    <item>
+        <title>[/COLOR]</title>
+            <link>
+                <sublink>magnet:?xt=urn:btih:9CA50DA836B52A6BCB06AAA91BB2478FD96F5DD0&dn=A+Beautiful+Mind+%282001%29+1080p+BrRip+x264+-+YIFY</sublink>
+            </link>
+        <thumbnail></thumbnail>
+        <fanart></fanart>
+    </item>
 
 """
 import random
@@ -582,18 +600,28 @@ class Sources(object):
     @staticmethod
     def __check_skip_pairing(scraper_link):
         if (
-            not ADDON.getSetting("allow_openload") == "true"
-            and "openload" in scraper_link["url"]
+            not ADDON.getSetting("allow_flashx") == "true"
+            and ("flashx" in scraper_link["url"] or "flashx.tv" in scraper_link["url"])
+        ):
+            return True
+        if (
+            not ADDON.getSetting("allow_uptobox") == "true"
+            and ("uptobox" in scraper_link["url"] or "uptobox.com" in scraper_link["url"])
         ):
             return True
         if (
             not ADDON.getSetting("allow_the_video_me") == "true"
-            and "thevideo.me" in scraper_link["url"]
+            and ("thevideo.me" in scraper_link["url"] or "vev.io" in scraper_link["url"])
         ):
             return True
         if (
-            not ADDON.getSetting("allow_the_vidup_me") == "true"
-            and "vidup.me" in scraper_link["url"]
+            not ADDON.getSetting("allow_vidup_me") == "true"
+            and ("vidup.me" in scraper_link["url"] or "vidup.io" in scraper_link["url"])
+        ):
+            return True
+        if (
+            not ADDON.getSetting("allow_videoshare") == "true"
+            and ("videoshare" in scraper_link["url"] or "vshare.eu" in scraper_link["url"])
         ):
             return True
         return False
@@ -829,8 +857,7 @@ def get_sources(item):
                     item=listitem,
                     player=jenplayer,
                     resolver=resolveurl,
-                )      
-                
+                )
         else:
             # who knows
             busy_dialog.close()

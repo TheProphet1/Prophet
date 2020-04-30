@@ -1,3 +1,31 @@
+v2.1.1
+    - Added latest imdb.py, tmdb.py & trakt.py, which were updated after the release of Jen v2.0.2
+
+v2.1
+    - Updated to support base64 encoding of message_xml_url
+    - Updated base64 decoding to work with padded strings for root_xml_url, message_xml_url & passwords
+    - Updated the PAIR_LIST
+        - removed Openload, Streamango & Streamcherry
+        - added UptoBox
+    - Added a multi-step protection process for accessing an Adult menu (details in tools.py)
+        - added "Enable Adult Menus" option in addon settings
+        - added password requirement to access the menu
+    - Replaced instance of "arrakis" with "jen" in disable_this function
+    - Updated __check_skip_pairing
+        - replaced openload with uptobox
+        - expanded on flashx.tv, vshare.eu
+    - Updated addon settings
+        - added flashx, videoshare options
+        - fixed duplicate id in APIs section
+        - re-categorized and renamed some settings for consistency
+    - Updated strings
+        - replaced openload with uptobox
+        - added flashx, videoshare
+        - updated several string names for consistency
+        - used Google translator for Hebrew
+    - Updated some sample XMLs
+    - Merged fix for Main Cache time
+
 v2.0.2
     - Fixed clear main cache issue after first install
     - Created 'Clear Scraper Cache' in settings cache  tab	

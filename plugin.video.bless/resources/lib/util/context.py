@@ -56,7 +56,7 @@ def get_context_items(item):
     # information
     context.append((xbmcaddon.Addon().getLocalizedString(30708),
                     "XBMC.Action(Info)"))
-    context.append(('Clear Main and Refresh', 'RunPlugin(plugin://%s/?mode=refresh_main&quot;,return)' % addon_id))
+    context.append(('Clear Main Cache and Refresh', 'RunPlugin(plugin://%s/?mode=refresh_main&quot;,return)' % addon_id))
     # view modes
     if content == "movie":
         context.append((_("Set Movie View"),

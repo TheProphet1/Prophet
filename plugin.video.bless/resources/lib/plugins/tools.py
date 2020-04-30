@@ -2,6 +2,7 @@
 """
     tools.py --- Jen Plugin for accessing various tools
     Copyright (C) 2018: MuadDib, Jen
+    Version 2.1.2
 
     ----------------------------------------------------------------------------
     "THE BEER-WARE LICENSE" (Revision 42):
@@ -14,12 +15,25 @@
     Overview:
         Drop this PY in the plugins folder, and use whatever tools below you want.
 
-    Version:
+    Changelog:
+        2020-04-19
+			- Updated the PAIR_LIST
+				- removed Openload, Streamango & Streamcherry
+				- added UptoBox (requires a VPN to pair from USA!)
+        2019-07-29
+            - Updated base64 decoding to work with padded strings
+            - Added a multi-step protection process for accessing an Adult menu (see XML Explanations below)
+                - added <adultpass></adultpass> tags
+                - added requirement to enable "Enable Adult Menus" option in addon settings before menu is visible
+                - requires password to access menu after it becomes visible
+                - works with both Local and Remote XML locations
+                
         2019-07-25
             - Added option to authorize ResolveURL with Premiumize.me debrid service (see Usage Examples below)
             - Added option to authorize ResolveURL with LinkSnappy debrid service (see Usage Examples below)
             - Added option to clear Resolver Function Cache for ResolveURL and/or URLResolver (see Usage Examples below)
             - Categorized and added Usage Examples
+            
         2018.11.17
             - Updated the PAIR_LIST (replaced the_video_me with vevio; replaced vid_up_me with vidup, replaced vshare with videoshare)
                 - updated URL for openload and vidup
@@ -57,32 +71,44 @@
         Tags:
             <heading></heading> - Displays the entry as normal, but performs no action (not a directory or "item")
             <mysettings>0/0</mysettings> - Opens settings dialog to the specified Tab and section (0 indexed)
-            <pairwith></pairwith> - Used for pairing with sites. See list of supported sites on line 210 below
-            <authwith></authwith> - Used for authorizing Debrid services (RealDebrid, AllDebrid, Premiumize, LinkSnappy)
-            <passreq></passreq> - Used to password protect submenus. Format is base64 encoded string formatted like this:
-                                    Password|link_to_xml
+            <pairwith></pairwith> - Used for pairing with supported sites (flashx, uptobox, vevio, vidup, videoshare)
+            <authwith></authwith> - Used for authorizing Debrid services (realdebrid, alldebrid, premiumize, linksnappy)
+            <funccache></funccache> - Used for clearing resolver function cache (resolveurl, urlresolver)
+            <passreq></passreq> - Used to password protect submenus. Format is base64 encoded string formatted like this:  Password|link_to_xml
             <trailer>plugin://plugin.video.youtube/play/?video_id=ChA0qNHV1D4</trailer> - Adds Trailer option for this movie in the context menu when Metadata is DISABLED in your addon
+            <adultpass></adultpass> - Used to password protect an Adult menu similar to <passreq> above.  Format is:  Password|link_to_xml  (all base64 encoded)
+                                    - If the Adult menu contains the word "adult" in ANY part of its name (lowercase, uppercase or both), the menu will NOT be displayed unless the "Enable Adult Menus" option is enabled in addon settings (requires latest settings.xml & xml.py files).
+                                    - If the Adult menu does NOT contain the word "adult" in ANY part of its name, you will get a "This menu is not enabled!" message when trying to access it.
+                                    - In either case, once the "Enable Adult Menus" option is enabled in addon settings, you will be required to enter a password in order to access the menu.
 
 
     *** COLORS ***
-        Set your desired colors for COLOR1 & COLOR2 within "" on lines 206 & 207 below.
-        COLOR1 is for the Header & COLOR2 is for the Items list, displayed in the Pair/Authorize/Function Cache window.
-        The color values can be alphanumeric (example: red, limegreen) or Hex (example: ffff0000, FF00FF00).
-        If colors are left blank, they will display as the default color set within the skin you're using.
+        Set your desired colors for the COLOR1 & COLOR2 variables within "" on lines 238 & 239 below.
+        COLOR1 is for all Headers & COLOR2 is for the Items list, displayed in the Pair/Authorize/Function Cache window.
+        The color values must be lowercase alphanumeric (example: red, limegreen) or anycase of Hex (example: ffff0000, FF00FF00).
+        If the color variables are left blank, they will display as the default color set within the skin you're using.
 
     -------------------------------------------------------------
 
     Usage Examples:
 
+	### Headings ###
+
+        * Displays the entry as normal, but performs no action (not a directory or "item")
+        <item>
+            <title>[COLOR dodgerblue]Don't forget to folow me on twitter @tantrumdev ![/COLOR]</title>
+            <heading></heading>
+        </item>
+
 	### Settings ###
 
-        ** Open the Settings for the addon on the Customization tab
+        * Open the Settings for the addon on the Customization tab
         <item>
             <title>JEN: Customization</title>
             <mysettings>0/0</mysettings>
         </item>
 
-        ** Open the Settings for the addon on the Cache tab
+        * Open the Settings for the addon on the Cache tab
 
         <item>
             <title>JEN: Cache</title>
@@ -91,45 +117,46 @@
 
 	### Pairing ###
 
-        ** Gives option to pair device with any of the supported pairing sites
+        * Gives option to pair device with any of the supported pairing sites
         <item>
             <title>Pair With Sites</title>
             <pairwith>pairlist</pairwith>
         </item>
 
-        ** Opens Openload site to pair device with.  To paith with a site other than "openload", use "flashx", "streamango", "streamcherry", "vevio", "vidup" or "videoshare"
+        * Opens UptoBox site to pair device with.  A VPN is required to pair with UptoBox from the USA !!!
         <item>
-            <title>Pair Openload</title>
-            <pairwith>openload</pairwith>
+            <title>Pair UptoBox</title>
+            <pairwith>uptobox</pairwith>
         </item>
+		* To paith with a site other than "uptobox", use "flashx", "vevio", "vidup" or "videoshare"
 
 	### Authorizing ###
 
-        ** Gives option to authorize ResolveURL with any/all supported Debrid Services
+        * Gives option to authorize ResolveURL with any/all supported Debrid Services
         <item>
             <title>Authorize Debrid Services</title>
             <authwith>authlist</authwith>
         </item>
 
-        ** Displays code to authorize ResolveURL with RealDebrid, waits 20 seconds, then displays the RealDebrid site to enter the code in
+        * Displays code to authorize ResolveURL with RealDebrid, waits 20 seconds, then displays the RealDebrid site to enter the code in
         <item>
             <title>Authorize RealDebrid</title>
             <authwith>realdebrid</authwith>
         </item>
 
-        ** Displays code to authorize ResolveURL with AllDebrid, waits 20 seconds, then displays the AllDebrid site to enter the code in
+        * Displays code to authorize ResolveURL with AllDebrid, waits 20 seconds, then displays the AllDebrid site to enter the code in
         <item>
             <title>Authorize AllDebrid</title>
             <authwith>alldebrid</authwith>
         </item>
 
-        ** Displays code to authorize ResolveURL with Premiumize.me, waits 20 seconds, then displays the Premiumize.me site to enter the code in
+        * Displays code to authorize ResolveURL with Premiumize.me, waits 20 seconds, then displays the Premiumize.me site to enter the code in
         <item>
             <title>Authorize Premiumize</title>
             <authwith>premiumize</authwith>
         </item>
 
-        ** Displays prompt for LinkSnappy account details (Username, Password) to authorize ResolveURL with LinkSnappy
+        * Displays prompt for LinkSnappy account details (Username, Password) to authorize ResolveURL with LinkSnappy
         <item>
             <title>Authorize LinkSnappy</title>
             <authwith>linksnappy</authwith>
@@ -137,19 +164,19 @@
 
 	### Function Cache ###
 
-        ** Gives option to clear function cache any/all supported Resolvers
+        * Gives option to clear function cache any/all supported Resolvers
         <item>
             <title>Clear Resolver Function Cache</title>
             <funccache>funclist</funccache>
         </item>
 
-        ** Clears function cache for ResolveURL
+        * Clears function cache for ResolveURL
         <item>
             <title>Clear ResolveURL Function Cache</title>
             <funccache>resolveurl</funccache>
         </item>
 
-        ** Clears function cache for URLResolver
+        * Clears function cache for URLResolver
         <item>
             <title>Clear URLResolver Function Cache</title>
             <funccache>urlresolver</funccache>
@@ -157,21 +184,35 @@
 
 	### Password Protection ###
 
-        ** Password protects a menu for which its corresponding xml is a Local file.  Everything between the <passreq></passreq> tags MUST be Base64 Encoded!
+        * Password protects a menu for which its corresponding xml is a Local file.  Everything between the <passreq></passreq> tags MUST be Base64 Encoded!
         <item>
             <title>Password Protected Local File</title>
             <passreq>ThisIsThePassword|file://submenu.xml</passreq>
         </item>
 
-        ** Password protects a menu for which its corresponding xml is a Remote file  Everything between the <passreq></passreq> tags MUST be Base64 Encoded!
+        * Password protects a menu for which its corresponding xml is a Remote file  Everything between the <passreq></passreq> tags MUST be Base64 Encoded!
         <item>
             <title>Password Protected Remote File</title>
             <passreq>ThisIsThePassword|http://www.example.com/submenu.xml</passreq>
         </item>
 
+	### Adult Protection ###
+        
+        * Password protects Adult menu for which its corresponding xml is a Local file.  Everything between the <adultpass></adultpass> tags MUST be Base64 Encoded!
+        <item>
+            <title>ADULT_Time</title>
+            <adultpass>ThisIsThePassword|file://adultmenu.xml</adultpass>
+        </item>
+
+        * Password protects Adult menu for which its corresponding xml is a Remote file.  Everything between the <adultpass></adultpass> tags MUST be Base64 Encoded!
+        <item>
+            <title>Myadult Area</title>
+            <adultpass>ThisIsThePassword|http://www.example.com/adultmenu.xml</adultpass>
+        </item>
+
 	### Trailer ###
 
-        ** Adds the Trailer option for a specific movie to the context menu when Metadata is DISABLED in your addon
+        * Adds the Trailer option for a specific movie to the context menu when Metadata is DISABLED in your addon
         <item>
             <title>Dune (1984)</title>
             <trailer>plugin://plugin.video.youtube/play/?video_id=ChA0qNHV1D4</trailer>
@@ -179,7 +220,7 @@
 
 	### Custom Modes ###
 
-        ** Sets a specific Mode for the menu item, to utilize Jen modes not normally accessible. Setting modeurl passes a custom built url= variable to go with it
+        * Sets a specific Mode for the menu item, to utilize Jen modes not normally accessible. Setting modeurl passes a custom built url= variable to go with it
         <item>
             <title>Custom Mode</title>
             <mode>Whatever</mode>
@@ -192,25 +233,25 @@ import collections,requests,re,os,time,traceback,webbrowser
 import koding
 import __builtin__
 import xbmc,xbmcaddon,xbmcgui
+import base64
 from koding import route
 from resources.lib.plugin import Plugin
 from resources.lib.util.context import get_context_items
 from resources.lib.util.xml import JenItem, JenList, display_list
 from unidecode import unidecode
 
+COLOR1 = ""
+COLOR2 = ""
+
 addon_id = xbmcaddon.Addon().getAddonInfo('id')
 this_addon   = xbmcaddon.Addon(id=addon_id)
 addon_fanart = xbmcaddon.Addon().getAddonInfo('fanart')
 addon_icon   = xbmcaddon.Addon().getAddonInfo('icon')
 addon_path   = xbmcaddon.Addon().getAddonInfo('path')
-COLOR1 = ""
-COLOR2 = ""
 
 
 PAIR_LIST = [ ("flashx", "https://www.flashx.tv/?op=login&redirect=https://www.flashx.tv/pairing.php"),
-              ("openload", "https://olpair.com"),
-              ("streamango", "https://streamango.com/pair"),
-              ("streamcherry", "https://streamcherry.com/pair"),
+              ("uptobox", "https://uptobox.com/pin"),
               ("vevio", "https://vev.io/pair"),
               ("vidup", "https://vidup.io/pair"),
               ("videoshare", "http://vshare.eu/pair") ]
@@ -385,6 +426,25 @@ class JenTools(Plugin):
                 "summary": item.get("summary", None)
             }
             return result_item
+        elif "<adultpass>" in item_xml:
+            item = JenItem(item_xml)
+            result_item = {
+                'label': item["title"],
+                'icon': item.get("thumbnail", addon_icon),
+                'fanart': item.get("fanart", addon_fanart),
+                'mode': "ADULTREQ",
+                'url': item.get("adultpass", ""),
+                'folder': True,
+                'imdb': "0",
+                'content': "files",
+                'season': "0",
+                'episode': "0",
+                'info': {},
+                'year': "0",
+                'context': get_context_items(item),
+                "summary": item.get("summary", None)
+            }
+            return result_item
 
 
 @route(mode='HEADING')
@@ -411,14 +471,14 @@ def mysettings_handler(query):
 def password_handler(url):
     pins = ""
     prot_xml = ''
-    sep_list = url.decode('base64').split('|')
+    sep_list = base64.b64decode(url + '=' * (-len(url) % 4)).split('|')
     dec_pass = sep_list[0]
     xml_loc = sep_list[1]
 
     SESSION_HOURS = this_addon.getSetting('SESSION_HOURS')
     if SESSION_HOURS == '':
         SESSION_HOURS = '1'
-    expires_at = this_addon.getSetting('PASS_EXIRES_AT')
+    expires_at = this_addon.getSetting('PASS_EXPIRES_AT')
     if time.time() > expires_at or expires_at == '':
         input = ''
         if not COLOR1 == "":
@@ -431,7 +491,7 @@ def password_handler(url):
             input = keyboard.getText()
         if input == dec_pass:
             expires_at = time.time() + 60 * 60 * int(SESSION_HOURS)
-            this_addon.setSetting("PASS_EXIRES_AT", str(expires_at))
+            this_addon.setSetting("PASS_EXPIRES_AT", str(expires_at))
             if 'http' in xml_loc:
                 prot_xml = requests.get(xml_loc).content
             else:
@@ -445,10 +505,10 @@ def password_handler(url):
                 passfail = "[COLOR %s]Wrong Answer...You are not worthy![/COLOR]" % COLOR2
             else:
                 passfail = "Wrong Answer...You are not worthy!"
-            prot_xml += "<dir>"\
+            prot_xml += "<item>"\
                     "    <title>%s</title>"\
                     "    <thumbnail>https://nsx.np.dl.playstation.net/nsx/material/c/ce432e00ce97a461b9a8c01ce78538f4fa6610fe-1107562.png</thumbnail>"\
-                    "</dir>" % passfail
+                    "</item>" % passfail
     else:
         if 'http' in xml_loc:
             prot_xml = requests.get(xml_loc).content
@@ -496,7 +556,7 @@ def pairing_handler(url):
            os.system("open " + site)
         else:
             open_site = webbrowser.open(site)
-    except:
+    except Exception:
         failure = traceback.format_exc()
         xbmcgui.Dialog().textviewer('Exception',str(failure))
         pass
@@ -545,7 +605,7 @@ def authorizing_handler(url):
                os.system("open " + site)
             else:
                 open_site = webbrowser.open(site)
-    except:
+    except Exception:
         failure = traceback.format_exc()
         xbmcgui.Dialog().textviewer('Exception',str(failure))
         pass
@@ -581,10 +641,84 @@ def funccache_handler(url):
         else:
             xbmcgui.Dialog().notification("[COLOR %s]Clear %s Function Cache[/COLOR]" % (plugin, COLOR1), "[COLOR %s]%s not found![/COLOR]" % (plugin, COLOR2))
 
-    except:
+    except Exception:
         failure = traceback.format_exc()
         xbmcgui.Dialog().textviewer('Exception',str(failure))
         pass
+
+
+@route(mode="ADULTREQ", args=["url"])
+def adultpass_handler(url):
+    pins = ""
+    adult_xml = ''
+    try:
+        adult_setting = this_addon.getSetting('adult_menu')
+        if adult_setting == None or adult_setting == '':
+            adult_setting = 'false'
+            xbmcaddon.Addon().setSetting('adult_menu', str(adult_setting))
+        if adult_setting == 'false':
+            if not COLOR1 == "":
+                adultenable = "[COLOR %s]This menu is not enabled![/COLOR]" % COLOR2
+            else:
+                adultenable = "This menu is not enabled!"
+            adult_xml += "<item>"\
+                    "    <title>%s</title>"\
+                    "    <thumbnail>https://nsx.np.dl.playstation.net/nsx/material/c/ce432e00ce97a461b9a8c01ce78538f4fa6610fe-1107562.png</thumbnail>"\
+                    "</item>" % adultenable
+            jenlist = JenList(adult_xml)
+            display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
+            return
+    except:
+        return
+    sep_list = base64.b64decode(url + '=' * (-len(url) % 4)).split('|')
+    dec_pass = sep_list[0]
+    xml_loc = sep_list[1]
+    SESSION_HOURS = this_addon.getSetting('SESSION_HOURS')
+    if SESSION_HOURS == '':
+        SESSION_HOURS = '1'
+    expires_at = this_addon.getSetting('ADULTPASS_EXPIRES_AT')
+    if time.time() > expires_at or expires_at == '':
+        input = ''
+        if not COLOR1 == "":
+            enterpass = "[COLOR %s]Are You Old Enough To Be Naughty?[/COLOR]" % COLOR1
+        else:
+            enterpass = "Are You Old Enough To Be Naughty?"
+        keyboard = xbmc.Keyboard(input, enterpass)
+        keyboard.doModal()
+        if keyboard.isConfirmed():
+            input = keyboard.getText()
+        if input == dec_pass:
+            expires_at = time.time() + 60 * 60 * int(SESSION_HOURS)
+            this_addon.setSetting("ADULTPASS_EXPIRES_AT", str(expires_at))
+            if 'http' in xml_loc:
+                adult_xml = requests.get(xml_loc).content
+            else:
+                import xbmcvfs
+                xml_loc = xml_loc.replace('file://', '')
+                xml_file = xbmcvfs.File(os.path.join(addon_path, "xml", xml_loc))
+                adult_xml = xml_file.read()
+                xml_file.close()
+        else:
+            if not COLOR2 == "":
+                passfail = "[COLOR %s]Wrong Answer...No Naughty Time for YOU![/COLOR]" % COLOR2
+            else:
+                passfail = "Wrong Answer...No Naughty Time for YOU!"
+            adult_xml += "<item>"\
+                    "    <title>%s</title>"\
+                    "    <thumbnail>https://nsx.np.dl.playstation.net/nsx/material/c/ce432e00ce97a461b9a8c01ce78538f4fa6610fe-1107562.png</thumbnail>"\
+                    "</item>" % passfail
+    else:
+        if 'http' in xml_loc:
+            adult_xml = requests.get(xml_loc).content
+        else:
+            import xbmcvfs
+            xml_loc = xml_loc.replace('file://', '')
+            xml_file = xbmcvfs.File(os.path.join(addon_path, "xml", xml_loc))
+            adult_xml = xml_file.read()
+            xml_file.close()
+
+    jenlist = JenList(adult_xml)
+    display_list(jenlist.get_list(), jenlist.get_content_type(), pins)
 
 
 def platform():

@@ -2,6 +2,7 @@
 """
     xml.py --- functions dealing with jen xml list format
     Copyright (C) 2017, Jen
+    Version 2.1.1
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,6 +16,15 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    ---------------------------------------------------------------------
+
+    Changelog:
+        2020-04-14
+            - Merged update from latest xml.py which fixes the Main cache time
+        2019-07-29
+            - Updated so that Adult menu items are not displayed unless the "Enable Adult Menus" option is enabled in addon settings
+    
 """
 import __builtin__
 import datetime
@@ -411,7 +421,7 @@ wrapper class for jen list functions
 
 class JenItem(object):
     """represents an item in a jen xml list"""
-    
+
 
     def __init__(self, item_xml):
         self.item_string = item_xml
@@ -461,54 +471,68 @@ def display_list(items, content_type, pins):
         if Items:
             import xbmcplugin
             import sys
-            #display_code(items, content_type) 
-            display_code(Items, content_type)                                                
+            display_code(Items, content_type)
         elif not Items:
             import xbmcplugin
             import sys
             hook_result = run_hook("display_list", items, content_type, pins)
-            if hook_result:       
-                return     
+            if hook_result:
+                return
             save_to_db(items, pins)
-            display_code(items, content_type)           
+            display_code(items, content_type)
     else:
         import xbmcplugin
         import sys
         hook_result = run_hook("display_list", items, content_type, pins)
-        if hook_result:       
+        if hook_result:
             return
-        display_code(items, content_type)    
+        display_code(items, content_type)
 
 def display_list2(items, content_type, pins):
         save_to_db(items, pins)
-        display_data(Items)              
+        display_data(Items)
 
 def display_data(Items):
-    for item in Items:           
+    for item in Items:
         context_items = []
         if ADDON.getSetting("settings_context") == "true":
             context_items.append((_("Settings"),
                                  "RunPlugin({0})".format(
                                      get_addon_url("Settings"))))
         context_items.extend(item["context"])
-        koding.Add_Dir(
-            name=item["label"],
-            url=item["url"],
-            mode=item["mode"],
-            folder=item["folder"],
-            icon=item["icon"],
-            fanart=item["fanart"],
-            context_items=context_items,
-            content_type="video",
-            info_labels=item["info"],
-            set_property=item.get("properties", {}),
-            set_art={"poster": item["icon"]})    
-    #xbmcplugin.setContent(int(sys.argv[1]), content_type)
+        name=item["label"]
+        if "adult" in name.lower():
+            if ADDON.getSetting("adult_menu") == "true":
+                koding.Add_Dir(
+                    name=item["label"],
+                    url=item["url"],
+                    mode=item["mode"],
+                    folder=item["folder"],
+                    icon=item["icon"],
+                    fanart=item["fanart"],
+                    context_items=context_items,
+                    content_type="video",
+                    info_labels=item["info"],
+                    set_property=item.get("properties", {}),
+                    set_art={"poster": item["icon"]})
+        else:
+            koding.Add_Dir(
+                name=item["label"],
+                url=item["url"],
+                mode=item["mode"],
+                folder=item["folder"],
+                icon=item["icon"],
+                fanart=item["fanart"],
+                context_items=context_items,
+                content_type="video",
+                info_labels=item["info"],
+                set_property=item.get("properties", {}),
+                set_art={"poster": item["icon"]})
 
 def save_to_db(items, url):
     if not items or not url:
         return False
-    url2 = clean_url(url)        
+    url2 = clean_url(url)
     koding.reset_db()
     test_spec = {
     "columns": {
@@ -516,17 +540,17 @@ def save_to_db(items, url):
         "created": "TEXT"}
         }
     koding.Create_Table(url2, test_spec)
-    set_val = base64.b64encode(pickle.dumps(items))        
+    set_val = base64.b64encode(pickle.dumps(items))
     koding.Add_To_Table(url2,
                         {
                             "value": set_val,
                             "created": time.time()
-                        })    
+                        })
     table_name_spec = {
     "columns": {
         "name": "TEXT",}
         }
-    koding.Create_Table("Table_names", table_name_spec)            
+    koding.Create_Table("Table_names", table_name_spec)
     plugin_table_name_spec = {
     "columns": {
         "name": "TEXT",}
@@ -537,11 +561,11 @@ def save_to_db(items, url):
                             {
                                 "name": url2,
                             })
-    else:                                 
+    else:
         koding.Add_To_Table("Table_names",
                             {
                                 "name": url2,
-                            })        
+                            })
 
 def fetch_from_db(url):
     koding.reset_db()
@@ -559,15 +583,14 @@ def fetch_from_db(url):
         created_time = match["created"]
         if float(created_time) + int(main_cache_time) <= time.time():
             koding.Remove_Table(url2)
-            db = sqlite3.connect('%s' % (database_loc))        
+            db = sqlite3.connect('%s' % (database_loc))
             cursor = db.cursor()
             db.execute("vacuum")
             db.commit()
             db.close()
-            #return result
             return None
         else:
-            return result                
+            return result
         return result
     else:
         return []
@@ -575,29 +598,45 @@ def fetch_from_db(url):
 
 def clean_url(url):
    url = re.sub('\\\|/|\(|\)|\[|\]|\{|\}|-|:|;|\*|\?|"|\'|<|>|\_|\.|\?|%20|_', '', url).replace("|","").replace(" ","")
-   return url            
+   return url
 
 def display_code(Items, content_type):
-    for item in Items:           
+    for item in Items:
         context_items = []
         if ADDON.getSetting("settings_context") == "true":
             context_items.append((_("Settings"),
                                  "RunPlugin({0})".format(
                                      get_addon_url("Settings"))))
         context_items.extend(item["context"])
-        koding.Add_Dir(
-            name=item["label"],
-            url=item["url"],
-            mode=item["mode"],
-            folder=item["folder"],
-            icon=item["icon"],
-            fanart=item["fanart"],
-            context_items=context_items,
-            content_type="video",
-            info_labels=item["info"],
-            set_property=item.get("properties", {}),
-            set_art={"poster": item["icon"]})                            
-    xbmcplugin.setContent(int(sys.argv[1]), content_type)    
+        name=item["label"]
+        if "adult" in name.lower():
+            if ADDON.getSetting("adult_menu") == "true":
+                koding.Add_Dir(
+                    name=item["label"],
+                    url=item["url"],
+                    mode=item["mode"],
+                    folder=item["folder"],
+                    icon=item["icon"],
+                    fanart=item["fanart"],
+                    context_items=context_items,
+                    content_type="video",
+                    info_labels=item["info"],
+                    set_property=item.get("properties", {}),
+                    set_art={"poster": item["icon"]})
+        else:
+            koding.Add_Dir(
+                name=item["label"],
+                url=item["url"],
+                mode=item["mode"],
+                folder=item["folder"],
+                icon=item["icon"],
+                fanart=item["fanart"],
+                context_items=context_items,
+                content_type="video",
+                info_labels=item["info"],
+                set_property=item.get("properties", {}),
+                set_art={"poster": item["icon"]})
+    xbmcplugin.setContent(int(sys.argv[1]), content_type)
 
 class threadWithReturn(Thread):
     def __init__(self, *args, **kwargs):

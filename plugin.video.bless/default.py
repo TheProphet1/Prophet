@@ -2,6 +2,7 @@
 """
     default.py --- Jen Addon entry point
     Copyright (C) 2017, Jen
+    Version 2.1
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,11 +16,16 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	
+	Changelog:
+		2019-08-13
+			- Updated base64 decoding to work with non-padded strings for root_xml_url
+    
 """
-
 
 import __builtin__
 import xbmcaddon
+import base64
 
 # CONFIGURATION VARIABLES
 # -----------------------
@@ -29,7 +35,7 @@ enable_installa = ownAddon.getSetting('dlimage')
 enable_newswin = ownAddon.getSetting('news_win')
 root_xml_url = ownAddon.getSetting('root_xml')
 if not 'file:' in root_xml_url and not 'http' in root_xml_url:
-    root_xml_url = root_xml_url.decode('base64')
+    root_xml_url = base64.b64decode(root_xml_url + '=' * (-len(root_xml_url) % 4))
 __builtin__.tvdb_api_key = ownAddon.getSetting('tvdb_api_key')
 __builtin__.tmdb_api_key = ownAddon.getSetting('tmdb_api_key')
 __builtin__.trakt_client_id = ownAddon.getSetting('trakt_api_client_id')
@@ -390,7 +396,7 @@ def Clear_Main():
 def Refresh_Main():
             Clear_Main()
             koding.Refresh(r_mode=['skin'])
-            xbmcgui.Dialog().notification('Refresh Main', 'Completed',xbmcaddon.Addon().getAddonInfo("icon"), 4000)
+            xbmcgui.Dialog().notification('Refresh Main Cache', 'Completed',xbmcaddon.Addon().getAddonInfo("icon"), 4000)
 
 def get_addon_url(mode, url=""):
     import urllib

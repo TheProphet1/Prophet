@@ -1,11 +1,11 @@
 # Addon Name: Bless
 # Addon id: plugin.video.bless
-# Addon Provider: The Prophet
+# Addon Provider: 	The Prophet
 msgid ""
 msgstr ""
 "Project-Id-Version: Bless\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2020-04-20 04:18-0600\n"
 "Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -46,7 +46,7 @@ msgid "Password Form Name"
 msgstr ""
 
 msgctxt "#30208"
-msgid "Session Length (in hours)"
+msgid "Session Length (in Hours)"
 msgstr ""
 
 msgctxt "#30209"
@@ -54,15 +54,15 @@ msgid "Login Notification Style"
 msgstr ""
 
 msgctxt "#30210"
-msgid "Text to display on successful login"
+msgid "Text to Display on Successful Login"
 msgstr ""
 
 msgctxt "#30211"
-msgid "Text to display on failed login"
+msgid "Text to Display on Failed Login"
 msgstr ""
 
 msgctxt "#30212"
-msgid "Text to display if no login provided"
+msgid "Text to Display if No Login Provided"
 msgstr ""
 
 msgctxt "#30401"
@@ -114,19 +114,19 @@ msgid "Information"
 msgstr ""
 
 msgctxt "#30711"
-msgid "Set Movies view"
+msgid "Set Movies View"
 msgstr ""
 
 msgctxt "#30712"
-msgid "Set TV Shows view"
+msgid "Set TV Shows View"
 msgstr ""
 
 msgctxt "#30713"
-msgid "Set Seasons view"
+msgid "Set Seasons View"
 msgstr ""
 
 msgctxt "#30714"
-msgid "Set Episodes view"
+msgid "Set Episodes View"
 msgstr ""
 
 msgctxt "#30715"
@@ -158,7 +158,7 @@ msgid "Downloads"
 msgstr ""
 
 msgctxt "#30722"
-msgid "Download item"
+msgid "Download Item"
 msgstr ""
 
 msgctxt "#30723"
@@ -166,11 +166,11 @@ msgid "Credits"
 msgstr ""
 
 msgctxt "#30724"
-msgid "Show credits"
+msgid "Show Credits"
 msgstr ""
 
 msgctxt "#30725"
-msgid "Add-on settings"
+msgid "Add-on Settings"
 msgstr ""
 
 msgctxt "#30726"
@@ -198,7 +198,7 @@ msgid "[COLOR orange]Please Wait...[/COLOR]"
 msgstr ""
 
 msgctxt "#30732"
-msgid "Opening image"
+msgid "Opening Image"
 msgstr ""
 
 msgctxt "#30733"
@@ -214,15 +214,15 @@ msgid "Filtering Options"
 msgstr ""
 
 msgctxt "#30736"
-msgid "Allow openload links"
+msgid "Allow uptobox Links"
 msgstr ""
 
 msgctxt "#30737"
-msgid "Allow thevideo.me links"
+msgid "Allow thevideo.me Links"
 msgstr ""
 
 msgctxt "#30738"
-msgid "Allow vidup.me links"
+msgid "Allow vidup.me Links"
 msgstr ""
 
 msgctxt "#30739"
@@ -253,6 +253,14 @@ msgctxt "#30745"
 msgid "Enable Link Selection Fallthrough"
 msgstr ""
 
+msgctxt "#30746"
+msgid "Allow flashx Links"
+msgstr ""
+
+msgctxt "#30747"
+msgid "Allow videoshare Links"
+msgstr ""
+
 msgctxt "#30751"
 msgid "Scoreboard"
 msgstr ""
@@ -262,7 +270,7 @@ msgid "Archived Games"
 msgstr ""
 
 msgctxt "#30753"
-msgid "Live Games , Requires some modifications to get working visit forum."
+msgid "Live Games require some modifications to get working, please visit Forum."
 msgstr ""
 
 msgctxt "#30754"
@@ -270,7 +278,7 @@ msgid "If list returns BLANK, Feed is not up yet."
 msgstr ""
 
 msgctxt "#30755"
-msgid "Feed not available yet"
+msgid "Feed Not Available Yet"
 msgstr ""
 
 msgctxt "#30756"
@@ -286,11 +294,11 @@ msgid "Enable Debugging Mode"
 msgstr ""
 
 msgctxt "#30760"
-msgid "Message options"
+msgid "Message Options"
 msgstr ""
 
 msgctxt "#30761"
-msgid "Enable possibly offensive messages"
+msgid "Enable Possibly Offensive Messages"
 msgstr ""
 
 msgctxt "#30762"
@@ -306,9 +314,7 @@ msgid "You can choose whether or not to install[CR]the relevant repos."
 msgstr ""
 
 msgctxt "#30765"
-msgid ""
-"We recommend installing the relevant repos[CR]to ensure your addons auto-"
-"update."
+msgid "We recommend installing the relevant repos[CR]to ensure your addons auto-update."
 msgstr ""
 
 msgctxt "#30766"
@@ -316,7 +322,7 @@ msgid "Offer to install required 3rd party addons"
 msgstr ""
 
 msgctxt "#30767"
-msgid "Disable all loading messages"
+msgid "Disable All Loading Messages"
 msgstr ""
 
 msgctxt "#30770"
@@ -324,7 +330,7 @@ msgid "Dev Mode"
 msgstr ""
 
 msgctxt "#30807"
-msgid "Please wait..."
+msgid "Please Wait..."
 msgstr ""
 
 msgctxt "#30808"
@@ -336,9 +342,7 @@ msgid "Wrong Password"
 msgstr ""
 
 msgctxt "#30826"
-msgid ""
-"You have entered an incorrect password for this account, please check "
-"settings and try again."
+msgid "You have entered an incorrect password for this account, please check settings and try again."
 msgstr ""
 
 msgctxt "#30827"
@@ -346,9 +350,7 @@ msgid "Wrong Username"
 msgstr ""
 
 msgctxt "#30828"
-msgid ""
-"You have not entered a valid username, please either correct your login "
-"details or register for FREE at www.noobsandnerds.com."
+msgid "You have not entered a valid username, please either correct your login details or register for FREE at www.noobsandnerds.com."
 msgstr ""
 
 msgctxt "#30829"
@@ -356,10 +358,7 @@ msgid "Account Restricted"
 msgstr ""
 
 msgctxt "#30830"
-msgid ""
-"There is a ban on your account, the most likely cause for this is account "
-"sharing. Please make sure you haven't accidentally left your login details "
-"on a shared computer."
+msgid "There is a ban on your account, the most likely cause for this is account sharing. Please make sure you haven\'t accidentally left your login details on a shared computer."
 msgstr ""
 
 msgctxt "#30831"
@@ -367,9 +366,7 @@ msgid "Re-Activate Account"
 msgstr ""
 
 msgctxt "#30832"
-msgid ""
-"You need to re-activate your account on the new forum. Simply visit the "
-"forum at www.noobsandnerds.com and login with your existing credentials."
+msgid "You need to re-activate your account on the new Forum. Simply visit the Forum at www.noobsandnerds.com and login with your existing credentials."
 msgstr ""
 
 msgctxt "#30833"
@@ -377,10 +374,7 @@ msgid "Servers Busy"
 msgstr ""
 
 msgctxt "#30834"
-msgid ""
-"Sorry the servers appear to be struggling with demand, please try again. "
-"Sorry for any inconvenience, we are currently working on improving the "
-"speeds."
+msgid "Sorry the servers appear to be struggling with demand, please try again. Sorry for any inconvenience, we are currently working on improving the speeds."
 msgstr ""
 
 msgctxt "#30835"
@@ -388,17 +382,15 @@ msgid "No Login Details"
 msgstr ""
 
 msgctxt "#30836"
-msgid ""
-"You have enabled the login feature but not entered any details. Please add "
-"your login details or disable the option."
+msgid "You have enabled the login feature but not entered any details. Please add your login details or disable the option."
 msgstr ""
 
 msgctxt "#30843"
-msgid "Login (For Playlisters Only)"
+msgid "Login (for Playlisters Only)"
 msgstr ""
 
 msgctxt "#30844"
-msgid "Forum to use for login"
+msgid "Forum to Use for Login"
 msgstr ""
 
 msgctxt "#30845"
@@ -410,12 +402,11 @@ msgid "Password"
 msgstr ""
 
 msgctxt "#30897"
-msgid ""
-"[COLOR=gold]----------------------------------------------------[/COLOR]"
+msgid "[COLOR=gold]----------------------------------------------------[/COLOR]"
 msgstr ""
 
 msgctxt "#30900"
-msgid "[COLOR=gold]Use latest test version (donators only)[/COLOR]"
+msgid "[COLOR=gold]Use Latest Test Version (donators only)[/COLOR]"
 msgstr ""
 
 msgctxt "#30901"
@@ -423,10 +414,7 @@ msgid "Check Login Details"
 msgstr ""
 
 msgctxt "#30902"
-msgid ""
-"Please double check your login credentials, once entered correctly try "
-"running the add-on to activate the test version then come back and try "
-"again."
+msgid "Please double check your login credentials, once entered correctly try running the add-on to activate the test version then come back and try again."
 msgstr ""
 
 msgctxt "#30903"
@@ -434,19 +422,19 @@ msgid "Log Options - Add an email to receive a link to your log"
 msgstr ""
 
 msgctxt "#30904"
-msgid "Enable Debug Mode (enable if asking for help on forum)"
+msgid "Enable Debug Mode (enable if asking for help on Forum)"
 msgstr ""
 
 msgctxt "#30905"
-msgid "Always skip Kodi.old.log (log from previous run)"
+msgid "Always Skip kodi.old.log (log from previous run)"
 msgstr ""
 
 msgctxt "#30906"
-msgid "Email address"
+msgid "Email Address"
 msgstr ""
 
 msgctxt "#30907"
-msgid "[COLOR=gold]Click to upload log[/COLOR]"
+msgid "[COLOR=gold]Click to Upload Log[/COLOR]"
 msgstr ""
 
 msgctxt "#30933"
@@ -454,11 +442,7 @@ msgid "-- Open Test Settings"
 msgstr ""
 
 msgctxt "#30962"
-msgid ""
-"You need to enable the login option to use the test version. This feature is"
-" only available to members who have donated towards the noobsandnerds "
-"development fund. You can disable this option to continue using the standard"
-" version."
+msgid "You need to enable the login option to use the test version. This feature is only available to members who have donated towards the noobsandnerds development fund. You can disable this option to continue using the standard version."
 msgstr ""
 
 msgctxt "#30963"
@@ -474,9 +458,7 @@ msgid "Error"
 msgstr ""
 
 msgctxt "#30966"
-msgid ""
-"Sorry there was an error trying to retrieve the latest test version, the "
-"developer may be working on pushing a new update."
+msgid "Sorry there was an error trying to retrieve the latest test version, the developer may be working on pushing a new update."
 msgstr ""
 
 msgctxt "#30967"
@@ -484,10 +466,7 @@ msgid "REPOSITORY REQUIRED"
 msgstr ""
 
 msgctxt "#30968"
-msgid ""
-"One of the addons required are hosted on a third party repository. If you "
-"don't have this installed you may miss out on important updates from the "
-"developer. Do you want to install:"
+msgid "One of the addons required are hosted on a third party repository. If you don\'t have this installed you may miss out on important updates from the developer. Do you want to install?:"
 msgstr ""
 
 msgctxt "#30969"
@@ -495,7 +474,7 @@ msgid "INSTALLING REPOSITORY"
 msgstr ""
 
 msgctxt "#30970"
-msgid "Please wait..."
+msgid "Please Wait..."
 msgstr ""
 
 msgctxt "#30971"
@@ -507,14 +486,11 @@ msgid "Just checking for any updates on the repo."
 msgstr ""
 
 msgctxt "#30973"
-msgid "UNABLE TO INSTALL REPO"
+msgid "UNABLE TO INSTALL REPO!"
 msgstr ""
 
 msgctxt "#30974"
-msgid ""
-"Sorry there was an error trying to install this repository, please let the "
-"team at noobsandnerds.com know so they can update the Add-on Portal. Thank "
-"you."
+msgid "Sorry there was an error trying to install this repository, please let the team at noobsandnerds.com know so they can update the Add-on Portal. Thank you."
 msgstr ""
 
 msgctxt "#30975"
@@ -522,10 +498,7 @@ msgid "UPDATE AVAILABLE"
 msgstr ""
 
 msgctxt "#30976"
-msgid ""
-"The noobsandnerds Add-on Portal is showing a newer version of "
-"[COLOR=gold]%s[/COLOR] is available. Would you like to update to version: "
-"[COLOR=dodgerblue]%s[/COLOR]"
+msgid "The noobsandnerds Add-on Portal is showing a newer version of [COLOR=gold]%s[/COLOR] is available. Would you like to update to version: [COLOR=dodgerblue]%s ?[/COLOR]"
 msgstr ""
 
 msgctxt "#30977"
@@ -533,10 +506,7 @@ msgid "ADDON REQUIRED"
 msgstr ""
 
 msgctxt "#30978"
-msgid ""
-"The following third party add-on is required, if you don't have this "
-"installed you may find certain features fail to work. Do you want to "
-"install?"
+msgid "The following third party add-on is required, if you don\'t have this installed you may find certain features fail to work. Do you want to install?"
 msgstr ""
 
 msgctxt "#30979"
@@ -548,7 +518,7 @@ msgid "Start From Beginning"
 msgstr ""
 
 msgctxt "#32502"
-msgid "Resume from %s"
+msgid "Resume From %s"
 msgstr ""
 
 msgctxt "#32503"
@@ -580,11 +550,11 @@ msgid "TV Metadata Provider"
 msgstr ""
 
 msgctxt "#32510"
-msgid "Choose Default Link"
+msgid "Link Selection"
 msgstr ""
 
 msgctxt "#32511"
-msgid "Select Link"
+msgid "Select Default Link"
 msgstr ""
 
 msgctxt "#32512"
@@ -596,15 +566,15 @@ msgid "Select Theme"
 msgstr ""
 
 msgctxt "#32514"
-msgid "GIFS"
+msgid "GIFs"
 msgstr ""
 
 msgctxt "#32515"
-msgid "Enable gifs"
+msgid "Enable GIFs"
 msgstr ""
 
 msgctxt "#30000"
-msgid "choose tv metadata provider"
+msgid "Choose TV Metadata Provider"
 msgstr ""
 
 msgctxt "#30001"
@@ -632,7 +602,7 @@ msgid "returned empty for "
 msgstr ""
 
 msgctxt "#30007"
-msgid "choose Selector type"
+msgid "Choose Selector Type"
 msgstr ""
 
 msgctxt "#30008"
@@ -656,7 +626,7 @@ msgid "TMDB"
 msgstr ""
 
 msgctxt "#30013"
-msgid "processing lists"
+msgid "Processing Lists"
 msgstr ""
 
 msgctxt "#30014"
@@ -668,7 +638,7 @@ msgid "Message"
 msgstr ""
 
 msgctxt "#30016"
-msgid "choose theme"
+msgid "Choose Theme"
 msgstr ""
 
 msgctxt "#30017"
@@ -696,7 +666,7 @@ msgid "TRAKT"
 msgstr ""
 
 msgctxt "#30023"
-msgid "Loading items"
+msgid "Loading Items"
 msgstr ""
 
 msgctxt "#30024"
@@ -744,7 +714,7 @@ msgid "Set Movie View"
 msgstr ""
 
 msgctxt "#30035"
-msgid "gif not found: "
+msgid "GIF not found: "
 msgstr ""
 
 msgctxt "#30036"
@@ -752,7 +722,7 @@ msgid "Queue TV Show"
 msgstr ""
 
 msgctxt "#30037"
-msgid "Previous playback detected"
+msgid "Previous Playback Detected"
 msgstr ""
 
 msgctxt "#30038"
@@ -760,11 +730,11 @@ msgid "Restart"
 msgstr ""
 
 msgctxt "#30039"
-msgid "Extended info"
+msgid "Extended Info"
 msgstr ""
 
 msgctxt "#30040"
-msgid "Queue cleared"
+msgid "Queue Cleared"
 msgstr ""
 
 msgctxt "#30041"
@@ -776,11 +746,11 @@ msgid "Finished Queueing"
 msgstr ""
 
 msgctxt "#30043"
-msgid "processing item"
+msgid "Processing Item"
 msgstr ""
 
 msgctxt "#30044"
-msgid "Queue is empty"
+msgid "Queue Is Empty"
 msgstr ""
 
 msgctxt "#30045"
@@ -796,7 +766,7 @@ msgid "Queue Movie"
 msgstr ""
 
 msgctxt "#30048"
-msgid "View set for %s"
+msgid "View Set For %s"
 msgstr ""
 
 msgctxt "#30049"
@@ -808,7 +778,7 @@ msgid "Play Queue"
 msgstr ""
 
 msgctxt "#30051"
-msgid "Loading database file"
+msgid "Loading Database File"
 msgstr ""
 
 msgctxt "#30052"
@@ -816,7 +786,7 @@ msgid "Show Queue"
 msgstr ""
 
 msgctxt "#30053"
-msgid "Enter search term"
+msgid "Enter Search Term"
 msgstr ""
 
 msgctxt "#30054"
@@ -832,7 +802,7 @@ msgid "Queue Item"
 msgstr ""
 
 msgctxt "#30057"
-msgid "processing metadata"
+msgid "Processing Metadata"
 msgstr ""
 
 msgctxt "#30058"
