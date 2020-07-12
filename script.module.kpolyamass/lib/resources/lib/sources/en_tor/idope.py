@@ -24,8 +24,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['idope.today']
-        self.base_link = 'http://idope.today/'
+        self.domains = ['idope.org']
+        self.base_link = 'http://idope.org'
         self.search_link = 'search?q=%s'
         self.scraper = cfscrape.create_scraper()
 

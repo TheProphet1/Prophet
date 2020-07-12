@@ -24,8 +24,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['btscene.today']
-        self.base_link = 'http://btscene.today'
+        self.domains = ['btscene.nl']
+        self.base_link = 'http://btscene.nl'
         self.search_link = 'search?q=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

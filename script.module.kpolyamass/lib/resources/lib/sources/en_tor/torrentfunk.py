@@ -1,16 +1,6 @@
 # -*- coding: utf-8 -*-
-# created by Venom for Openscrapers
-
-#  ..#######.########.#######.##....#..######..######.########....###...########.#######.########..######.
-#  .##.....#.##.....#.##......###...#.##....#.##....#.##.....#...##.##..##.....#.##......##.....#.##....##
-#  .##.....#.##.....#.##......####..#.##......##......##.....#..##...##.##.....#.##......##.....#.##......
-#  .##.....#.########.######..##.##.#..######.##......########.##.....#.########.######..########..######.
-#  .##.....#.##.......##......##..###.......#.##......##...##..########.##.......##......##...##........##
-#  .##.....#.##.......##......##...##.##....#.##....#.##....##.##.....#.##.......##......##....##.##....##
-#  ..#######.##.......#######.##....#..######..######.##.....#.##.....#.##.......#######.##.....#..######.
 
 '''
-    OpenScrapers Project
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -40,8 +30,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['torrentfunk.com', 'torrentfunk2.com']
-        self.base_link = 'https://www.torrentfunk.com'
+        self.domains = ['torrentfunk2.com']
+        self.base_link = 'https://www.torrentfunk2.com'
         self.search_link = '/all/torrents/%s.html?&sort=seeds&o=desc' # seeder low counts, site sucks
         self.min_seeders = 1
 

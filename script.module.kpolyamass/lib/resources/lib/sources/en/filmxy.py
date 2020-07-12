@@ -26,8 +26,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['filmxy.me', 'filmxy.one', 'filmxy.ws', 'filmxy.live']
-        self.base_link = 'https://www.filmxy.nl'
+        self.domains = ['filmxy.tv', 'filmxy.one', 'filmxy.ws', 'filmxy.live']
+        self.base_link = 'https://www.filmxy.tv'
         self.search_link = '/%s-%s'
         self.scraper = cfscrape.create_scraper()
 

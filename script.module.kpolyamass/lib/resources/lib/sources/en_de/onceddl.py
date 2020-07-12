@@ -18,9 +18,9 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['onceddl.net']
-        self.base_link = 'https://onceddl.net'
-        self.search_link = '/?s=%s'
+        self.domains = ['onceddl.net', 'onceddl.org']
+        self.base_link = 'https://onceddl.org'
+        self.search_link = '/find/keyword/%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
