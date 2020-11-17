@@ -158,6 +158,25 @@
   </extension>
 </addon>
 
+<addon id="plugin.video.shadow"
+	   name="Shadow"
+	   version="2.4.5"
+	   provider-name="Darkness">
+  <requires>
+
+  </requires>
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
+        <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">The single light in the Darkness</summary>
+    <description lang="en">All the media as fast as possible</description>
+
+    <platform>all</platform>
+  </extension>
+</addon>
+
 <addon id="repository.prophet" name="The Prophet repo" version="1.0.6" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.addon" version="12.0.0"/>
