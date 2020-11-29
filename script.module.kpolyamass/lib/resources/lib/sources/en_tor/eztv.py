@@ -27,8 +27,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['eztv.io']
-        self.base_link = 'https://eztv.io'
+        self.domains = ['eztvtorrent.co']
+        self.base_link = 'https://eztvtorrent.co'
         self.search_link = '/search/%s'
         self.min_seeders = int(control.setting('torrent.min.seeders'))
 

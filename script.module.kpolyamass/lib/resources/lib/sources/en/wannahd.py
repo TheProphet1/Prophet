@@ -31,8 +31,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['wannahd.pro']
-        self.base_link = 'http://www.wannahd.pro'
+        self.domains = ['wannahd.cam']
+        self.base_link = 'https://www.wannahd.cam'
         self.search_link = '/?s=%s'
         self.scraper = cfscrape.create_scraper()
 

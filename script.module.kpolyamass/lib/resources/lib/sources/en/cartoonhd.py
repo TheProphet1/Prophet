@@ -33,8 +33,8 @@ class source:
 	def __init__(self):
 		self.priority = 1
 		self.language = ['en']
-		self.domains = ['cartoonhd.com', 'cartoonhd.care']
-		self.base_link = 'https://cartoonhd.com'  # .care dont seem to work no more.
+		self.domains = ['cartoonhd.com','cartoonhd.app']
+		self.base_link = 'https://cartoonhd.app'  # .care dont seem to work no more.
 
 	def movie(self, imdb, title, localtitle, aliases, year):
 		try:

@@ -31,8 +31,8 @@ class source:
 	def __init__(self):
 		self.priority = 0
 		self.language = ['en']
-		self.domain = ['ettv.to']
-		self.base_link = 'https://ettv.to'
+		self.domain = ['ettvtorrents.com']
+		self.base_link = 'https://ettvtorrents.com'
 		self.search_link = '/torrents-search.php?search=%s'
 
 
