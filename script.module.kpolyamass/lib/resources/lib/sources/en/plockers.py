@@ -21,12 +21,12 @@ from resources.lib.modules import client, cleantitle
 from resources.lib.modules import cfscrape
 
 
-class s0urce:
+class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
         self.domains = ['putlockers.fm']
-        self.base_link = 'https://www8.putlockers.fm'
+        self.base_link = 'https://www8.putlockers.fm/'
         self.search_link = 'search-movies/%s.html'
 
     def movie(self, imdb, title, localtitle, aliases, year):

@@ -14,9 +14,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re
-import urllib
-import urlparse
+import re, urllib, urlparse
 from resources.lib.modules import client
 from resources.lib.modules import control
 from resources.lib.modules import debrid
@@ -28,8 +26,8 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['www.skytorrents.lol']
-        self.base_link = 'https://www.skytorrents.lol'
-        self.search_link = '?query=%s'
+        self.base_link = 'https://www.skytorrents.to'
+        self.search_link = '/?search=%s'
         self.min_seeders = int(control.setting('torrent.min.seeders'))
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -50,8 +48,7 @@ class source:
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
-            if url is None:
-                return
+            if url is None: return
             url = urlparse.parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
@@ -63,10 +60,8 @@ class source:
     def sources(self, url, hostDict, hostprDict):
         sources = []
         try:
-            if url is None:
-                return sources
-            if debrid.status() is False:
-                raise Exception()
+            if url == None: return sources
+            if debrid.status() == False: raise Exception()
             data = urlparse.parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
@@ -87,12 +82,11 @@ class source:
                 for post in posts:
                     link = re.findall('a href="(magnet:.+?)" title="(.+?)"', post, re.DOTALL)
                     for url, data in link:
-                        if hdlr not in data:
-                            continue
+                        if not hdlr in data: continue
                         url = url.split('&tr')[0]
+                        url = url.encode('ascii', 'ignore')
                         quality, info = source_utils.get_release_quality(data)
-                        if any(x in url for x in ['FRENCH', 'Ita', 'italian', 'TRUEFRENCH', '-lat-', 'Dublado']):
-                            continue
+                        if any(x in url for x in ['FRENCH', 'Ita', 'italian', 'TRUEFRENCH', '-lat-','Dublado']): continue
                         info = ' | '.join(info)
                         sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True})
             except:
@@ -103,4 +97,3 @@ class source:
 
     def resolve(self, url):
         return url
-

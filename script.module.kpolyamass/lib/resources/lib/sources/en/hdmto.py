@@ -19,7 +19,7 @@ import re,urllib,urlparse
 from resources.lib.modules import cleantitle,client,source_utils,proxy,cfscrape
 
 
-class s0urce:
+class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
