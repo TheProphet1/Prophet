@@ -29,7 +29,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['1337x.to']
+        self.domains = ['1337x.to', '1337x.st', 'x1337x.ws', 'x1337x.eu', 'x1337x.se', '1337x.is', '1337x.gd']
         self.base_link = 'https://1337x.to'
         self.tvsearch = 'https://1337x.to/sort-category-search/{0}/TV/seeders/desc/{1}/'
         self.moviesearch = 'https://1337x.to/sort-category-search/{0}/Movies/size/desc/{1}/'

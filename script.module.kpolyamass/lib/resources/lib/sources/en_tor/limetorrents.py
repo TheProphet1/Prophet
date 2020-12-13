@@ -29,7 +29,7 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['limetorrents.info']
+        self.domains = ['limetorrents.info', 'Limetor.pro']
         self.base_link = 'https://www.limetorrents.info'
         self.tvsearch = 'https://www.limetorrents.info/search/tv/{0}/'
         self.moviesearch = 'https://www.limetorrents.info/search/movies/{0}/'

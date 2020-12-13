@@ -27,8 +27,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['glodls.to']
-        self.base_link = 'http://glodls.to'
+        self.domains = ['glodls.to', 'gtdb.to']
+        self.base_link = 'https://www.gtdb.to'
         self.tvsearch = 'search_results.php?search={0}&cat=41&incldead=0&inclexternal=0&lang=1&sort=seeders&order=desc'
         self.moviesearch = 'search_results.php?search={0}&cat=1&incldead=0&inclexternal=0&lang=1&sort=size&order=desc'
 
