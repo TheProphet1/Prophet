@@ -91,7 +91,8 @@
         <setting id="provider.watchserieshd" type="bool" label="WATCHSERIESHD" default="true" />  
     </category>
     <category label="70001">
-        <setting label="70001" type="lsep" /> 
+        <setting label="70001" type="lsep" />
+        <setting id="provider.2ddl" type="bool" label="$NUMBER[2]DDL" default="true" /> 
         <setting id="provider.300mbfilms" type="bool" label="$NUMBER[300]MBFILMS" default="true" />         
         <setting id="provider.crazyhdsource" type="bool" label="CRAZYHDSOURCE" default="true" />
         <setting id="provider.downduck" type="bool" label="DOWNDUCK" default="true" /> 
@@ -107,7 +108,8 @@
         <setting id="provider.bitlord" type="bool" label="BITLORD" default="true" />
         <setting id="provider.btdb" type="bool" label="BTDB" default="true" />
         <setting id="provider.btscene" type="bool" label="BTSCENE" default="true" />                  
-        <setting id="provider.ettv" type="bool" label="ETTV" default="true" /> 
+        <setting id="provider.ettv" type="bool" label="ETTV" default="true" />
+        <setting id="provider.eztv" type="bool" label="EZTV" default="true" /> 
         <setting id="provider.glodls" type="bool" label="GLODLS" default="true" />
         <setting id="provider.ibit" type="bool" label="IBIT" default="true" />
         <setting id="provider.idope" type="bool" label="IDOPE" default="true" />
