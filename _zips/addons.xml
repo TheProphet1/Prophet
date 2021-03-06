@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.video.amass" version="1.0.2" name="Amass" provider-name="The Prophet">
+<addon id="plugin.video.Amass_Reborn"
+	   name="[COLOR yellow]Amass Reborn[/COLOR]"
+	   version="2.0.0"
+	   provider-name="The Prophet">
     <requires>
-        <import addon="xbmc.python" version="2.19.0"/>
-        <import addon="script.amass.artwork" version="1.0.0"/>
-        <import addon="script.module.resolveurl" />
-        <import addon="script.module.metahandler" version="2.9.0"/>
-        <import addon="script.module.requests" version="2.12.4"/>
-        <import addon="script.module.beautifulsoup" version="3.2.1"/>
-        <import addon="script.module.schism.common" version="2017.06.08"/>
-        <import addon="script.module.futures" version="2.2.0"/>
-        <import addon="script.module.universalscrapers" version="1.0.0"/>
+	    <import addon="script.module.resolveurl" />
     </requires>
-    <extension point="xbmc.python.pluginsource" library="amass.py">
+  <extension point="xbmc.python.pluginsource"
+            library="default.py">
         <provides>video</provides>
-    </extension>
-    <extension point="xbmc.addon.metadata">
-        <summary lang="en">Amass movies and TV shows</summary>
-        <description lang="en">Watch movies and TV shows in high quality! Please note that this addon is not an official part of the Kodi media player and is therefore not to be mentioned within Kodi's official support channels. This addon has nothing to do with the media player itself, nor its intended use, it is simply a third party plugin which has been added to your system.</description>
-        <disclaimer lang="en">The author does not host any content, nor is he affiliated with any of the content providers.</disclaimer>
-        <platform>all</platform>
-        <news>Fork of Elysium / Uranus credit to original Devs</news>
-        <assets>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en">All Credit To aa - Works On Matrix</summary>
+    <description lang="en">All Credit To aa - Works On Matrix</description>
+
+    <platform>all</platform>
+	<assets>
             <icon>icon.png</icon>
             <fanart>fanart.jpg</fanart>
-        </assets>
-    </extension>
+    </assets>
+  </extension>
+
 </addon>
 
 <addon id="plugin.video.bless" name="Bless" version="2.1.2" provider-name="The Prophet">
@@ -132,51 +128,7 @@
   </extension>
 </addon>
 
-<addon
-  id="plugin.video.SportsDevil"
-  version="2017.11.16.NL1116"
-  name="sportsdevil"
-  provider-name="MaxMustermann, Al101, Hubbab3, Jairox, Sattekop">
-  <requires>
-   <import addon="xbmc.python" version="2.14.0"/>
-   <import addon="script.module.dateutil" />
-   <import addon="script.module.simplejson" />
-   <import addon="script.module.six" />
-   <import addon="script.module.requests" />
-   <import addon="script.module.livestreamer" />
-   <!-- <import addon="script.video.F4mProxy" /> -->
-   <!-- <import addon="plugin.video.f4mTester"/> -->
-   <!-- *broken* <import addon="repository.unofficialsportsdevil" version="1.0.0" optional="true"/> *broken* -->
-  </requires>
-  <extension
-    point="xbmc.python.pluginsource"
-    library="default.py">
-   <provides>video</provides>
-  </extension>
-  <extension point="xbmc.service" library="service/proxy_service.py" start="startup" />
-  <extension point="xbmc.addon.metadata">
-    <summary>Play videos of different ad-financed sports streaming sites (XvBMC acts only as a mirror).</summary>
-    <description>Play videos of different ad-financed sports streaming sites.
-
-Sportsdevil does not provide any streams of its own; stream quality, content and copyright are responsibility of the ad-financed source web site (XvBMC acts only as a mirror).
-
-For updates check the readme.
-    </description>
-    <disclaimer>Sportsdevil does not provide any streams of its own; stream quality, content and copyright are responsibility of the ad-financed source web site (XvBMC acts only as a mirror).</disclaimer>
-    <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
-    <platform>all</platform>
-    <forum>http://forums.koditips.com/index.php?topic=11.0</forum>
-    <website>http://forums.koditips.com/index.php?topic=11.0</website>
-    <source>http://forums.koditips.com/index.php?topic=11.0</source>
-    <news>version="2017.11.15.NL1115" (mirror@xvbmc)</news>
-  <assets>
-    <icon>icon.png</icon>
-    <fanart>fanart.jpg</fanart>
-  </assets>
-  </extension>
-</addon>
-
-<addon id="repository.prophet" name="The Prophet repo" version="1.0.8" provider-name="The Prophet">
+<addon id="repository.prophet" name="The Prophet repo" version="1.0.9" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.addon" version="12.0.0"/>
 	</requires>
@@ -185,11 +137,6 @@ For updates check the readme.
 		<checksum>https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/addons.xml.md5</checksum>
 		<datadir zip="true">https://raw.githubusercontent.com/TheProphet1/Prophet/master/_zips/</datadir>
 		<hashes>false</hashes>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/jsergio123/zips/master/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/jsergio123/zips/master/</datadir>
-		</dir>
 		<dir>
 			<info compressed="false">https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml</info>
 			<checksum>https://raw.githubusercontent.com/teamuniversal/scrapers/master/_modules4all/zips/addons.xml.md5</checksum>
@@ -211,21 +158,6 @@ For updates check the readme.
 		<description>Welcome to The Prophet repo</description>
 		<platform>all</platform>
 		<genre>movies,usa</genre>
-	</extension>
-</addon>
-
-<addon id="script.amass.artwork" version="1.0.0" name="Amass Artwork" provider-name="The Prophet">
-	<requires>
-		<import addon="xbmc.python" version="2.19.0"/>
-	</requires>
-	<extension point="xbmc.python.script" library="default.py">
-		<provides>executable</provides>
-	</extension>
-	<extension point="xbmc.addon.metadata">
-		<summary>Themes for the Amass Addon</summary>
-		<description></description>
-		<platform>all</platform>
-		<news>Initial Version</news>
 	</extension>
 </addon>
 
@@ -253,31 +185,6 @@ For updates check the readme.
 	</extension>
 </addon>
 
-<addon id="script.module.idna"
-       name="idna"
-       version="2.8"
-       provider-name="Kim Davies">
-  <requires>
-    <import addon="xbmc.python" version="2.25.0"/>
-  </requires>
-  <extension point="xbmc.python.module"
-             library="lib" />
-  <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">Internationalized Domain Names for Python</summary>
-    <description lang="en_GB">Packed for KODI from https://github.com/kjd/idna</description>
-    <platform>all</platform>
-    <language></language>
-    <license>BSD</license>
-    <forum></forum>
-    <website>https://github.com/kjd/idna</website>
-    <source>https://github.com/Freso/script.module.idna</source>
-    <email>freso.dk AT gmail.com</email>
-    <assets>
-      <icon>resources/icon.png</icon>
-    </assets>
-  </extension>
-</addon>
-
 <addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.3.6" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
@@ -286,22 +193,6 @@ For updates check the readme.
 	<extension point="xbmc.addon.metadata">
 		<platform>all</platform>
 		<summary lang="en">kpolyamass</summary>
-	</extension>
-</addon>
-
-<addon id="script.module.schism.common" name="Elysium Common Libraries" version="2019.11.29" provider-name="Elysium">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0" />
-		<import addon="script.module.six" />
-		<import addon="script.module.metahandler" />
-		<import addon="script.module.beautifulsoup" />
-	</requires>
-	<extension point="xbmc.python.module" library="lib" />
-	<extension point="xbmc.addon.metadata">
-		<platform>all</platform>
-		<summary lang="en">Collection of modules used by Elysium</summary>
-		<description lang="en">Collection of modules used by Elysium</description>
-		<license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
 	</extension>
 </addon>
 </addons>

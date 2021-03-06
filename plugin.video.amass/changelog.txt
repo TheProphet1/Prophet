@@ -1,7 +1,0 @@
-
-v1.0.0
-    - Initial Release 
-    - Fork of Elysium/Uranus credit to original Devs
-
-
-
