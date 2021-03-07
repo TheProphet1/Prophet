@@ -3505,7 +3505,10 @@ def main_menu(time_data):
     elapsed_time = time.time() - start_time_start
     time_data.append(elapsed_time+222)
     all_d=[]
-   
+    #place your Jen playlist here:
+    #dulpicate this line with your address
+    aa=addDir3('[COLOR yellow]1 Click Movies And TV[/COLOR]', 'https://bitbucket.org/Mad-Eric/textfiles/raw/master/FreeJen.xml',189,'https://i.imgur.com/mkqHgJi.jpg','https://i.imgur.com/QIO4Sds.jpg','One Click')
+    all_d.append(aa)   
     if Addon.getSetting('movie_world')=='true':
         aa=addDir3(Addon.getLocalizedString(32024),'www',2,BASE_LOGO+'movies.png',all_fanarts['32024'],'Movies')
         all_d.append(aa)
@@ -3548,7 +3551,12 @@ def main_menu(time_data):
         all_d.append(aa)
     if Addon.getSetting('scraper_check')=='true':
         aa=addDir3( Addon.getLocalizedString(32034), id,172,BASE_LOGO+'basic.png',all_fanarts['32034'],'Test')
-        
+
+        all_d.append(aa)
+    #place your Jen playlist here:
+    #dulpicate this line with your address
+    aa=addDir3('[COLOR yellow]New 1 Click Movies[/COLOR]', 'http://thechains24.com/Ghost-Addon/ghostxmls/xmls1/series9/newm.xml',189,'https://www.wirelesshack.org/wp-content/uploads/2020/07/How-To-Install-Ghost-Kodi-Addon-2020.jpg','https://troypoint.com/wp-content/uploads/2020/07/ghost-kodi-addon.png','Ghost')
+    all_d.append(aa)   
     if Addon.getSetting('debug')=='true':
         aa=addDir3( 'Unit tests', 'www',181,'https://lh3.googleusercontent.com/proxy/Ia9aOfcgtzofMb0urCAs8NV-4RRhcIVST-Gqx9GI9RLsx7IJe_5jBqjfdsJcOO3QIV3TT-uiF2nKmyYCX0vj5UPR4iW1iHXgZylE8N8wyNgRLw','https://i.ytimg.com/vi/3wLqsRLvV-c/maxresdefault.jpg','Test')
         
@@ -11855,7 +11863,8 @@ time_data.append(elapsed_time)
 public.pre_mode=mode
 elapsed_time = time.time() - start_time_start
 time_data.append(elapsed_time+777)
-
+logging.warning('Mode::'+str(mode))
+logging.warning('Url::'+str(url))
     
 if mode==None :
        elapsed_time = time.time() - start_time_start

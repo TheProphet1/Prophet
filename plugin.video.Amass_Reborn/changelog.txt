@@ -1,3 +1,6 @@
-﻿[COLOR yellow][B]2.0.0[/B]
+﻿[COLOR yellow][B]2.0.1[/B]
+ - Add 1 Click Movies & TV 
+
+[COLOR yellow][B]2.0.0[/B]
 - Initial version
 - Compatible With Matrix

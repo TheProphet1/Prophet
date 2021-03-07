@@ -120,12 +120,12 @@ msgstr "Trakt Lists"
 
 
 msgctxt "#32027"
-msgid "Trakt"
+msgid "[COLOR yellow]Trakt[/COLOR]"
 msgstr "Trakt"
 
 msgctxt "#32028"
-msgid "---Whats New---"
-msgstr "---Whats New---"
+msgid "[COLOR yellow]Whats New[/COLOR]"
+msgstr "Whats New"
 
 msgctxt "#32029"
 msgid "[COLOR yellow]Settings[/COLOR]"
@@ -140,11 +140,11 @@ msgid "[COLOR yellow]My RD History[/COLOR]"
 msgstr "My RD History"
 
 msgctxt "#32032"
-msgid "[COLOR lawn green]RD Torrents[/COLOR]"
+msgid "[COLOR yellow]RD Torrents[/COLOR]"
 msgstr "RD Torrents
 
 msgctxt "#32033"
-msgid "Actor"
+msgid "[COLOR yellow]Actor[/COLOR]"
 msgstr "Actor"
 
 msgctxt "#32034"
@@ -376,8 +376,8 @@ msgid ", Dup.: "
 msgstr ", Dup.: "
 
 msgctxt "#32091"
-msgid "[COLOR lawn green] Cached: "
-msgstr "[COLOR lawn green] Cached: "
+msgid "[COLOR yellow] Cached: "
+msgstr "[COLOR yellow] Cached: "
 
 msgctxt "#32092"
 msgid "Cleared"

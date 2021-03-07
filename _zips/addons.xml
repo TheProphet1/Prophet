@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.Amass_Reborn"
 	   name="[COLOR yellow]Amass Reborn[/COLOR]"
-	   version="2.0.0"
+	   version="2.0.1"
 	   provider-name="The Prophet">
     <requires>
 	    <import addon="script.module.resolveurl" />
