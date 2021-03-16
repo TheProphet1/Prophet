@@ -233,7 +233,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.0" provider-name="The Prophet">
+<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.1" provider-name="The Prophet">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.module.beautifulsoup4" />

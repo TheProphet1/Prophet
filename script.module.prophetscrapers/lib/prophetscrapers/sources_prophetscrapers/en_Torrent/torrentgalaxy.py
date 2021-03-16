@@ -24,9 +24,9 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['btscene.nl']
-        self.base_link = 'http://btscene.nl'
-        self.search_link = 'search?q=%s'
+        self.domains = ['torrentgalaxy.to']
+        self.base_link = 'https://torrentgalaxy.to'
+        self.search_link = '/torrents.php?search=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -80,9 +80,9 @@ class source:
 
             try:
                 r = client.request(url)
-                posts = client.parseDOM(r, 'tr')
+                posts = client.parseDOM(r, 'div', attrs={'class': 'tgxtable'})
                 for post in posts:
-                    link = re.findall('a title="Download Torrent Magnet" href="(magnet:.+?)"', post, re.DOTALL)
+                    link = re.findall('a href="(magnet:.+?)"', post, re.DOTALL)
                     try:
                         size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
                         div = 1 if size.endswith('GB') else 1024
