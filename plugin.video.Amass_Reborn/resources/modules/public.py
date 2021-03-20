@@ -133,7 +133,7 @@ def addNolink( name, url,mode,isFolder,fanart='DefaultFolder.png', iconimage="De
             liz.setProperty("IsPlayable","false")
             liz.addContextMenuItems(menu_items, replaceItems=False)
             art = {}
-            art.update({'poster': iconimage})
+            art.update({'poster': iconimage,'icon': iconimage,'thumb': iconimage})
             liz.setArt(art)
             if dont_place:
                 return u,liz,False
@@ -160,7 +160,7 @@ def utf8_urlencode(params):
                 #logging.warning( '**ERROR utf8_urlencode ERROR** %s' % e )
     
     return enc(params).encode().decode('utf-8')
-def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master='',all_w_trk='',last_id='',video_info={},data=' ',original_title=' ',id=' ',season=' ',episode=' ',tmdbid=' ',eng_name=' ',show_original_year=' ',rating=0,heb_name=' ',isr=0,generes=' ',trailer=' ',dates=' ',watched='no',fav_status='false',collect_all=False,ep_number='',watched_ep='',remain='',hist='',join_menu=False,menu_leave=False,remove_from_fd_g=False,all_w={},mark_time=False,ct_date=''):
+def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master='',all_w_trk='',last_id='',video_info={},data=' ',original_title=' ',id=' ',season=' ',episode=' ',tmdbid=' ',eng_name=' ',show_original_year=' ',rating=0,heb_name=' ',isr=0,generes=' ',trailer=' ',dates=' ',watched='no',fav_status='false',collect_all=False,ep_number='',watched_ep='',remain='',hist='',join_menu=False,menu_leave=False,remove_from_fd_g=False,all_w={},mark_time=False,ct_date='',search_db=''):
         if Addon.getSetting("stop_where")=='1':
             return 0
         name=name.replace("|",' ')
@@ -215,11 +215,16 @@ def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master
         params['isr']=isr
         params['fav_status']=fav_status
         params['all_w']=json.dumps(all_w)
+        params['search_db']=search_db
         if Addon.getSetting("stop_where")=='3':
             return 0
         all_ur=utf8_urlencode(params)
-        
-        u=sys.argv[0]+"?mode="+str(mode)+'&'+all_ur
+        plugin_link=False
+        if 'plugin://' in url:
+            u=url
+            plugin_link=True
+        else:   
+            u=sys.argv[0]+"?mode="+str(mode)+'&'+all_ur
         if Addon.getSetting("stop_where")=='4':
             return 0
         ok=True
@@ -389,7 +394,7 @@ def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master
                 pass
         
         art = {}
-        art.update({'poster': iconimage})
+        art.update({'poster': iconimage,'icon': iconimage,'thumb': iconimage})
         liz.setArt(art)
         video_data['title']=video_data['title'].replace("|",' ')
         video_data['plot']=video_data['plot'].replace("|",' ')
@@ -419,11 +424,13 @@ def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master
         params['video_data']=all_v_data
        
         all_ur=utf8_urlencode(params)
-        u=u+'&'+all_ur
+        if not plugin_link:
+            
+            u=u+'&'+all_ur
         if Addon.getSetting("stop_where")=='9':
             return 0
         art = {}
-        art.update({'poster': iconimage})
+        art.update({'poster': iconimage,'icon': iconimage,'thumb': iconimage})
         liz.setArt(art)
         #ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
         if (Addon.getSetting("one_click")=='true' and mode==15):
@@ -432,7 +439,7 @@ def addDir3(name,url,mode,iconimage,fanart,description,premired=' ',image_master
 
 
 
-def addLink( name, url,mode,isFolder, iconimage,fanart,description,place_control=False,data='',rating='',generes='',no_subs='0',tmdb='0',season='0',episode='0',original_title='',prev_name='',da='',year=0,all_w={},dd='',in_groups=False):
+def addLink( name, url,mode,isFolder, iconimage,fanart,description,place_control=False,data='',from_seek=False,rating='',generes='',no_subs='0',tmdb='0',season='0',episode='0',original_title='',prev_name='',da='',year=0,all_w={},dd='',in_groups=False):
           name=name.replace("|",' ')
           description=description.replace("|",' ')
           episode=episode.replace('%20',' ')
@@ -454,12 +461,38 @@ def addLink( name, url,mode,isFolder, iconimage,fanart,description,place_control
           params['data']=data
           params['prev_name']=prev_name
           params['nextup']='false'
+          params['from_seek']=from_seek
           
           all_ur=utf8_urlencode(params)
 
           u=sys.argv[0]+"?"+'&'+all_ur
- 
-
+          menu_items=[]
+          if len(tmdb)>1:
+            try:
+                a=int(season)
+                tv_show='tv'
+                tv_mov='tv'
+            except:
+                tv_show='movie'
+                tv_mov='movie'
+            
+            if Addon.getSetting("queue_item")=='true':
+                menu_items.append(('%s'%Addon.getLocalizedString(32169), 'Action(Queue)' ))
+            if Addon.getSetting("trakt_manager")=='true':
+                menu_items.append((Addon.getLocalizedString(32170), 'RunPlugin(%s)' % ('%s?url=%s&mode=150&name=%s&data=%s')%(sys.argv[0],tmdb,original_title,tv_mov) ))
+            if Addon.getSetting("trakt_watched")=='true':
+                menu_items.append(('[I]%s[/I]'%Addon.getLocalizedString(32171), 'RunPlugin(%s)' % ('%s?url=www&original_title=add&mode=65&name=%s&id=%s&season=%s&episode=%s')%(sys.argv[0],tv_show,tmdb,season,episode))) 
+            if Addon.getSetting("trakt_unwatched")=='true':
+                menu_items.append(('[I]%s[/I]'%Addon.getLocalizedString(32172), 'RunPlugin(%s)' % ('%s?url=www&original_title=remove&mode=65&name=%s&id=%s&season=%s&episode=%s')%(sys.argv[0],tv_show,tmdb,season,episode))) 
+            if Addon.getSetting("openinfo")=='true':
+                type_info='extendedinfo'
+                if mode==16:
+                    type_info='extendedtvinfo'
+                if mode==19:
+                    type_info='seasoninfo'
+                if mode==15 and tv_movie=='tv':
+                    type_info='extendedepisodeinfo'
+                menu_items.append(('[I]OpenInfo[/I]','RunScript(script.extendedinfo,info=%s,dbid=,id=%s,name=%s,tvshow=%s,season=%s,episode=%s)'%(type_info,tmdb,original_title,original_title,season,episode)))
           video_data={}
           video_data['title']=name
             
@@ -490,7 +523,7 @@ def addLink( name, url,mode,isFolder, iconimage,fanart,description,place_control
             liz = xbmcgui.ListItem( name, iconImage=iconimage, thumbnailImage=iconimage)
           else:
              liz = xbmcgui.ListItem( name)
-          menu_items=[]
+     
           if Addon.getSetting("set_view_type")=='true':
             menu_items.append(('[I]%s[/I]'%Addon.getLocalizedString(32179), 'RunPlugin(%s)' % ('%s?url=%s&mode=167')%(sys.argv[0],str(pre_mode))))
           if mode==170:
@@ -517,7 +550,7 @@ def addLink( name, url,mode,isFolder, iconimage,fanart,description,place_control
                     pass
           liz.setInfo(type="Video", infoLabels=video_data)
           art = {}
-          art.update({'poster': iconimage})
+          art.update({'poster': iconimage,'icon': iconimage,'thumb': iconimage})
           liz.setArt(art)
           liz.setProperty("IsPlayable","true")
           liz.setProperty( "Fanart_Image", fanart )

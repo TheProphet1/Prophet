@@ -23,7 +23,7 @@
 '''
 
 
-import HTMLParser
+
 import StringIO
 import base64
 import cookielib
@@ -364,7 +364,14 @@ def parseDOM(html, name='', attrs=None, ret=False):
 
 def replaceHTMLCodes(txt):
     # txt = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", txt)
-    txt = HTMLParser.HTMLParser().unescape(txt)
+    try:
+        import HTMLParser
+        html_parser = HTMLParser.HTMLParser()
+       
+    except:
+        import html as html_parser
+        
+    txt =html_parser.unescape(txt)
     txt = txt.replace("&quot;", "\"")
     txt = txt.replace("&amp;", "&")
     txt = txt.replace("&lt;", "<")

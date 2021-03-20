@@ -23,7 +23,7 @@ if KODI_VERSION<=18:
 else:
     unque=urllib.parse.unquote_plus
 def adv_gen_window(url):
-    import pyxbmct
+    from  resources.modules import pyxbmct
     class adv_gen_window(pyxbmct.AddonDialogWindow):
         def __init__(self,type):
             super(adv_gen_window, self).__init__(Addon.getLocalizedString(32149))
@@ -217,7 +217,7 @@ def get_tmdb_data(new_name_array,html_g,fav_search_f,fav_servers_en,fav_servers,
                    
        #except:
            html=get_html(url).json()
-           
+           logging.warning(json.dumps(html))
            max_page=html['total_pages']
      
            all_res=html['total_results']
@@ -786,7 +786,7 @@ def get_seasons(name,url,iconimage,fanart,description,data,original_title,id,heb
                     "userkey": "",
                     "username": ""
    }
-   tmdbKey = '653bb8af90162bd98fc7ee32bcbbfb3d'
+   tmdbKey = '68128451d921ff3b7f1b7610b3cbead0'
    #headers = {'Content-Type': 'application/json', 'Accept': 'application/json', 'Accept-Language': 'he'}
    #r = requests.post(domain_s+'api.thetvdb.com/login', json=payload, headers=headers)
    #r_json = r.json()
@@ -1002,7 +1002,7 @@ def get_seasons(name,url,iconimage,fanart,description,data,original_title,id,heb
 def get_episode_data(id,season,episode,yjump=True,o_name=' '):
     o_season=season
     o_episode=episode
-    url='http://api.themoviedb.org/3/tv/%s/season/%s/episode/%s?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&language=%s&append_to_response=external_ids'%(id,season,episode,lang)
+    url='http://api.themoviedb.org/3/tv/%s/season/%s/episode/%s?api_key=68128451d921ff3b7f1b7610b3cbead0&language=%s&append_to_response=external_ids'%(id,season,episode,lang)
 
     html=get_html(url).json()
    
@@ -1010,7 +1010,7 @@ def get_episode_data(id,season,episode,yjump=True,o_name=' '):
       
       if 'status_code' in html or ('error_code' in html and html['error_code']==404):
         logging.warning('In::')
-        url='http://api.themoviedb.org/3/tv/%s/season/%s/episode/%s?api_key=653bb8af90162bd98fc7ee32bcbbfb3d&language=%s&append_to_response=external_ids'%(id,str(int(season)+1),'1',lang)
+        url='http://api.themoviedb.org/3/tv/%s/season/%s/episode/%s?api_key=68128451d921ff3b7f1b7610b3cbead0&language=%s&append_to_response=external_ids'%(id,str(int(season)+1),'1',lang)
         html=get_html(url).json()
         episode='1'
         season=str(int(season)+1)
@@ -1042,7 +1042,7 @@ def get_episode(name,url,iconimage,fanart,description,data,original_title,id,sea
    all_d=[]
    
    url=domain_s+'api.themoviedb.org/3/tv/%s/season/%s?api_key=34142515d9d23817496eeb4ff1d223d0&language=%s&append_to_response=external_ids'%(id,season,lang)
-   tmdbKey = '653bb8af90162bd98fc7ee32bcbbfb3d'
+   tmdbKey = '68128451d921ff3b7f1b7610b3cbead0'
    html=get_html(url).json()
    #tmdb data
 

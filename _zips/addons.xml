@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.Amass_Reborn"
 	   name="[COLOR yellow]Amass Reborn[/COLOR]"
-	   version="2.0.1"
+	   version="2.0.2"
 	   provider-name="The Prophet">
     <requires>
 	    <import addon="script.module.resolveurl" />
@@ -128,7 +128,7 @@
   </extension>
 </addon>
 
-<addon id="plugin.video.prophet" name="Prophet" provider-name="The Prophet" version="2.0.0">
+<addon id="plugin.video.prophet" name="Prophet" provider-name="The Prophet" version="2.0.1">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.prophet.artwork" />
@@ -233,7 +233,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.1" provider-name="The Prophet">
+<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.2" provider-name="The Prophet">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.module.beautifulsoup4" />

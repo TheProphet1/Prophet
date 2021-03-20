@@ -15,7 +15,8 @@
         <setting label="Disable All Torrent Providers" type="action" option="close" action="RunPlugin(plugin://script.module.prophetscrapers/?action=toggleAllTorrent&amp;setting=false&amp;query=0.10)"/>
         <setting label="Enable All Torrent Providers" type="action" option="close" action="RunPlugin(plugin://script.module.prophetscrapers/?action=toggleAllTorrent&amp;setting=true&amp;query=0.11)"/>
     </category>
-    <!-- Providers/Hosters-1 -->
+
+<!-- Providers/Hosters-1 -->
     <category label="Hosters">
         <setting id="provider.library" type="bool" label="LIBRARY" default="true" />
         <setting id="provider.5movies" type="bool" label="5MOVIES" default="true" />

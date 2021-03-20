@@ -23,7 +23,7 @@
 '''
 
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin,os,base64,sys,xbmcvfs,time
-from HTMLParser import HTMLParser
+
 import base64,hashlib,os,random,re,requests,shutil,string,sys,urllib,urllib2,json,resolveurl,ssl,zipfile,urlparse
 
 AddonTitle     = "[COLOR yellow]The Crew[/COLOR]"
@@ -172,16 +172,3 @@ def addDir(name,url,mode,iconimage,fanartimage):
     ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=True)
     return ok
 
-class MLStripper(HTMLParser):
-    def __init__(self):
-        self.reset()
-        self.fed = []
-    def handle_data(self, d):
-        self.fed.append(d)
-    def get_data(self):
-        return ''.join(self.fed)
-
-def strip_tags(html):
-    s = MLStripper()
-    s.feed(html)
-    return s.get_data()

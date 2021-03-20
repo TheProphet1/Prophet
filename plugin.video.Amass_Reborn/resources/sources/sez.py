@@ -183,6 +183,7 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
                 url.append(api_call)
                 qua.append(x['name'])
                 res=x['name'].replace('mobile','480').replace('lowest','480').replace('low','480').replace('sd','480').replace('hd','720')
+                '''
                 try_head = requests.head(x['url'],headers=base_header, stream=True,verify=False,timeout=15)
                 f_size2=0
                 
@@ -190,7 +191,8 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
           
                     if int(try_head.headers['Content-Length'])>(1024*1024):
                         f_size2=str(round(float(try_head.headers['Content-Length'])/(1024*1024*1024), 2))
-                all_links.append((title,'Direct_link$$$'+api_call,str(f_size2),res))
+                '''
+                all_links.append((title,'Direct_link$$$'+api_call,str(0),res))
                        
                 global_var=all_links
                 

@@ -146,7 +146,10 @@ class get_html():
         
         self.status_code=prehtml.getcode()
         if self.stream==False:
-            html=prehtml.read().decode('utf-8')
+            try:
+                html=prehtml.read().decode('utf-8','ignore')
+            except:
+                html=prehtml.read()
            
             
             try:

@@ -32,7 +32,7 @@
         <setting id="preemptive.termination" type="bool" label="32618" default="false" />
         <setting id="preemptive.limit" type="slider" label="32619" default="10" range="1,50" option="int" enable="eq(-1,true)" />
         <setting id="linesplit" type="enum" label="32628" lvalues="32629|32630|32631" default="0" />
-        <setting id="prem.identify" type="select" label="32588" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221" default="0" enable="!eq(-1,2)"/>
+        <setting id="prem.identify" type="select" label="32588" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221" default="5" enable="!eq(-1,2)"/>
         <setting id="sec.identify" type="select" label="32626" lvalues="32201|32202|32203|32204|32205|32206|32207|32208|32209|32210|32211|32212|32213|32214|32215|32216|32217|32218|32219|32220|32221|32200" default="9" enable="!eq(-2,2)"/>
         <setting id="source.list.meta" type="bool" label="32112" default="false" enable="eq(-8,1)" />
         <setting type="lsep" label="32338" />

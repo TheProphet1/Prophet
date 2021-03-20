@@ -7,7 +7,7 @@ from  resources.modules.client import get_html
 class AllDebrid:
     
     def __init__(self):
-        import tools
+        from  resources.modules import tools
         self.tools=tools
         self.agent_identifier = self.tools.addonName
         self.token = self.tools.getSetting('alldebrid.token')
@@ -64,9 +64,9 @@ class AllDebrid:
         self.tools.copy2clip(resp['pin'])
 
         self.tools.progressDialog.create('{} - {}'.format(self.tools.addonName, 'AllDebrid Auth'))
-        self.tools.progressDialog.update(100, 'Open this link in a browser: {}'.format(self.tools.colorString(resp['base_url'])),
+        self.tools.progressDialog.update(100, 'Open this link in a browser: {}'.format(self.tools.colorString(resp['base_url']))+'\n'+
                                     'Enter the code: {}'.format(self.tools.colorString(
-                                        resp['pin'])),
+                                        resp['pin']))+'\n'+
                                     'This code has been copied to your clipboard')
 
         # Seems the All Debrid servers need some time do something with the pin before polling
@@ -86,7 +86,7 @@ class AllDebrid:
         self.store_user_info()
 
         if auth_complete:
-            xbmc.executebuiltin((u'Notification(%s,%s)' % (self.tools.addonName, ('Authentication is completed').decode('utf8'))).encode('utf-8'))
+            xbmc.executebuiltin((u'Notification(%s,%s)' % (self.tools.addonName, ('Authentication is completed'))))
             
         else:
             return

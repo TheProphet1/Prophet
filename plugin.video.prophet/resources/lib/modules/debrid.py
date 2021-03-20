@@ -34,16 +34,8 @@ except:
     debrid_resolvers = []
 
 
-def status(torrent=False):
-    debrid_check = debrid_resolvers != []
-    if debrid_check is True:
-        if torrent:
-            enabled = control.setting('torrent.enabled')
-            if enabled == '' or enabled.lower() == 'true':
-                return True
-            else:
-                return False
-    return debrid_check
+def status():
+    return debrid_resolvers != []
 
 
 def resolver(url, debrid):

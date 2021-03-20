@@ -17,11 +17,11 @@
 
 import urllib, urlparse, re
 
-from prophetscrapers.modules import cleantitle
-from prophetscrapers.modules import client
-from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import dom_parser2
-from prophetscrapers.modules import tvmaze
+from prophetcrapers.modules import cleantitle
+from prophetcrapers.modules import client
+from prophetcrapers.modules import source_utils
+from prophetcrapers.modules import dom_parser2
+from prophetcrapers.modules import tvmaze
 
 
 class source:

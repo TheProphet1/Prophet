@@ -21,6 +21,7 @@ Addon = xbmcaddon.Addon()
 try:
     resuaddon=xbmcaddon.Addon('script.module.resolveurl')
 except Exception as e:
+    resuaddon=None
     pass
 def copy2clip(txt):
     import subprocess
@@ -61,18 +62,30 @@ class RealDebrid:
     def __init__(self):
         self.count_rd=0
         self.count_refresh=0
-        self.ClientID = Addon.getSetting('rd.client_id')
+        try:
+            self.ClientID = resuaddon.getSetting('RealDebridResolver_client_id') 
+        except:
+            self.ClientID = Addon.getSetting('rd.client_id')
         if self.ClientID == '':
             self.ClientID = 'X245A4XAIBGVM'
         self.OauthUrl = 'https://api.real-debrid.com/oauth/v2/'
         self.DeviceCodeUrl = "device/code?%s"
         self.DeviceCredUrl = "device/credentials?%s"
         self.TokenUrl = "token"
-        self.token = Addon.getSetting('rd.auth')
-        self.ClientSecret = Addon.getSetting('rd.secret')
+        try:
+            self.token = resuaddon.getSetting('RealDebridResolver_token') 
+        except:
+            self.token = Addon.getSetting('rd.auth')
+        try:
+            self.ClientSecret = resuaddon.getSetting('RealDebridResolver_client_secret') 
+        except:
+            self.ClientSecret = Addon.getSetting('rd.secret')
         if self.ClientSecret=='':
             self.auth()
-        self.refresh = Addon.getSetting('rd.refresh')
+        try:
+            self.refresh = resuaddon.getSetting('RealDebridResolver_refresh') 
+        except:
+            self.refresh = Addon.getSetting('rd.refresh')
         self.DeviceCode = ''
         
         self.OauthTimeout = 0
@@ -332,6 +345,13 @@ class RealDebrid:
             pass
         self.token = response['access_token']
         self.refresh = response['refresh_token']
+        try:
+            resuaddon.setSetting('RealDebridResolver_token', self.token)
+            resuaddon.setSetting('RealDebridResolver_refresh', self.refresh)
+            resuaddon.setSetting('RealDebridResolver_refresh', self.refresh)
+        except:
+            pass
+            
         Addon.setSetting('rd.auth', self.token)
         Addon.setSetting('rd.refresh', self.refresh)
         Addon.setSetting('rd.expiry', str(time.time() + int(response['expires_in'])))

@@ -377,7 +377,7 @@ class navigator:
         self.endDirectory()
 
     def tools(self):
-        self.addDirectoryItem('[COLOR aqua][B]prophet[/B] : Changelog[/COLOR]', 'changelog', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
+        self.addDirectoryItem('[COLOR yellow][B]Prophet[/B] : Changelog[/COLOR]', 'changelog', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
         self.addDirectoryItem(32043, 'openSettings&query=0.0', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
         self.addDirectoryItem(32556, 'libraryNavigator', 'tools.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem(32049, 'viewsNavigator', 'tools.png', 'DefaultAddonProgram.png')
@@ -389,7 +389,7 @@ class navigator:
         self.addDirectoryItem(32108, 'cleanSettings', 'tools.png', 'DefaultAddonProgram.png', isFolder=False)
         self.addDirectoryItem(32079, 'prophetscrapersettings', 'icon.png', 'DefaultAddonProgram.png', isFolder=False)
         if not control.condVisibility('System.HasAddon(script.module.openscrapers)'):
-            self.addDirectoryItem('[COLOR aqua][B]Openscrapers[/B] : Install[/COLOR]', 'installOpenscrapers', 'openscr.png', 'DefaultAddonProgram.png', isFolder=False)
+            self.addDirectoryItem('[COLOR yellow][B]Openscrapers[/B] : Install[/COLOR]', 'installOpenscrapers', 'openscr.png', 'DefaultAddonProgram.png', isFolder=False)
         else:
             self.addDirectoryItem(32082, 'openscrapersettings', 'openscr.png', 'DefaultAddonProgram.png', isFolder=False)
         self.addDirectoryItem(32076, 'smuSettings', 'resolveurl.png', 'DefaultAddonProgram.png', isFolder=False)

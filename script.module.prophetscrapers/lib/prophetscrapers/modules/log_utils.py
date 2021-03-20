@@ -37,7 +37,7 @@ LOGNOTICE = xbmc.LOGNOTICE if int(control.getKodiVersion()) < 19 else xbmc.LOGIN
 LOGWARNING = xbmc.LOGWARNING
 
 name = control.addonInfo('name')
-DEBUGPREFIX = '[ prophet DEBUG ]'
+DEBUGPREFIX = '[ Prophet DEBUG ]'
 LOGPATH = xbmc.translatePath('special://logpath/')
 
 

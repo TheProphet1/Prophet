@@ -52,6 +52,13 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
     'TE': 'Trailers',
     }
     non_magnet=[]
+    x= get_html('https://snowfl.com',headers=headers).content()
+    regex='src="b.min.js(.+?)"'
+    m=re.compile(regex).findall(x)[0]
+    x= get_html('https://snowfl.com/b.min.js'+m,headers=headers).content()
+    regex='isMobile\=!1,.+?\="(.+?)"'
+    code=re.compile(regex).findall(x)[0]
+    logging.warning(code)
     for page in range(1,4):
         if stop_all==1:
             break
@@ -61,7 +68,7 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
             ('_', str(time.time()*100)),
         )          
        
-        response = get_html('https://snowfl.com/aoBzKcHcwJIXDLBGbvMFyCPdIZdmUXHnmZ/%s/%s/%s/NONE/NONE/1'%(search_url,rand_str,str(page)), headers=headers, params=params).json()
+        response = get_html('https://snowfl.com/%s/%s/%s/%s/NONE/NONE/1'%(code,search_url,rand_str,str(page)), headers=headers, params=params).json()
        
         for results in response:
             if stop_all==1:

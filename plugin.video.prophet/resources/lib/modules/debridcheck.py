@@ -70,7 +70,7 @@ class ADapi:
     def __init__(self):
         self.base_url = 'https://api.alldebrid.com/v4/'
         self.token = __r_url__.getSetting('AllDebridResolver_token')
-        self.user_agent = 'prophet for Kodi'
+        self.user_agent = 'Prophet for Kodi'
 
     def check_cache(self, hashes):
         data = {'magnets[]': hashes}

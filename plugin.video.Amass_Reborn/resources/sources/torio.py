@@ -62,7 +62,10 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
                    size=size/1000
             
             links=results['infoHash']
-            lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,que(nam))
+            try:
+                lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,que(original_title))
+            except:
+                lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,que(original_title))
             if '4k' in nam:
                   res='2160'
             elif '2160' in nam:

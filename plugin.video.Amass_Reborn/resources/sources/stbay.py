@@ -25,7 +25,10 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
     global global_var,stop_all
     all_links=[]
     imdb_id=cache.get(get_imdb, 999,tv_movie,id,table='pages')
-        
+    try:
+        que=urllib.quote_plus
+    except:
+        que=urllib.parse.quote_plus
     seed=''
     f_seeds=False
     use_debrid=Addon.getSetting('debrid_use')=='true'
@@ -53,7 +56,7 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
        
         for results in y['streams']:
             
-            nam=results['title'].encode('utf-8')
+            nam=results['title']
             if f_seeds:
                 regex='👤 (.+?) 💾'
                 
@@ -77,7 +80,10 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
                    size=size/1000
             
             links=results['infoHash']
-            lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,urllib.quote_plus(nam))
+            try:
+                lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,que(nam))
+            except:
+                lk='magnet:?xt=urn:btih:%s&dn=%s'%(links,que(nam.encode('utf-8')))
             if '4k' in nam:
                   res='2160'
             elif '2160' in nam:

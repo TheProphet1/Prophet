@@ -111,7 +111,9 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
    
         
         regex_pre='class="detLink" title=".+?">(.+?)<.+?a href="(.+?)".+?Size (.+?)\,.+?<td align="right">(.+?)<.+?<td align="right">(.+?)<'
+       
         m_pre=regex2.findall(x)
+        
       
         if len(m_pre)==0:
             break

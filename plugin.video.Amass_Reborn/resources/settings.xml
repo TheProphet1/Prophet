@@ -144,105 +144,84 @@
 		<setting label="32254"  type="action" option="close" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=173&url=movie&name=disable)" />
 		<setting id="fav_movie" type="text" label="32255" default="" />
 		
-		
+		<!--Movie Sources-->
+
 		<setting id="1337x" label="1337x" type="bool"  default="true" />
-		<setting id="7tor" label="7tor" type="bool"  default="true" />
 		<setting id="api" label="api" type="bool"  default="true" />
 		<setting id="bay" label="bay" type="bool"  default="true" />
 		<setting id="bitlord" label="bitlord" type="bool"  default="true" />
-		<setting id="btdig" label="btdig" type="bool"  default="true" />
 		<setting id="dl" label="dl" type="bool"  default="true" />
+		<setting id="easynews" label="easynews [COLOR red](Paid)[/COLOR]" type="bool"  default="true" />
 		<setting id="extra" label="extra" type="bool"  default="true" />
-		<setting id="ext" label="ext" type="bool"  default="true" />
 		<setting id="ez" label="ez" type="bool"  default="true" />
 		<setting id="ezio" label="ezio" type="bool"  default="true" />
-		<setting id="ezshow" label="ezshow" type="bool"  default="true" />
+		<setting id="furk" label="furk [COLOR red](Paid)[/COLOR]" type="bool"  default="true" />
 		<setting id="glorls" label="glorls" type="bool"  default="true" />
-		<setting id="gow" label="gow" type="bool"  default="true" />
-		<setting id="idope" label="idope" type="bool"  default="true" />
 		<setting id="kass" label="kass" type="bool"  default="true" />
-		
-		<setting id="lime" label="lime" type="bool"  default="true" />
-		<setting id="m20" label="m20" type="bool"  default="true" />
-		<setting id="monk" label="monk" type="bool"  default="true" />
-		<setting id="morg" label="morg" type="bool"  default="true" />
-		<setting id="mosh" label="mosh" type="bool"  default="true" />
 		<setting id="magno" label="magno" type="bool"  default="true" />
-		<setting id="orn" label="orn" type="bool"  default="true" />
-		<setting id="ornt" label="ornt" type="bool"  default="true" />
+		<setting id="monk" label="monk" type="bool"  default="true" />
 		<setting id="pop" label="pop" type="bool"  default="true" />
-		<setting id="qaz" label="qaz" type="bool"  default="true" />
-		<setting id="sdarot" label="sdarot" type="bool"  default="true" />
-		<setting id="sez" label="sez" type="bool"  default="true" />
+		<setting id="qaz" label="qaz [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="sez" label="sez [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="shrss" label="shrss" type="bool"  default="true" />
 		<setting id="sky" label="sky" type="bool"  default="true" />
 		<setting id="sky2" label="sky2" type="bool"  default="true" />
-		<setting id="shrss" label="shrss" type="bool"  default="true" />
 		<setting id="snow" label="snow" type="bool"  default="true" />
 		<setting id="sol" label="sol" type="bool"  default="true" />
-		<setting id="soup" label="soup" type="bool"  default="true" />
+		<setting id="stbay" label="stbay" type="bool"  default="true" />
 		<setting id="thd" label="thd" type="bool"  default="true" />
-		<setting id="tele" label="telemedia" type="bool"  default="true" />
-		<setting id="tse" label="tse" type="bool"  default="true" />
-		
-		<setting id="tsdl" label="tsdl" type="bool"  default="true" />
-		<setting id="torq" label="torq" type="bool"  default="true" />
+		<setting id="torio" label="torio" type="bool"  default="true" />
+		<setting id="torrz" label="torrz" type="bool"  default="true" />
 		<setting id="trpar" label="trpar" type="bool"  default="true" />
-		<setting id="wshd" label="wshd" type="bool"  default="true" />
+		<setting id="tsdl" label="tsdl" type="bool"  default="true" />
+		<setting id="tse" label="tse" type="bool"  default="true" />
 		<setting id="yts" label="yts" type="bool"  default="true" />
-		<setting id="you" label="you" type="bool"  default="true" />
 		<setting id="zg" label="zg" type="bool"  default="true" />
+
+<!--End Movie Sources-->
+	</category>
+	<category label="Tv sources">
 		
 		<setting label="32299" type="lsep"/>
 		<setting label="32253"  type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=173&url=tv&name=enable)" />
 		<setting label="32254"  type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=173&url=tv&name=disable)" />
 		<setting id="fav_tv" type="text" label="32255" default="" />
 		
+		<!--TV Sources-->
+
 		<setting id="1337x_tv" label="1337x" type="bool"  default="true" />
-		<setting id="7tor_tv" label="7tor" type="bool"  default="true" />
 		<setting id="api_tv" label="api" type="bool"  default="true" />
 		<setting id="bay_tv" label="bay" type="bool"  default="true" />
 		<setting id="bitlord_tv" label="bitlord" type="bool"  default="true" />
-		<setting id="btdig_tv" label="btdig" type="bool"  default="true" />
 		<setting id="dl_tv" label="dl" type="bool"  default="true" />
+		<setting id="easynews_tv" label="easynews [COLOR red](Paid)[/COLOR]" type="bool"  default="true" />
 		<setting id="extra_tv" label="extra" type="bool"  default="true" />
-		<setting id="ext_tv" label="ext" type="bool"  default="true" />
 		<setting id="ez_tv" label="ez" type="bool"  default="true" />
 		<setting id="ezio_tv" label="ezio" type="bool"  default="true" />
-		<setting id="ezshow_tv" label="ezshow" type="bool"  default="true" />
+		<setting id="furk_tv" label="furk [COLOR red](Paid)[/COLOR]" type="bool"  default="true" />
 		<setting id="glorls_tv" label="glorls" type="bool"  default="true" />
-		<setting id="gow_tv" label="gow" type="bool"  default="true" />
-		<setting id="idope_tv" label="idope" type="bool"  default="true" />
 		<setting id="kass_tv" label="kass" type="bool"  default="true" />
-		
-		<setting id="lime_tv" label="lime" type="bool"  default="true" />
-		<setting id="m20_tv" label="m20" type="bool"  default="true" />
-		<setting id="monk_tv" label="monk" type="bool"  default="true" />
-		<setting id="mosh_tv" label="mosh" type="bool"  default="true" />
-		<setting id="morg_tv" label="morg" type="bool"  default="true" />
 		<setting id="magno_tv" label="magno" type="bool"  default="true" />
-		<setting id="orn_tv" label="orn" type="bool"  default="true" />
-		<setting id="ornt_tv" label="ornt" type="bool"  default="true" />
+		<setting id="monk_tv" label="monk" type="bool"  default="true" />
 		<setting id="pop_tv" label="pop" type="bool"  default="true" />
-		<setting id="qaz_tv" label="qaz" type="bool"  default="true" />
-		<setting id="sdarot_tv" label="sdarot" type="bool"  default="true" />
-		<setting id="sez_tv" label="sez" type="bool"  default="true" />
+		<setting id="qaz_tv" label="qaz [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="sez_tv" label="sez [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="shrss_tv" label="shrss" type="bool"  default="true" />
 		<setting id="sky_tv" label="sky" type="bool"  default="true" />
 		<setting id="sky2_tv" label="sky2" type="bool"  default="true" />
-		<setting id="shrss_tv" label="shrss" type="bool"  default="true" />
 		<setting id="snow_tv" label="snow" type="bool"  default="true" />
 		<setting id="sol_tv" label="sol" type="bool"  default="true" />
-		<setting id="soup_tv" label="soup" type="bool"  default="true" />
-		<setting id="tele_tv" label="telemedia" type="bool"  default="true" />
+		<setting id="stbay_tv" label="stbay" type="bool"  default="true" />
 		<setting id="thd_tv" label="thd" type="bool"  default="true" />
-		<setting id="tse_tv" label="tse" type="bool"  default="true" />
-		
-		<setting id="tsdl_tv" label="tsdl" type="bool"  default="true" />
-		<setting id="torq_tv" label="torq" type="bool"  default="true" />
+		<setting id="torio_tv" label="torio" type="bool"  default="true" />
+		<setting id="torrz_tv" label="torrz" type="bool"  default="true" />
 		<setting id="trpar_tv" label="trpar" type="bool"  default="true" />
-		<setting id="wshd_tv" label="wshd" type="bool"  default="true" />
+		<setting id="tsdl_tv" label="tsdl" type="bool"  default="true" />
+		<setting id="tse_tv" label="tse" type="bool"  default="true" />
 		<setting id="yts_tv" label="yts" type="bool"  default="true" />
-		<setting id="you_tv" label="you" type="bool"  default="true" />
 		<setting id="zg_tv" label="zg" type="bool"  default="true" />
+
+<!--End TV Sources-->
 	</category>
 	<category label="32256">
 		<setting label="Furk" type="lsep" />

@@ -4,7 +4,7 @@
 
 import re, time, traceback
 from resources.lib.modules import log_utils
-import HTMLParser
+
 
 headers = {'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3555.0 Safari/537.36"}
 
@@ -177,9 +177,16 @@ def get_video(text):
     return links
 
 
+    
 def replaceHTMLCodes(text):
+    try:
+        import HTMLParser
+        html_parser = HTMLParser.HTMLParser()
+       
+    except:
+        import html as html_parser
     text = re.sub("(&#[0-9]+)([^;^0-9]+)", "\\1;\\2", text)
-    text = HTMLParser.HTMLParser().unescape(text)
+    text = html_parser.unescape(text)
     text = text.replace("&quot;", "\"")
     text = text.replace("&amp;", "&")
     text = text.replace("%2B", "+")
