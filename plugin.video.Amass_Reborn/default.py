@@ -3603,7 +3603,7 @@ def main_menu(time_data):
     #dulpicate this line with your address
     #aa=addDir3('Name', 'Your Jen Address',189,'Iconimage','fanart','Description',search_db='Your Search db Address')
     #all_d.append(aa)
-   
+
 
     if Addon.getSetting('debug')=='true':
         aa=addDir3( 'Unit tests', 'www',181,'https://lh3.googleusercontent.com/proxy/Ia9aOfcgtzofMb0urCAs8NV-4RRhcIVST-Gqx9GI9RLsx7IJe_5jBqjfdsJcOO3QIV3TT-uiF2nKmyYCX0vj5UPR4iW1iHXgZylE8N8wyNgRLw','https://i.ytimg.com/vi/3wLqsRLvV-c/maxresdefault.jpg','Test')
@@ -7827,7 +7827,7 @@ def play_link(name,url,iconimage,fanart,description,data,original_title,id,seaso
 
    if '(' in url and jen_addon:
         url=url.split('(')[0]
-   
+    
    from resources.modules.general import post_trakt
    from resources.modules import real_debrid,premiumize
    from resources.modules import all_debrid
@@ -13192,7 +13192,7 @@ elif mode==187:
 elif mode==188:
     get_keywords(url,iconimage,fanart,dates)
 elif mode==189:
-   
+
     populate_playlist(url,iconimage,fanart,search_db)
 elif mode==190:
     play_list(name,url,iconimage,fanart,id,show_original_year,season,episode)

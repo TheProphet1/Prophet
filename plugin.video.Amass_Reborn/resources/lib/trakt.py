@@ -1079,7 +1079,7 @@ class cTrakt:
             return
 
         oRequestHandler = cRequestHandler('https://api.themoviedb.org/3/movie/' + str(sTmdb))
-        oRequestHandler.addParameters('api_key', '92ab39516970ab9d86396866456ec9b6')
+        oRequestHandler.addParameters('api_key', '68128451d921ff3b7f1b7610b3cbead0')
         oRequestHandler.addParameters('language', 'fr')
 
         sHtmlContent = oRequestHandler.request()

@@ -20,7 +20,7 @@
 		<setting id="adults" label="32217" type="bool"  default="true" />
 		
 		
-		<setting label="[COLOR lightblue][I]$ADDON[plugin.video.Amass_Reborn 32220][/I][/COLOR]" option="close" type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=163&url=www)" />
+		<setting label="[COLOR yellow][I]$ADDON[plugin.video.Amass_Reborn 32220][/I][/COLOR]" option="close" type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=163&url=www)" />
 		
 		
 		<setting id="rd.auth" type="text" default="" visible="hidden" />
@@ -48,7 +48,7 @@
 		
 	</category>
 	<category label="32221">
-		<setting label="[COLOR khaki][I]$ADDON[plugin.video.Amass_Reborn 32124][/I][/COLOR]" type="lsep"/>
+		<setting label="[COLOR yellow][I]$ADDON[plugin.video.Amass_Reborn 32124][/I][/COLOR]" type="lsep"/>
 		<setting id="garbage" type="text" default="" visible="false" />
 		<setting label="32222" type="lsep"/>
 		<setting id="max_q" type="enum" label="32223" values="720|1080|2160"  default="2" />
@@ -60,7 +60,7 @@
 		<setting id="hdvc" type="bool" label="32228" default="true" visible="eq(-2,true)"/>
 		<setting id="low_q" type="bool" label="32229" default="false" visible="eq(-3,true)"/>
 		
-		<setting label="[COLOR khaki][I]$ADDON[plugin.video.Amass_Reborn 32099][/I][/COLOR]" type="lsep"/>
+		<setting label="[COLOR yellow][I]$ADDON[plugin.video.Amass_Reborn 32099][/I][/COLOR]" type="lsep"/>
 		<setting id="garbage2" type="text" default="" visible="false" />
 		<setting label="32222" type="lsep"/>
 		<setting id="max_q_tv" type="enum" label="32223" values="720|1080|2160"  default="2" />
@@ -161,8 +161,8 @@
 		<setting id="magno" label="magno" type="bool"  default="true" />
 		<setting id="monk" label="monk" type="bool"  default="true" />
 		<setting id="pop" label="pop" type="bool"  default="true" />
-		<setting id="qaz" label="qaz [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
-		<setting id="sez" label="sez [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="qaz" label="qaz [COLOR yellow](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="sez" label="sez [COLOR yellow](Free)[/COLOR]" type="bool"  default="true" />
 		<setting id="shrss" label="shrss" type="bool"  default="true" />
 		<setting id="sky" label="sky" type="bool"  default="true" />
 		<setting id="sky2" label="sky2" type="bool"  default="true" />
@@ -204,8 +204,8 @@
 		<setting id="magno_tv" label="magno" type="bool"  default="true" />
 		<setting id="monk_tv" label="monk" type="bool"  default="true" />
 		<setting id="pop_tv" label="pop" type="bool"  default="true" />
-		<setting id="qaz_tv" label="qaz [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
-		<setting id="sez_tv" label="sez [COLOR lightblue](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="qaz_tv" label="qaz [COLOR yellow](Free)[/COLOR]" type="bool"  default="true" />
+		<setting id="sez_tv" label="sez [COLOR yellow](Free)[/COLOR]" type="bool"  default="true" />
 		<setting id="shrss_tv" label="shrss" type="bool"  default="true" />
 		<setting id="sky_tv" label="sky" type="bool"  default="true" />
 		<setting id="sky2_tv" label="sky2" type="bool"  default="true" />
