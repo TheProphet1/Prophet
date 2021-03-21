@@ -89,7 +89,7 @@ class navigator:
         self.addDirectoryItem(32005, 'movieWidget', 'latest-movies.png', 'DefaultRecentlyAddedMovies.png')
         self.addDirectoryItem(32124, 'customNavigator', 'imdb.png', 'DefaultMovies.png')
         self.addDirectoryItem(32125, 'imdbLists', 'imdb.png', 'DefaultMovies.png')
-        self.addDirectoryItem('[COLOR aqua]Movie Mosts[/COLOR]', 'movieMosts', 'featured.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Movie Mosts[/COLOR]', 'movieMosts', 'featured.png', 'playlist.jpg')
 
         if lite == False:
             if not control.setting('lists.widget') == '0':
@@ -148,7 +148,7 @@ class navigator:
         self.addDirectoryItem(32018, 'tvshows&url=popular', 'most-popular.png', 'DefaultTVShows.png')
         self.addDirectoryItem(32023, 'tvshows&url=rating', 'highly-rated.png', 'DefaultTVShows.png')
         self.addDirectoryItem(32019, 'tvshows&url=views', 'most-voted.png', 'DefaultTVShows.png')
-        self.addDirectoryItem('[COLOR aqua]TV Show Mosts[/COLOR]', 'showMosts', 'featured.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]TV Show Mosts[/COLOR]', 'showMosts', 'featured.png', 'playlist.jpg')
         self.addDirectoryItem(32024, 'tvshows&url=airing', 'airing-today.png', 'DefaultTVShows.png')
         #self.addDirectoryItem(32025, 'tvshows&url=active', 'returning-tvshows.png', 'DefaultTVShows.png')
         self.addDirectoryItem(32026, 'tvshows&url=premiere', 'new-tvshows.png', 'DefaultTVShows.png')
@@ -345,34 +345,34 @@ class navigator:
 
 
     def movieMosts(self):
-        self.addDirectoryItem('[COLOR aqua]Most Played This Week[/COLOR]', 'movies&url=played1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played This Month[/COLOR]', 'movies&url=played2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played This Year[/COLOR]', 'movies&url=played3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played All Time[/COLOR]', 'movies&url=played4', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Week[/COLOR]', 'movies&url=collected1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Month[/COLOR]', 'movies&url=collected2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Year[/COLOR]', 'movies&url=collected3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected All Time[/COLOR]', 'movies&url=collected4', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Week[/COLOR]', 'movies&url=watched1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Month[/COLOR]', 'movies&url=watched2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Year[/COLOR]', 'movies&url=watched3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched All Time[/COLOR]', 'movies&url=watched4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Week[/COLOR]', 'movies&url=played1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Month[/COLOR]', 'movies&url=played2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Year[/COLOR]', 'movies&url=played3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played All Time[/COLOR]', 'movies&url=played4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Week[/COLOR]', 'movies&url=collected1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Month[/COLOR]', 'movies&url=collected2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Year[/COLOR]', 'movies&url=collected3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected All Time[/COLOR]', 'movies&url=collected4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Week[/COLOR]', 'movies&url=watched1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Month[/COLOR]', 'movies&url=watched2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Year[/COLOR]', 'movies&url=watched3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched All Time[/COLOR]', 'movies&url=watched4', 'trakt.png', 'playlist.jpg')
 
         self.endDirectory()
 
     def showMosts(self):
-        self.addDirectoryItem('[COLOR aqua]Most Played This Week[/COLOR]', 'tvshows&url=played1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played This Month[/COLOR]', 'tvshows&url=played2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played This Year[/COLOR]', 'tvshows&url=played3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Played All Time[/COLOR]', 'tvshows&url=played4', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Week[/COLOR]', 'tvshows&url=collected1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Month[/COLOR]', 'tvshows&url=collected2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected This Year[/COLOR]', 'tvshows&url=collected3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Collected All Time[/COLOR]', 'tvshows&url=collected4', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Week[/COLOR]', 'tvshows&url=watched1', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Month[/COLOR]', 'tvshows&url=watched2', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched This Year[/COLOR]', 'tvshows&url=watched3', 'trakt.png', 'playlist.jpg')
-        self.addDirectoryItem('[COLOR aqua]Most Watched All Time[/COLOR]', 'tvshows&url=watched4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Week[/COLOR]', 'tvshows&url=played1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Month[/COLOR]', 'tvshows&url=played2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played This Year[/COLOR]', 'tvshows&url=played3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Played All Time[/COLOR]', 'tvshows&url=played4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Week[/COLOR]', 'tvshows&url=collected1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Month[/COLOR]', 'tvshows&url=collected2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected This Year[/COLOR]', 'tvshows&url=collected3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Collected All Time[/COLOR]', 'tvshows&url=collected4', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Week[/COLOR]', 'tvshows&url=watched1', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Month[/COLOR]', 'tvshows&url=watched2', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched This Year[/COLOR]', 'tvshows&url=watched3', 'trakt.png', 'playlist.jpg')
+        self.addDirectoryItem('[COLOR yellow]Most Watched All Time[/COLOR]', 'tvshows&url=watched4', 'trakt.png', 'playlist.jpg')
 
         self.endDirectory()
 
@@ -392,6 +392,10 @@ class navigator:
             self.addDirectoryItem('[COLOR yellow][B]Openscrapers[/B] : Install[/COLOR]', 'installOpenscrapers', 'openscr.png', 'DefaultAddonProgram.png', isFolder=False)
         else:
             self.addDirectoryItem(32082, 'openscrapersettings', 'openscr.png', 'DefaultAddonProgram.png', isFolder=False)
+        if not control.condVisibility('System.HasAddon(script.module.orion)'):
+            self.addDirectoryItem('[COLOR yellow][B]Orion[/B] : Install[/COLOR]', 'installOrion', 'orion.png', 'DefaultAddonProgram.png', isFolder=False)
+        else:
+            self.addDirectoryItem(32080, 'orionsettings', 'orion.png', 'DefaultAddonProgram.png', isFolder=False)
         self.addDirectoryItem(32076, 'smuSettings', 'resolveurl.png', 'DefaultAddonProgram.png', isFolder=False)
         if trakt.getTraktCredentialsInfo():
             self.addDirectoryItem(32093, 'syncTraktStatus', 'trakt.png', 'DefaultAddonProgram.png', isFolder=False)

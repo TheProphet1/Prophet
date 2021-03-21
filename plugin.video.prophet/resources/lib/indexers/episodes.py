@@ -55,8 +55,8 @@ class seasons:
         self.specials = control.setting('tv.specials') or 'true'
         self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours = 5))
         self.today_date = self.datetime.strftime('%Y-%m-%d')
-        self.etvdb_key = 'VlNZM1JXMk0wQllYTEdZRA=='
-        self.tvdb_key = 'VSY3RW2M0BYXLGYD'#base64.b64decode(self.etvdb_key)#
+        self.etvdb_key = 'NWNjMzg0Y2EtODFhOS00NTIyLWJkNzMtZjllZTVjYjBlMWE2'
+        self.tvdb_key = '5cc384ca-81a9-4522-bd73-f9ee5cb0e1a6'#base64.b64decode(self.etvdb_key)#
 
         self.tvdb_info_link = 'https://thetvdb.com/api/%s/series/%s/all/%s.zip' % (self.tvdb_key, '%s', '%s')
         self.tvdb_by_imdb = 'https://thetvdb.com/api/GetSeriesByRemoteID.php?imdbid=%s'

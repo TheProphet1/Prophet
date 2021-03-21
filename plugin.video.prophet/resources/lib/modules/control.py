@@ -240,9 +240,9 @@ def infoDialog(message, heading=addonInfo('name'), icon='', time=3000, sound=Fal
     dialog.notification(heading, message, icon, time, sound=sound)
 
 
-def yesnoDialog(line1, line2, line3, heading=addonInfo('name'), nolabel='', yeslabel=''):
+def yesnoDialog(message, heading=addonInfo('name'), nolabel='', yeslabel=''):
     if int(getKodiVersion()) < 19: return dialog.yesno(heading, message, '', '', nolabel, yeslabel)
-    else: return dialog.yesno(heading, line1, line2, line3, nolabel, yeslabel)
+    else: return dialog.yesno(heading, message, nolabel, yeslabel)
 
 
 def selectDialog(list, heading=addonInfo('name')):
@@ -330,25 +330,19 @@ def getCurrentViewId():
     win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
     return str(win.getFocusId())
 
-def getKodiVersion():
-    return xbmc.getInfoLabel("System.BuildVersion").split(".")[0]
 
 def refresh():
     return execute('Container.Refresh')
 
 
 def busy():
-    if int(getKodiVersion()) >= 18:
-        return execute('ActivateWindow(busydialognocancel)')
-    else:
-        return execute('ActivateWindow(busydialog)')
+    if int(getKodiVersion()) >= 18: return execute('ActivateWindow(busydialognocancel)')
+    else: return execute('ActivateWindow(busydialog)')
 
 
 def idle():
-    if int(getKodiVersion()) >= 18:
-        return execute('Dialog.Close(busydialognocancel)')
-    else:
-        return execute('Dialog.Close(busydialog)')
+    if int(getKodiVersion()) >= 18: return execute('Dialog.Close(busydialognocancel)')
+    else: return execute('Dialog.Close(busydialog)')
 
 
 def queueItem():

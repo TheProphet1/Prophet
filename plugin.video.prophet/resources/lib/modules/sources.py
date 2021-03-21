@@ -201,15 +201,12 @@ class sources:
             imdb = meta['imdb'] if 'imdb' in meta else None
             tvdb = meta['tvdb'] if 'tvdb' in meta else None
 
-            next = []
-            prev = []
-            total = []
+            next = [] ; prev = [] ; total = []
 
             for i in list(range(1,1000)):
                 try:
                     u = control.infoLabel('ListItem(%s).FolderPath' % str(i))
-                    if u in total: 
-                        raise Exception()
+                    if u in total: raise Exception()
                     total.append(u)
                     u = dict(urllib_parse.parse_qsl(u.replace('?','')))
                     u = json.loads(u['source'])[0]
@@ -219,8 +216,7 @@ class sources:
             for i in range(-1000,0)[::-1]:
                 try:
                     u = control.infoLabel('ListItem(%s).FolderPath' % str(i))
-                    if u in total: 
-                        raise Exception()
+                    if u in total: raise Exception()
                     total.append(u)
                     u = dict(urllib_parse.parse_qsl(u.replace('?','')))
                     u = json.loads(u['source'])[0]
@@ -234,24 +230,21 @@ class sources:
             header = control.addonInfo('name')
             header2 = header.upper()
 
-            progressDialog = control.progressDialog if control.setting(
-                'progress.dialog') == '0' else control.progressDialogBG
+            progressDialog = control.progressDialog if control.setting('progress.dialog') == '0' else control.progressDialogBG
             progressDialog.create(header, '')
-            progressDialog.update(0)
+            #progressDialog.update(0)
 
             block = None
 
             for i in list(range(len(items))):
                 try:
                     try:
-                        if progressDialog.iscanceled(): 
-                            break
+                        if progressDialog.iscanceled(): break
                         progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']).replace('[CR]    ', ' | '))
                     except:
                         progressDialog.update(int((100 / float(len(items))) * i), str(header2) + '[CR]' + str(items[i]['label']))
 
-                    if items[i]['source'] == block: 
-                        raise Exception()
+                    if items[i]['source'] == block: raise Exception()
 
                     w = workers.Thread(self.sourcesResolve, items[i])
                     w.start()
@@ -280,54 +273,38 @@ class sources:
 
                     for x in list(range(3600)):
                         try:
-                            if control.monitor.abortRequested(): 
-                                return sys.exit()
-                            if progressDialog.iscanceled(): 
-                                return progressDialog.close()
+                            if control.monitor.abortRequested(): return sys.exit()
+                            if progressDialog.iscanceled(): return progressDialog.close()
                         except:
                             pass
 
                         k = control.condVisibility('Window.IsActive(virtualkeyboard)')
-                        if k: 
-                            m += '1'
-                            m = m[-1]
-                        if (w.is_alive() == False or x > 30 + offset) and not k: 
-                            break
+                        if k: m += '1'; m = m[-1]
+                        if (w.is_alive() == False or x > 30 + offset) and not k: break
                         k = control.condVisibility('Window.IsActive(yesnoDialog)')
-                        if k: 
-                            m += '1'
-                            m = m[-1]
-                        if (w.is_alive() == False or x > 30 + offset) and not k: 
-                            break
+                        if k: m += '1'; m = m[-1]
+                        if (w.is_alive() == False or x > 30 + offset) and not k: break
                         time.sleep(0.5)
 
 
                     for x in list(range(30)):
                         try:
-                            if control.monitor.abortRequested():
-                                return sys.exit()
-                            if progressDialog.iscanceled():
-                                return progressDialog.close()
+                            if control.monitor.abortRequested(): return sys.exit()
+                            if progressDialog.iscanceled(): return progressDialog.close()
                         except:
                             pass
 
-                        if m == '':
-                            break
-                        if w.is_alive() == False: 
-                            break
+                        if m == '': break
+                        if w.is_alive() == False: break
                         time.sleep(0.5)
 
 
-                    if w.is_alive() == True: 
-                        block = items[i]['source']
+                    if w.is_alive() == True: block = items[i]['source']
 
-                    if self.url == None: 
-                        raise Exception()
+                    if self.url == None: raise Exception()
 
-                    try: 
-                        progressDialog.close()
-                    except: 
-                        pass
+                    try: progressDialog.close()
+                    except: pass
 
                     control.sleep(200)
                     control.execute('Dialog.Close(virtualkeyboard)')
@@ -340,10 +317,8 @@ class sources:
                 except:
                     pass
 
-            try:
-                progressDialog.close()
-            except: 
-                pass
+            try: progressDialog.close()
+            except: pass
             del progressDialog
 
             self.errorForSources()
@@ -375,10 +350,8 @@ class sources:
         sourceDict = [(i[0], i[1], i[1].language) for i in sourceDict]
         sourceDict = [(i[0], i[1]) for i in sourceDict if any(x in i[2] for x in language)]
 
-        try: 
-            sourceDict = [(i[0], i[1], control.setting('provider.' + i[0])) for i in sourceDict]
-        except: 
-            sourceDict = [(i[0], i[1], 'true') for i in sourceDict]
+        try: sourceDict = [(i[0], i[1], control.setting('provider.' + i[0])) for i in sourceDict]
+        except: sourceDict = [(i[0], i[1], 'true') for i in sourceDict]
         sourceDict = [(i[0], i[1]) for i in sourceDict if not i[2] == 'false']
 
         if control.setting('cf.disable') == 'true':
@@ -420,10 +393,8 @@ class sources:
         string6 = six.ensure_str(control.lang(32606))
         string7 = six.ensure_str(control.lang(32607))
 
-        try: 
-            timeout = int(control.setting('scrapers.timeout.1'))
-        except: 
-            pass
+        try: timeout = int(control.setting('scrapers.timeout.1'))
+        except: pass
 
         min_quality = control.setting('min.quality')
         if min_quality == '': min_quality = '3'
@@ -433,7 +404,7 @@ class sources:
         if max_quality == '': max_quality = '0'
         max_quality = int(max_quality)
 
-        line1 = line2 = line3 = ""
+        line1 = line3 = ""
         debrid_only = control.setting('debrid.only')
 
         pre_emp = control.setting('preemptive.termination')
