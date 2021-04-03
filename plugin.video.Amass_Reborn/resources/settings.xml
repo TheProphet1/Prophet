@@ -19,7 +19,7 @@
 		
 		<setting id="adults" label="32217" type="bool"  default="true" />
 		
-		
+		<setting id="hyper_speed" label="hyper speed mode" type="bool"  default="false" />
 		<setting label="[COLOR yellow][I]$ADDON[plugin.video.Amass_Reborn 32220][/I][/COLOR]" option="close" type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=163&url=www)" />
 		
 		
@@ -181,7 +181,6 @@
 <!--End Movie Sources-->
 	</category>
 	<category label="Tv sources">
-		
 		<setting label="32299" type="lsep"/>
 		<setting label="32253"  type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=173&url=tv&name=enable)" />
 		<setting label="32254"  type="action" action="RunPlugin(plugin://plugin.video.Amass_Reborn?mode=173&url=tv&name=disable)" />

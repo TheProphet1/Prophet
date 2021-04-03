@@ -347,18 +347,7 @@
 					   
 					   <!-- [pre/] -->
 					   <!-- [pre/] -->
-					   <control type="image">
-							<posx>100</posx>
-							<posy>25</posy>
-							<width>30</width>
-							<height>20</height>
-							<visible>String.IsEqual(ListItem.Property(server_v),100)</visible>
-							<texture>pre.png</texture>
-							
-							
-										
-						</control>
-						
+					   
 					   <control type="label">
 							<posx>135</posx>
 							<posy>20</posy>
@@ -597,17 +586,7 @@
 					   
 					   <!-- [pre/] -->
 					   <!-- [pre/] -->
-					   <control type="image">
-							<posx>150</posx>
-							<posy>25</posy>
-							<width>30</width>
-							<height>20</height>
-							<visible>String.IsEqual(ListItem.Property(server_v),100)</visible>
-							<texture>pre.png</texture>
-							
-							
-										
-						</control>
+					  
 						
 					   <control type="label">
 							<posx>135</posx>

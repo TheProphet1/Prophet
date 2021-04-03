@@ -13,7 +13,7 @@ try:
     from resources.modules.general import Addon,get_imdb
 except:
   import Addon
-type=['movie','tv','torrent']
+type=['movie','tv','torrent','api']
 
 import urllib,logging,base64,json
 
@@ -24,6 +24,7 @@ color=all_colors[112]
 def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_original_year,id):
     global global_var,stop_all
     all_links=[]
+ 
     imdb_id=cache.get(get_imdb, 999,tv_movie,id,table='pages')
     try:
         que=urllib.quote_plus
@@ -36,8 +37,7 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
     if (Addon.getSetting('torrents')=='true' and use_debrid==False):
         f_seeds=True
         seed='S: >>'
-    x=get_html("https://torrentapi.org/pubapi_v2.php?app_id=me&get_token=get_token",headers=base_header,timeout=10).json()
-    token=x['token']
+ 
     if tv_movie=='movie':
      ur='https://torrentio.strem.fun/stream/movie/%s.json'%imdb_id
     elif tv_movie=='tv':
@@ -51,7 +51,7 @@ def get_links(tv_movie,original_title,season_n,episode_n,season,episode,show_ori
     'Upgrade-Insecure-Requests': '1',
     }
     if 1:
-        
+        logging.warning(ur)
         y=get_html(ur,headers=headers,timeout=10).json()
        
         for results in y['streams']:

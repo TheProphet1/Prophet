@@ -30,7 +30,7 @@ class get_html():
         
         self.final_url=''
         self.html_in=''
-        self.url=args[0]
+        self.url=args[0].replace(' ','%20')
         self.get_content=kwargs.get('get_content',False)
         self.head=kwargs.get('headers',base_header)
         self.cookies=kwargs.get('cookies',{})

@@ -767,6 +767,7 @@ class sources_search2(xbmcgui.WindowXMLDialog):
                             else:
                                 tt=','.join(all_t)
                             self.getControl(self.labelstatus).setLabel(tt)
+                        self.getControl(self.labelstatus).setLabel(all_s_in[2])
                         elapsed_time = time.time() - start_time
                         self.getControl(self.timelabel).setLabel(time.strftime("%H:%M:%S", time.gmtime(elapsed_time)))
                         
@@ -2214,7 +2215,7 @@ class ContextMenu_new4(xbmcgui.WindowXMLDialog):
                     
                     
                 liz   = xbmcgui.ListItem(title)
-                liz.setProperty('title','[COLOR lime]['+server.capitalize() +'][/COLOR] '+added_h +pre_n+item[4])
+                liz.setProperty('title','[COLOR lime]['+server.capitalize() +'][/COLOR] '+added_h +pre_n+item[4].encode('ascii', errors='ignore').decode('ascii', errors='ignore'))
                 if q=='2160':
                     q='4k'
                 if q.lower()=='hd':
@@ -3552,9 +3553,7 @@ def main_menu(time_data):
     elapsed_time = time.time() - start_time_start
     time_data.append(elapsed_time+222)
     all_d=[]
-    #place your Jen playlist here:
-    #dulpicate this line with your address
-      
+   
     if Addon.getSetting('movie_world')=='true':
         aa=addDir3(Addon.getLocalizedString(32024),'www',2,BASE_LOGO+'movies.png',all_fanarts['32024'],'Movies')
         all_d.append(aa)
@@ -3597,14 +3596,15 @@ def main_menu(time_data):
         all_d.append(aa)
     if Addon.getSetting('scraper_check')=='true':
         aa=addDir3( Addon.getLocalizedString(32034), id,172,BASE_LOGO+'basic.png',all_fanarts['32034'],'Test')
-
+        
         all_d.append(aa)
     #place your Jen playlist here:
     #dulpicate this line with your address
     #aa=addDir3('Name', 'Your Jen Address',189,'Iconimage','fanart','Description',search_db='Your Search db Address')
     #all_d.append(aa)
-
-
+   
+    aa=addDir3('[COLOR yellow]1 Click Movies And TV[/COLOR]', 'https://bitbucket.org/Mad-Eric/textfiles/raw/master/FreeJen.xml',189,'https://i.imgur.com/mkqHgJi.jpg','https://i.imgur.com/QIO4Sds.png','One Click',search_db='')
+    all_d.append(aa)
     if Addon.getSetting('debug')=='true':
         aa=addDir3( 'Unit tests', 'www',181,'https://lh3.googleusercontent.com/proxy/Ia9aOfcgtzofMb0urCAs8NV-4RRhcIVST-Gqx9GI9RLsx7IJe_5jBqjfdsJcOO3QIV3TT-uiF2nKmyYCX0vj5UPR4iW1iHXgZylE8N8wyNgRLw','https://i.ytimg.com/vi/3wLqsRLvV-c/maxresdefault.jpg','Test')
         
@@ -3700,7 +3700,7 @@ def movie_world():
     
     all_d.append(aa)
     
-    aa=addDir3(Addon.getLocalizedString(32313),'0',187,BASE_LOGO+'base.png',all_fanarts['32313'],'3D')
+    aa=addDir3(Addon.getLocalizedString(32313),'0',187,BASE_LOGO+'keywords.png',all_fanarts['32313'],'keywords')
     
     all_d.append(aa)
     #place your Jen playlist here:
@@ -4343,7 +4343,16 @@ def c_get_sources(name,data,original_title,id,season,episode,show_original_year,
         added='_tv'
     
     z=0
-    for items in onlyfiles:
+    import pkgutil
+    hyper_speed=Addon.getSetting('hyper_speed')=='true'
+    for loader, items, is_pkg in pkgutil.walk_packages([source_dir]):
+       if is_pkg: 
+            continue
+        
+       
+       module = loader.find_module(items).load_module(items)
+       items=items+'.py'
+    
        
        test_scr=Addon.getSetting(items.replace('.py','')+added)
        all_s_in=({},int((z*100.0)/(len(onlyfiles))),items,1,'')
@@ -4368,8 +4377,10 @@ def c_get_sources(name,data,original_title,id,season,episode,show_original_year,
             else:
                 dp.update(0, Addon.getLocalizedString(32072),Addon.getLocalizedString(32074), items.replace('.py','') )
         try:
-            impmodule = __import__(items.replace('.py',''))
-        
+            impmodule = module
+            if hyper_speed:
+                if 'api' not in impmodule.type:
+                    continue
             
             
             impmodule.stop_all=0
@@ -4851,7 +4862,7 @@ def c_get_sources(name,data,original_title,id,season,episode,show_original_year,
                 items.stop_all=1
           num_live2=0
           for threads in thread:
-            all_s_in=(f_result,int(((num_live2* 100.0)/(len(thread))) ),Addon.getLocalizedString(32079),2,threads.name)
+            all_s_in=(f_result,int(((num_live2* 100.0)/(len(thread))) ),Addon.getLocalizedString(32079),2,'Stoping '+threads.name)
             
             elapsed_time = time.time() - start_time
             if not silent:
@@ -4984,6 +4995,7 @@ def c_get_sources(name,data,original_title,id,season,episode,show_original_year,
         for items in all_mag:
                     
                 if len(all_mag[items])>0 :
+                    all_s_in=({},0,'Checking Hash page:'+str(items),2,'')
                     check_mass_hash(all_mag,items,rd,pr,ad,statistics,tv_movie,season_n,episode_n,page_no,start_time,dp)
                     #thread.append(Thread(check_mass_hash,all_mag,items,rd,pr,ad,statistics,tv_movie,season_n,episode_n,page_no,start_time,dp))
                     #thread[len(thread)-1].setName('Page '+str(page_no))
@@ -7797,7 +7809,7 @@ def play_link(name,url,iconimage,fanart,description,data,original_title,id,seaso
         for ur in urls:
             logging.warning('ur:'+ur)
             if '(' in ur :
-
+                
                 ur_s=ur.split('(')[0]
                 ur_p='('+ur.split('(')[1]+' '
             else:
@@ -7824,10 +7836,10 @@ def play_link(name,url,iconimage,fanart,description,data,original_title,id,seaso
                 return 0
    if 'http' not in url:
         url=url.replace('Direct_link$$$resolveurl','')
-
+   
    if '(' in url and jen_addon:
         url=url.split('(')[0]
-    
+   
    from resources.modules.general import post_trakt
    from resources.modules import real_debrid,premiumize
    from resources.modules import all_debrid
@@ -9050,7 +9062,7 @@ def play_trailer(id,tv_movie,plot):
         
       #playback_url = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % video_id
       item = xbmcgui.ListItem(path=playback_url)
-      logging.warning('plot::'+plot)
+
       if plot=='play_now':
         ok=xbmc.Player().play(playback_url,listitem=item,windowed=False)
       else:
@@ -12046,6 +12058,10 @@ def update_keys():
         xbmc.sleep(300)
         with gzip.open(os.path.join(user_dataDir,'temp_file.zip'), 'rb') as f:
           file_content = (f.read())
+        try:
+            file_content=file_content.decode('utf-8')
+        except:
+            pass
         ff='['+file_content.replace('\n',",")+']'
        
         j_file=json.loads(ff.replace(',]',']'))
@@ -12080,6 +12096,7 @@ def get_keywords_ab(icon,fan):
     import string
     a=list(string.ascii_lowercase)
     all_d=[]
+   
     all_keys,all_json_data=cache.get(update_keys,72, table='posters')
     
     for items in a:
@@ -12205,7 +12222,7 @@ def populate_playlist(url,iconimage,o_fanart,search_db,search=False):
     for f in listdir(plugin_dir):
         if isfile(join(plugin_dir, f)):
             all_plugins.append(f.replace('.py','').replace('tmdb_jen','tmdb').replace('trakt_jen','trakt'))
-
+            
     #all_plugins = [f.replace('.py','') for f in listdir(plugin_dir) if isfile(join(plugin_dir, f))]
     sys.path.append( plugin_dir)
     
@@ -13192,7 +13209,7 @@ elif mode==187:
 elif mode==188:
     get_keywords(url,iconimage,fanart,dates)
 elif mode==189:
-
+   
     populate_playlist(url,iconimage,fanart,search_db)
 elif mode==190:
     play_list(name,url,iconimage,fanart,id,show_original_year,season,episode)

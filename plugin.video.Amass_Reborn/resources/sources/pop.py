@@ -17,7 +17,7 @@ try:
     from resources.modules.general import Addon,get_imdb
 except:
   import Addon
-type=['movie','tv','torrent']
+type=['movie','tv','torrent','api']
 
 import urllib,logging,base64,json
 
