@@ -38,14 +38,15 @@ def fetch(items, lang='en', user=''):
 
     for i in list(range(0, len(items))):
         try:
-            dbcur.execute("SELECT * FROM meta WHERE (imdb = '%s' and lang = '%s' and user = '%s' and not imdb = '0') or (tvdb = '%s' and lang = '%s' and user = '%s' and not tvdb = '0')" % (items[i]['imdb'], lang, user, items[i]['tvdb'], lang, user))
+            dbcur.execute("SELECT * FROM meta WHERE (imdb = '%s' and lang = '%s' and user = '%s' and not imdb = '0') or (tmdb = '%s' and lang = '%s' and user = '%s' and not tmdb = '0')" % \
+                                                    (items[i]['imdb'], lang, user, items[i]['tmdb'], lang, user))
             match = dbcur.fetchone()
 
-            t1 = int(match[5])
+            t1 = int(match[6])
             update = (abs(t2 - t1) / 3600) >= 720
             if update == True: raise Exception()
 
-            item = eval(six.ensure_str(match[4]))
+            item = eval(six.ensure_str(match[5]))
             item = dict((k,v) for k, v in six.iteritems(item) if not v == '0')
 
             items[i].update(item)
@@ -61,16 +62,19 @@ def insert(meta):
         control.makeFile(control.dataPath)
         dbcon = database.connect(control.metacacheFile)
         dbcur = dbcon.cursor()
-        dbcur.execute("CREATE TABLE IF NOT EXISTS meta (""imdb TEXT, ""tvdb TEXT, ""lang TEXT, ""user TEXT, ""item TEXT, ""time TEXT, ""UNIQUE(imdb, tvdb, lang, user)"");")
+        dbcur.execute("CREATE TABLE IF NOT EXISTS meta (""imdb TEXT, ""tmdb TEXT, ""tvdb TEXT, ""lang TEXT, ""user TEXT, ""item TEXT, ""time TEXT, ""UNIQUE(imdb, tmdb, tvdb, user, lang)"");")
         t = int(time.time())
         for m in meta:
             try:
                 if not "user" in m: m["user"] = ''
                 if not "lang" in m: m["lang"] = 'en'
                 i = repr(m['item'])
-                try: dbcur.execute("DELETE * FROM meta WHERE (imdb = '%s' and lang = '%s' and user = '%s' and not imdb = '0') or (tvdb = '%s' and lang = '%s' and user = '%s' and not tvdb = '0')" % (m['imdb'], m['lang'], m['user'], m['tvdb'], m['lang'], m['user']))
+                try: dbcur.execute("DELETE * FROM meta WHERE (imdb = '%s' and lang = '%s' and user = '%s' and not imdb = '0') or \
+                                                             (tvdb = '%s' and lang = '%s' and user = '%s' and not tvdb = '0' or \
+                                                             (tmdb = '%s' and lang = '%s' and user = '%s' and not tmdb = '0'))" % \
+                                                             (m['imdb'], m['lang'], m['user'], m['tvdb'], m['lang'], m['user'], m['tmdb'], m['lang'], m['user']))
                 except: pass
-                dbcur.execute("INSERT INTO meta Values (?, ?, ?, ?, ?, ?)", (m['imdb'], m['tvdb'], m['lang'], m['user'], i, t))
+                dbcur.execute("INSERT OR REPLACE INTO meta Values (?, ?, ?, ?, ?, ?, ?)", (m['imdb'], m['tmdb'], m['tvdb'], m['lang'], m['user'], i, t))
             except:
                 pass
 

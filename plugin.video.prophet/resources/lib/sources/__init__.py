@@ -21,7 +21,7 @@
 import pkgutil
 import os
 
-from resources.lib.modules import log_utils
+from resources.lib.modules import log_utils, control
 
 __all__ = [x[1] for x in os.walk(os.path.dirname(__file__))][0]
 
@@ -29,6 +29,7 @@ __all__ = [x[1] for x in os.walk(os.path.dirname(__file__))][0]
 def sources():
     try:
         sourceDict = []
+        orion_color = control.setting('orion.color')
         for i in __all__:
             for loader, module_name, is_pkg in pkgutil.walk_packages([os.path.join(os.path.dirname(__file__), i)]):
                 if is_pkg:
@@ -39,15 +40,14 @@ def sources():
 
                     # [ORION/]
                     if module_name == 'orionoid':
-                        from resources.lib.modules.control import setting
-                        if not setting('orion.color') == 'No color':
-                            module_name = '[COLOR %s]orion[/COLOR]' % setting('orion.color')
+                        if not orion_color == 'No color':
+                            module_name = '[COLOR %s]orion[/COLOR]' % orion_color
                         else: module_name = 'orion'
                     # [/ORION]
 
                     sourceDict.append((module_name, module.source()))
-                except Exception as e:
-                    log_utils.log('Could not load "%s": %s' % (module_name, e), log_utils.LOGDEBUG)
+                except:
+                    log_utils.log('Could not load "%s"' % module_name, 1)
         return sourceDict
     except:
         return []

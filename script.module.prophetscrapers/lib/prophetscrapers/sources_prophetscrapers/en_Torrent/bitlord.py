@@ -15,6 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+# - Converted to py3/2 for TheOath
+
+
 import re
 
 try: from urlparse import parse_qs, urljoin
@@ -28,7 +31,6 @@ from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import utils
 
 
 class source:
@@ -84,7 +86,6 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-            title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU')
 
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
@@ -121,25 +122,23 @@ class source:
                     try:
                         size = link[1]
                         size = str(size) + ' GB' if len(str(size)) == 1 else str(size) + ' MB'
-                        dsize, isize = utils._size(size)
+                        dsize, isize = source_utils._size(size)
                     except:
-                        dsize, isize = 0, ''
+                        dsize, isize = 0.0, ''
 
                     info.insert(0, isize)
                     info = ' | '.join(info)
 
                     sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
-                                                'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+                                                'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
                 return sources
 
             except:
                 return sources
 
         except:
-            import traceback
             from prophetscrapers.modules import log_utils
-            failure = traceback.format_exc()
-            log_utils.log('bitlord - Exception: \n' + str(failure))
+            log_utils.log('bitlord - Exception', 1)
             return sources
 
 

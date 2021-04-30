@@ -7,7 +7,7 @@ from . import sources_prophetscrapers
 
 
 try:
-    import xbmcaddon
+    from kodi_six import xbmcaddon
     __addon__ = xbmcaddon.Addon(id='script.module.prophetscrapers')
 except:
     __addon__ = None

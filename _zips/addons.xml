@@ -84,17 +84,18 @@
 	</extension>
 </addon>
 
-<addon id="plugin.video.prophet" name="Prophet" provider-name="The Prophet" version="2.0.2">
+<addon id="plugin.video.prophet" name="Prophet" provider-name="The Prophet" version="2.0.2a">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.prophet.artwork" />
         <import addon="script.prophet.metadata" />
         <import addon="script.module.resolveurl" />
         <import addon="script.module.requests" />
-        <import addon="script.module.beautifulsoup4" />
         <import addon="script.module.prophetscrapers" />
         <import addon="script.module.six" />
+        <import addon="script.module.kodi-six" />
         <import addon="script.module.simplejson" />
+        <import addon="script.module.orion" optional="true" />
         <import addon="plugin.video.youtube" optional="true" />
     </requires>
     <extension library="prophet.py" point="xbmc.python.pluginsource">
@@ -199,7 +200,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.2" provider-name="The Prophet">
+<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.2a" provider-name="The Prophet">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.module.beautifulsoup4" />

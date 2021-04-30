@@ -1,25 +1,14 @@
 # -*- coding: UTF-8 -*-
 
-import os, xbmcgui
-from resources.lib.modules import control
+import os
+from resources.lib.modules import control, log_utils
 
 def get():
+    try:
         changelogfile = os.path.join(control.addonPath, 'changelog.txt')
-        r = open(changelogfile)
-        text = r.read()
-        id = 10147
-        control.execute('ActivateWindow(%d)' % id)
-        control.sleep(500)
-        win = xbmcgui.Window(id)
-        retry = 50
-        while (retry > 0):
-            try:
-                control.sleep(10)
-                retry -= 1
-                win.getControl(1).setLabel('[COLOR yellow]Prophet [/COLOR] --Changelog--')
-                win.getControl(5).setText(text)
-                return
-            except:
-                pass
-
+        head = '[COLOR yellow]Prophet [/COLOR]  -- Changelog --'
+        control.textViewer(changelogfile, head)
+    except:
+        control.infoDialog('Error opening changelog', sound=True)
+        log_utils.log('changeloglog_view_fail', 1)
 

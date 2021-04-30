@@ -26,23 +26,25 @@ import simplejson as json
 
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
-from prophetscrapers.modules import source_utils
+from prophetscrapers.modules import source_utils, log_utils
+#from prophetscrapers.sources_prophetscrapers import cfScraper
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
         self.domains = ['gowatchseries.io','gowatchseries.co']
-        self.base_link = 'https://www7.series.movie/'
+        self.base_link = 'https://www1.gowatchseries.bz'
         self.search_link = '/ajax-search.html?keyword=%s&id=-1'
-        self.search_link2 = '/search.html?keyword=%s'
+        #self.search_link2 = '/search.html?keyword=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urlencode(url)
             return url
-        except BaseException:
+        except:
+            log_utils.log('gowatchseries0 - Exception', 1)
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -54,7 +56,8 @@ class source:
                 'year': year}
             url = urlencode(url)
             return url
-        except BaseException:
+        except:
+            log_utils.log('gowatchseries1 - Exception', 1)
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -67,7 +70,8 @@ class source:
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
             url = urlencode(url)
             return url
-        except BaseException:
+        except:
+            log_utils.log('gowatchseries2 - Exception', 1)
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -76,6 +80,8 @@ class source:
 
             if url is None:
                 return sources
+
+            host_dict = hostprDict + hostDict
 
             data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
@@ -88,27 +94,24 @@ class source:
             year = data['year']
 
             r = client.request(self.base_link, output='extended', timeout='10')
-            try:
-                cookie = r[4]
-                headers = r[3]
-            except:
-                cookie = r[3]
-                headers = r[2]
+            #r = cfScraper.get(self.base_link).content
+            cookie = r[3]
+            headers = r[2]
             result = r[0]
             headers['Cookie'] = cookie
 
-            query = urljoin(self.base_link, self.search_link %quote_plus(cleantitle.getsearch(title)))
+            query = urljoin(self.base_link, self.search_link % quote_plus(cleantitle.getsearch(title)))
             query2 = urljoin(self.base_link, self.search_link % quote_plus(title).lower())
             r = client.request(query, headers=headers, XHR=True)
             if len(r) < 20:
                 r = client.request(query2, headers=headers, XHR=True)
             r = json.loads(r)['content']
-            r = zip( client.parseDOM( r, 'a', ret='href'), client.parseDOM(r, 'a'))
+            r = zip(client.parseDOM( r, 'a', ret='href'), client.parseDOM(r, 'a'))
 
             if 'tvshowtitle' in data:
                 cltitle = cleantitle.get(title + 'season' + season)
                 cltitle2 = cleantitle.get(title + 'season%02d' % int(season))
-                r = [ i for i in r if cltitle == cleantitle.get(i[1]) or cltitle2 == cleantitle.get(i[1])]
+                r = [i for i in r if cltitle == cleantitle.get(i[1]) or cltitle2 == cleantitle.get(i[1])]
                 vurl = '%s%s-episode-%s' % (self.base_link, str(r[0][0]).replace('/info', ''), episode)
                 vurl2 = None
 
@@ -131,41 +134,20 @@ class source:
                 slinks = client.parseDOM(slinks, 'li', ret='data-video')
             slinks = [slink if slink.startswith('http') else 'https:{0}'.format(slink) for slink in slinks]
 
-            _slinks = []
             for url in slinks:
-                try:
-                    # if 'vidcloud.icu' in url:
-                        # urls = []
-                        # urls = source_utils.getVidcloudLink(url)
-                        # if urls:
-                            # for uri in urls:
-                                # _slinks.append((uri[0], uri[1]))
-                    # elif 'xstreamcdn.com' in url:
-                        # url, quality = source_utils.getXstreamcdnLink(url)
-                        # if url:
-                            # _slinks.append((url, quality))
-                    # else:
-                    _slinks.append((url, 'HD'))
-                except BaseException:
-                    pass
-
-            for url in _slinks:
-                quality = url[1]
-                url = url[0]
                 url = client.replaceHTMLCodes(url)
                 #url = url.encode('utf-8')
-                valid, host = source_utils.is_host_valid(url, hostDict)
-                direct = False if valid else True
-                host = client.replaceHTMLCodes(host)
-                #host = host.encode('utf-8')
-                sources.append({'source': host,
-                                'quality': quality,
-                                'language': 'en',
-                                'url': url,
-                                'direct': direct,
-                                'debridonly': False})
+                valid, host = source_utils.is_host_valid(url, host_dict)
+                if valid:
+                    sources.append({'source': host,
+                                    'quality': '720p',
+                                    'language': 'en',
+                                    'url': url,
+                                    'direct': False,
+                                    'debridonly': False})
             return sources
-        except BaseException:
+        except:
+            log_utils.log('gowatchseries3 - Exception', 1)
             return sources
 
     def resolve(self, url):

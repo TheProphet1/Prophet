@@ -5,6 +5,7 @@
 import re
 from prophetscrapers.modules import client
 from prophetscrapers.modules import cleantitle
+from prophetscrapers.modules import log_utils
 from prophetscrapers.modules import source_utils
 
 
@@ -48,11 +49,13 @@ class source:
             for url in r:
                 if url in str(sources):
                     continue
+                quality, info = source_utils.get_release_quality(url, url)
                 valid, host = source_utils.is_host_valid(url, hostDict)
                 if valid:
-                    sources.append({'source': host, 'quality': 'SD', 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
+                    sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
             return sources
         except:
+            log_utils.log('Watchepisodes4 Exception', 1)
             return sources
 
 

@@ -19,18 +19,17 @@
 """
 
 
-import simplejson as json
-
+from resources.lib.modules import bookmarks
 from resources.lib.modules import control
 from resources.lib.modules import trakt
+from resources.lib.modules import log_utils
 
 
 def getMovieIndicators(refresh=False):
     try:
         if trakt.getTraktIndicatorsInfo() == True: raise Exception()
-        from metahandler import metahandlers
-        indicators = metahandlers.MetaData()
-        return indicators
+        indicators_ = bookmarks._indicators()
+        return indicators_
     except:
         pass
     try:
@@ -38,27 +37,26 @@ def getMovieIndicators(refresh=False):
         if refresh == False: timeout = 720
         elif trakt.getWatchedActivity() < trakt.timeoutsyncMovies(): timeout = 720
         else: timeout = 0
-        indicators = trakt.cachesyncMovies(timeout=timeout)
-        return indicators
+        indicators_ = trakt.cachesyncMovies(timeout=timeout)
+        return indicators_
     except:
         pass
 
 
 def getTVShowIndicators(refresh=False):
-    try:
-        if trakt.getTraktIndicatorsInfo() == True: raise Exception()
-        from metahandler import metahandlers
-        indicators = metahandlers.MetaData()
-        return indicators
-    except:
-        pass
+    # try:
+        # if trakt.getTraktIndicatorsInfo() == True: raise Exception()
+        # indicators_ = bookmarks._indicators()
+        # return indicators_
+    # except:
+        # pass
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
         if refresh == False: timeout = 720
         elif trakt.getWatchedActivity() < trakt.timeoutsyncTVShows(): timeout = 720
         else: timeout = 0
-        indicators = trakt.cachesyncTVShows(timeout=timeout)
-        return indicators
+        indicators_ = trakt.cachesyncTVShows(timeout=timeout)
+        return indicators_
     except:
         pass
 
@@ -66,45 +64,62 @@ def getTVShowIndicators(refresh=False):
 def getSeasonIndicators(imdb):
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
-        indicators = trakt.syncSeason(imdb)
-        return indicators
+        indicators_ = trakt.syncSeason(imdb)
+        return indicators_
     except:
         pass
 
 
-def getMovieOverlay(indicators, imdb):
+def getMovieOverlay(indicators_, imdb):
     try:
-        try:
-            playcount = indicators._get_watched('movie', imdb, '', '')
-            return str(playcount)
-        except:
-            playcount = [i for i in indicators if i == imdb]
+        if trakt.getTraktIndicatorsInfo() == False:
+            overlay = bookmarks._get_watched('movie', imdb, '', '')
+            return str(overlay)
+        else:
+            playcount = [i for i in indicators_ if i == imdb]
+            overlay = 7 if len(playcount) > 0 else 6
+            return str(overlay)
+    except:
+        return '6'
+
+
+def getTVShowOverlay(indicators_, imdb, tmdb):
+    try:
+        if trakt.getTraktIndicatorsInfo():
+            playcount = [i[0] for i in indicators_ if i[0] == tmdb and len(i[2]) >= int(i[1])]
             playcount = 7 if len(playcount) > 0 else 6
             return str(playcount)
+        # else:
+            # playcount = bookmarks._get_watched('tvshow', imdb, '', '')
+            # return str(playcount)
     except:
         return '6'
 
 
-def getTVShowOverlay(indicators, tvdb):
+def getSeasonOverlay(indicators_, imdb, season):
     try:
-        playcount = [i[0] for i in indicators if i[0] == tvdb and len(i[2]) >= int(i[1])]
-        playcount = 7 if len(playcount) > 0 else 6
-        return str(playcount)
-    except:
-        return '6'
-
-
-def getEpisodeOverlay(indicators, imdb, tvdb, season, episode):
-    try:
-        try:
-            playcount = indicators._get_watched_episode({'imdb_id' : imdb, 'season' : season, 'episode': episode, 'premiered' : ''})
+        if trakt.getTraktIndicatorsInfo():
+            playcount = [i for i in indicators_ if int(season) == int(i)]
+            playcount = 7 if len(playcount) > 0 else 6
             return str(playcount)
-        except:
-            playcount = [i[2] for i in indicators if i[0] == tvdb]
+        # else:
+            # playcount = bookmarks._get_watched('season', imdb, season, '')
+            # return str(playcount)
+    except:
+        return '6'
+
+
+def getEpisodeOverlay(indicators_, imdb, tmdb, season, episode):
+    try:
+        if trakt.getTraktIndicatorsInfo() == False:
+            overlay = bookmarks._get_watched('episode', imdb, season, episode)
+            return str(overlay)
+        else:
+            playcount = [i[2] for i in indicators_ if i[0] == tmdb]
             playcount = playcount[0] if len(playcount) > 0 else []
             playcount = [i for i in playcount if int(season) == int(i[0]) and int(episode) == int(i[1])]
-            playcount = 7 if len(playcount) > 0 else 6
-            return str(playcount)
+            overlay = 7 if len(playcount) > 0 else 6
+            return str(overlay)
     except:
         return '6'
 
@@ -123,33 +138,28 @@ def markMovieDuringPlayback(imdb, watched):
         pass
 
     try:
-        from metahandler import metahandlers
-        metaget = metahandlers.MetaData()
-        metaget.get_meta('movie', name='', imdb_id=imdb)
-        metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
+        if int(watched) == 7:
+            bookmarks.reset(1, 1, 'movie', imdb, '', '')
     except:
         pass
 
 
-def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
+def markEpisodeDuringPlayback(imdb, tmdb, season, episode, watched):
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
 
-        if int(watched) == 7: trakt.markEpisodeAsWatched(tvdb, season, episode)
-        else: trakt.markEpisodeAsNotWatched(tvdb, season, episode)
+        if int(watched) == 7: trakt.markEpisodeAsWatched(imdb, season, episode)
+        else: trakt.markEpisodeAsNotWatched(imdb, season, episode)
         trakt.cachesyncTVShows()
 
         if trakt.getTraktAddonEpisodeInfo() == True:
-            trakt.markEpisodeAsNotWatched(tvdb, season, episode)
+            trakt.markEpisodeAsNotWatched(imdb, season, episode)
     except:
         pass
 
     try:
-        from metahandler import metahandlers
-        metaget = metahandlers.MetaData()
-        metaget.get_meta('tvshow', name='', imdb_id=imdb)
-        metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
-        metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+        if int(watched) == 7:
+            bookmarks.reset(1, 1, 'episode', imdb, season, episode)
     except:
         pass
 
@@ -167,22 +177,22 @@ def movies(imdb, watched):
         pass
 
     try:
-        from metahandler import metahandlers
-        metaget = metahandlers.MetaData()
-        metaget.get_meta('movie', name='', imdb_id=imdb)
-        metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
+        if int(watched) == 7:
+            bookmarks.reset(1, 1, 'movie', imdb, '', '')
+        else:
+            bookmarks._delete_record('movie', imdb, '', '')
         if trakt.getTraktIndicatorsInfo() == False: control.refresh()
 #        control.idle()
     except:
         pass
 
 
-def episodes(imdb, tvdb, season, episode, watched):
+def episodes(imdb, tmdb, season, episode, watched):
 #    control.busy()
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
-        if int(watched) == 7: trakt.markEpisodeAsWatched(tvdb, season, episode)
-        else: trakt.markEpisodeAsNotWatched(tvdb, season, episode)
+        if int(watched) == 7: trakt.markEpisodeAsWatched(imdb, season, episode)
+        else: trakt.markEpisodeAsNotWatched(imdb, season, episode)
         trakt.cachesyncTVShows()
         control.refresh()
 #        control.idle()
@@ -190,28 +200,24 @@ def episodes(imdb, tvdb, season, episode, watched):
         pass
 
     try:
-        from metahandler import metahandlers
-        metaget = metahandlers.MetaData()
-        metaget.get_meta('tvshow', name='', imdb_id=imdb)
-        metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
-        metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+        if int(watched) == 7:
+            bookmarks.reset(1, 1, 'episode', imdb, season, episode)
+        else:
+            bookmarks._delete_record('episode', imdb, season, episode)
         if trakt.getTraktIndicatorsInfo() == False: control.refresh()
 #        control.idle()
     except:
         pass
 
 
-def tvshows(tvshowtitle, imdb, tvdb, season, watched):
+def tvshows(tvshowtitle, imdb, tmdb, season, watched):
     control.busy()
     try:
         import sys,xbmc
 
         if not trakt.getTraktIndicatorsInfo() == False: raise Exception()
 
-        from metahandler import metahandlers
         from resources.lib.indexers import episodes
-
-        metaget = metahandlers.MetaData()
 
         name = control.addonInfo('name')
 
@@ -219,25 +225,52 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
         dialog.create(str(name), str(tvshowtitle))
         dialog.update(0, str(name), str(tvshowtitle))
 
-        metaget.get_meta('tvshow', name='', imdb_id=imdb)
+        #log_utils.log('playcount_season: ' + str(season))
+        items = []
+        if season:
+            items = episodes.episodes().get(tvshowtitle, '0', imdb, tmdb, meta=None, season=season, idx=False)
+            items = [i for i in items if int('%01d' % int(season)) == int('%01d' % int(i['season']))]
+            items = [{'label': '%s S%02dE%02d' % (tvshowtitle, int(i['season']), int(i['episode'])), 'season': int('%01d' % int(i['season'])), 'episode': int('%01d' % int(i['episode'])), 'unaired': i['unaired']} for i in items]
 
-        items = episodes.episodes().get(tvshowtitle, '0', imdb, tvdb, '0', idx=False)
-        try: items = [i for i in items if int('%01d' % int(season)) == int('%01d' % int(i['season']))]
-        except: pass
-        items = [{'label': '%s S%02dE%02d' % (tvshowtitle, int(i['season']), int(i['episode'])), 'season': int('%01d' % int(i['season'])), 'episode': int('%01d' % int(i['episode']))} for i in items]
+            for i in list(range(len(items))):
+                if control.monitor.abortRequested(): return sys.exit()
 
-        for i in list(range(len(items))):
-            if control.monitor.abortRequested(): return sys.exit()
+                dialog.update(int((100 / float(len(items))) * i), str(name), str(items[i]['label']))
 
-            dialog.update(int((100 / float(len(items))) * i), str(name), str(items[i]['label']))
+                _season, _episode, unaired = items[i]['season'], items[i]['episode'], items[i]['unaired']
+                if int(watched) == 7:
+                    if not unaired == 'true':
+                        bookmarks.reset(1, 1, 'episode', imdb, _season, _episode)
+                    else: pass
+                else:
+                    bookmarks._delete_record('episode', imdb, _season, _episode)
 
-            season, episode = items[i]['season'], items[i]['episode']
-            metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
-            metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
+        else:
+            seasons = episodes.seasons().get(tvshowtitle, '0', imdb, tmdb, meta=None, idx=False)
+            seasons = [i['season'] for i in seasons]
+            #log_utils.log('playcount_seasons: ' + str(seasons))
+            for s in seasons:
+                items = episodes.episodes().get(tvshowtitle, '0', imdb, tmdb, meta=None, season=s, idx=False)
+                items = [{'label': '%s S%02dE%02d' % (tvshowtitle, int(i['season']), int(i['episode'])), 'season': int('%01d' % int(i['season'])), 'episode': int('%01d' % int(i['episode'])), 'unaired': i['unaired']} for i in items]
+                #log_utils.log('playcount_items2: ' + str(items))
+
+                for i in list(range(len(items))):
+                    if control.monitor.abortRequested(): return sys.exit()
+
+                    dialog.update(int((100 / float(len(items))) * i), str(name), str(items[i]['label']))
+
+                    _season, _episode, unaired = items[i]['season'], items[i]['episode'], items[i]['unaired']
+                    if int(watched) == 7:
+                        if not unaired == 'true':
+                            bookmarks.reset(1, 1, 'episode', imdb, _season, _episode)
+                        else: pass
+                    else:
+                        bookmarks._delete_record('episode', imdb, _season, _episode)
 
         try: dialog.close()
         except: pass
     except:
+        log_utils.log('playcount_local_shows', 1)
         try: dialog.close()
         except: pass
 
@@ -245,19 +278,21 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
 
+        #log_utils.log('playcount_season: ' + str(season))
         if season:
             from resources.lib.indexers import episodes
-            items = episodes.episodes().get(tvshowtitle, '0', imdb, tvdb, season, idx=False)
+            items = episodes.episodes().get(tvshowtitle, '0', imdb, tmdb, meta=None, season=season, idx=False)
             items = [(int(i['season']), int(i['episode'])) for i in items]
             items = [i[1] for i in items if int('%01d' % int(season)) == int('%01d' % i[0])]
             for i in items:
-                if int(watched) == 7: trakt.markEpisodeAsWatched(tvdb, season, i)
-                else: trakt.markEpisodeAsNotWatched(tvdb, season, i)
+                if int(watched) == 7: trakt.markEpisodeAsWatched(imdb, season, i)
+                else: trakt.markEpisodeAsNotWatched(imdb, season, i)
         else:
-            if int(watched) == 7: trakt.markTVShowAsWatched(tvdb)
-            else: trakt.markTVShowAsNotWatched(tvdb)
+            if int(watched) == 7: trakt.markTVShowAsWatched(imdb)
+            else: trakt.markTVShowAsNotWatched(imdb)
         trakt.cachesyncTVShows()
     except:
+        log_utils.log('playcount_trakt_shows', 1)
         pass
 
     control.refresh()

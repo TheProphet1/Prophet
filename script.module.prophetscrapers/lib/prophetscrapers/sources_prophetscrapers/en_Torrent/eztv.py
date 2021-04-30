@@ -12,19 +12,20 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
+try:
+    from urlparse import parse_qs, urljoin
+    from urllib import urlencode, quote_plus
+except ImportError:
+    from urllib.parse import parse_qs, urljoin, urlencode, quote_plus
 
-from prophetscrapers.modules import cache, cleantitle, client, debrid, source_utils, utils
+from prophetscrapers.modules import cache, cleantitle, client, debrid, source_utils, log_utils
 
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['eztv.tf', 'eztv.yt', 'eztv.re', 'eztv.ag', 'eztv.it', 'eztv.ch', 'eztv.io']
+        self.domains = ['eztv.re', 'eztv.ag', 'eztv.it', 'eztv.ch', 'eztv.tf', 'eztv.yt', 'eztv.unblockit.dev']
         self._base_link = None
         self.search_link = '/search/%s'
 
@@ -72,14 +73,15 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle']
+            title = cleantitle.get_query(title)
 
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode']))
 
             query = '%s S%02dE%02d' % (
-                data['tvshowtitle'],
+                title,
                 int(data['season']),
                 int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (
-                data['title'],
+                title,
                 data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|<|>|\|)', ' ', query)
 
@@ -119,20 +121,15 @@ class source:
 
                     try:
                         size = re.findall('((?:\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|MB|MiB))', name)[-1]
-                        dsize, isize = utils._size(size)
+                        dsize, isize = source_utils._size(size)
                     except Exception:
-                        dsize, isize = 0, ''
+                        dsize, isize = 0.0, ''
 
                     info.insert(0, isize)
 
-                    #try:
-                        #info.append(name)
-                    #except Exception:
-                        #pass
-
                     info = ' | '.join(info)
                     sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en',
-                                    'url': link, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+                                    'url': link, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
                 except Exception:
                     continue
 
@@ -141,7 +138,8 @@ class source:
                 sources = check
 
             return sources
-        except Exception:
+        except:
+            log_utils.log('eztv_exc', 1)
             return sources
 
     def __get_base_url(self, fallback):
@@ -149,9 +147,9 @@ class source:
             for domain in self.domains:
                 try:
                     url = 'https://%s' % domain
-                    result = client.request(url, timeout='10')
-                    search_n = re.findall('<input type="txt" name="(.+?)"', result, re.DOTALL)[0]
-                    if search_n and 'q1' in search_n:
+                    result = client.request(url, limit=1, timeout='4')
+                    search_n = re.findall('<title>(.+?)</title>', result, re.DOTALL)[0]
+                    if search_n and 'EZTV' in search_n:
                         return url
                 except Exception:
                     pass

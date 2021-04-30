@@ -17,35 +17,27 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
+try:
+    from urlparse import parse_qs, urljoin
+    from urllib import urlencode, quote_plus
+except ImportError:
+    from urllib.parse import parse_qs, urljoin, urlencode, quote_plus
 
-from prophetscrapers.modules import cache
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import utils
+from prophetscrapers.modules import log_utils
 
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['glodls.to', 'gtdb.to', 'glodls.live', 'glodls.rocks', 'glodls.wtf']
-        self._base_link = None
+        self.domains = ['glodls.to', 'gtdb.to']
+        self.base_link = 'https://glodls.to/'
         self.tvsearch = 'search_results.php?search={0}&cat=41&incldead=0&inclexternal=0&lang=1&sort=seeders&order=desc'
         self.moviesearch = 'search_results.php?search={0}&cat=1&incldead=0&inclexternal=0&lang=1&sort=size&order=desc'
-
-
-    @property
-    def base_link(self):
-        if not self._base_link:
-            self._base_link = cache.get(self.__get_base_url, 120, 'https://%s' % self.domains[0])
-        return self._base_link
-
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -88,11 +80,11 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            self.title = cleantitle.get_query(self.title)
             self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
             query = '%s S%02dE%02d' % (
-            data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (
-            data['title'], data['year'])
+            self.title, int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (self.title, data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
             if 'tvshowtitle' in data:
                 url = self.tvsearch.format(quote_plus(query))
@@ -112,16 +104,17 @@ class source:
                     url = url.split('&tr')[0]
                     quality, info = source_utils.get_release_quality(name, url)
                     info.insert(0, item[2])
-                    #info.append(item[0])
                     info = ' | '.join(info)
 
                     sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                                    'direct': False, 'debridonly': True, 'size': item[3]})
-                except BaseException:
+                                    'direct': False, 'debridonly': True, 'size': item[3], 'name': name})
+                except:
+                    log_utils.log('glodls0_exc', 1)
                     pass
 
             return sources
-        except BaseException:
+        except:
+            log_utils.log('glodls1_exc', 1)
             return sources
 
     def _get_items(self, url):
@@ -147,31 +140,16 @@ class source:
 
                 try:
                     size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
-                    dsize, isize = utils._size(size)
+                    dsize, isize = source_utils._size(size)
                 except BaseException:
-                    dsize, isize = 0, ''
+                    dsize, isize = 0.0, ''
 
                 items.append((name, url, isize, dsize))
             return items
-        except BaseException:
+        except:
+            log_utils.log('glodls2_exc', 1)
             return items
 
 
     def resolve(self, url):
         return url
-
-
-    def __get_base_url(self, fallback):
-        try:
-            for domain in self.domains:
-                try:
-                    url = 'https://%s' % domain
-                    result = client.request(url, limit=1, timeout='5')
-                    result = re.findall('<meta name="description" content="(.+?)"', result, re.DOTALL)[0]
-                    if result and 'GloTorrents' in result:
-                        return url
-                except Exception:
-                    pass
-        except Exception:
-            pass
-        return fallback

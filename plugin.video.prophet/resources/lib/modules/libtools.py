@@ -29,13 +29,14 @@ import simplejson as json
 import os
 import re
 import sys
-import xbmc
+from kodi_six import xbmc
 
 import six
 from six.moves import urllib_parse
 
 from resources.lib.modules import control
 from resources.lib.modules import cleantitle
+from resources.lib.modules import log_utils
 
 class lib_tools:
     @staticmethod
@@ -74,27 +75,27 @@ class lib_tools:
 
     @staticmethod
     def nfo_url(media_string, ids):
-        tvdb_url = 'https://thetvdb.com/?tab=series&id=%s'
         tmdb_url = 'https://www.themoviedb.org/%s/%s'
         imdb_url = 'https://www.imdb.com/title/%s/'
+        tvdb_url = 'https://thetvdb.com/?tab=series&id=%s'
 
-        if 'tvdb' in ids:
-            return tvdb_url % (str(ids['tvdb']))
+        if 'imdb' in ids:
+            return imdb_url % (str(ids['imdb']))
         elif 'tmdb' in ids:
             return tmdb_url % (media_string, str(ids['tmdb']))
-        elif 'imdb' in ids:
-            return imdb_url % (str(ids['imdb']))
+        elif 'tvdb' in ids:
+            return tvdb_url % (str(ids['tvdb']))
         else:
             return ''
 
-    @staticmethod
-    def check_sources(title, year, imdb, tvdb=None, season=None, episode=None, tvshowtitle=None, premiered=None):
-        try:
-            from resources.lib.modules import sources
-            src = sources.sources().getSources(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered)
-            return src and len(src) > 5
-        except:
-            return False
+    # @staticmethod
+    # def check_sources(title, year, imdb, tvdb=None, season=None, episode=None, tvshowtitle=None, premiered=None):
+        # try:
+            # from resources.lib.modules import sources
+            # src = sources.sources().getSources(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered)
+            # return src and len(src) > 5
+        # except:
+            # return False
 
     @staticmethod
     def legal_filename(filename):
@@ -121,7 +122,7 @@ class libmovies:
     def __init__(self):
         self.library_folder = os.path.join(control.transPath(control.setting('library.movie')), '')
 
-        self.check_setting = control.setting('library.check_movie') or 'false'
+        # self.check_setting = control.setting('library.check_movie') or 'false'
         self.library_setting = control.setting('library.update') or 'true'
         self.dupe_setting = control.setting('library.check') or 'true'
         self.silentDialog = False
@@ -131,7 +132,7 @@ class libmovies:
     def add(self, name, title, year, imdb, range=False):
         if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo')\
                 and self.silentDialog is False:
-            control.infoDialog(six.ensure_str(control.lang(32552)), time=10000000)
+            control.infoDialog(control.lang(32552), time=10000000)
             self.infoDialog = True
 
         try:
@@ -146,13 +147,15 @@ class libmovies:
             lib = []
 
         files_added = 0
+        #name = cleantitle.normalize(name)
+        #title = cleantitle.normalize(title)
 
         try:
             if not lib == []: raise Exception()
 
-            if self.check_setting == 'true':
-                src = lib_tools.check_sources(title, year, imdb, None, None, None, None, None)
-                if not src: raise Exception()
+            # if self.check_setting == 'true':
+                # src = lib_tools.check_sources(title, year, imdb, None, None, None, None, None)
+                # if not src: raise Exception()
 
             self.strmFile({'name': name, 'title': title, 'year': year, 'imdb': imdb})
             files_added += 1
@@ -162,7 +165,7 @@ class libmovies:
         if range == True: return
 
         if self.infoDialog == True:
-            control.infoDialog(six.ensure_str(control.lang(32554)), time=1)
+            control.infoDialog(control.lang(32554), time=1)
 
         if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo') and files_added > 0:
             control.execute('UpdateLibrary(video)')
@@ -171,7 +174,7 @@ class libmovies:
         control.idle()
 
         if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-            control.infoDialog(six.ensure_str(control.lang(32552)), time=10000000)
+            control.infoDialog(control.lang(32552), time=10000000)
             self.infoDialog = True
             self.silentDialog = True
 
@@ -193,11 +196,11 @@ class libmovies:
     def range(self, url):
         control.idle()
 
-        yes = control.yesnoDialog(six.ensure_str(control.lang(32555)))
+        yes = control.yesnoDialog(control.lang(32555))
         if not yes: return
 
         if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-            control.infoDialog(six.ensure_str(control.lang(32552)), time=10000000)
+            control.infoDialog(control.lang(32552), time=10000000)
             self.infoDialog = True
 
         from resources.lib.indexers import movies
@@ -212,7 +215,7 @@ class libmovies:
                 pass
 
         if self.infoDialog == True:
-            control.infoDialog(six.ensure_str(control.lang(32554)), time=1)
+            control.infoDialog(control.lang(32554), time=1)
 
         if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo'):
             control.execute('UpdateLibrary(video)')
@@ -224,8 +227,9 @@ class libmovies:
 
             sysname, systitle = urllib_parse.quote_plus(name), urllib_parse.quote_plus(title)
 
-            try: transtitle = cleantitle.normalize(title.translate(None, '\/:*?"<>|'))
-            except: transtitle = cleantitle.normalize(title.translate(str.maketrans('', '', '\/:*?"<>|')))
+            try: transtitle = title.translate(None, '\/:*?"<>|')
+            except: transtitle = title.translate(str.maketrans('', '', '\/:*?"<>|'))
+            transtitle = cleantitle.normalize(transtitle)
 
             content = '%s?action=play&name=%s&title=%s&year=%s&imdb=%s' % (sys.argv[0], sysname, systitle, year, imdb)
 
@@ -244,13 +248,13 @@ class libtvshows:
 
         self.version = control.version()
 
-        self.check_setting = control.setting('library.check_episode') or 'false'
+        # self.check_setting = control.setting('library.check_episode') or 'false'
         self.include_unknown = control.setting('library.include_unknown') or 'true'
         self.include_special = control.setting('library.include_special')
         self.library_setting = control.setting('library.update') or 'true'
         self.dupe_setting = control.setting('library.check') or 'true'
 
-        self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours = 5))
+        self.datetime = datetime.datetime.utcnow()
         if control.setting('library.importdelay') != 'true':
             self.date = self.datetime.strftime('%Y%m%d')
         else:
@@ -260,76 +264,82 @@ class libtvshows:
         self.block = False
 
 
-    def add(self, tvshowtitle, year, imdb, tvdb, range=False):
-        if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo')\
-                and self.silentDialog is False:
-            control.infoDialog(six.ensure_str(control.lang(32552)), time=10000000)
-            self.infoDialog = True
-
-        from resources.lib.indexers import episodes
-        items = episodes.episodes().get(tvshowtitle, year, imdb, tvdb, idx=False)
-
-        try: items = [{'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tvdb': i['tvdb'], 'season': i['season'], 'episode': i['episode'], 'tvshowtitle': i['tvshowtitle'], 'premiered': i['premiered']} for i in items]
-        except: items = []
-
+    def add(self, tvshowtitle, year, imdb, tmdb, range=False):
         try:
-            if not self.dupe_setting == 'true': raise Exception()
-            if items == []: raise Exception()
+            if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo')\
+                    and self.silentDialog is False:
+                control.infoDialog(control.lang(32552), time=10000000)
+                self.infoDialog = True
 
-            id = [items[0]['imdb'], items[0]['tvdb']]
+            from resources.lib.indexers import episodes
+            seasons = episodes.seasons().get(tvshowtitle, year, imdb, tmdb, meta=None, idx=False)
+            seasons = [i['season'] for i in seasons]
+            for s in seasons:
+                items = episodes.episodes().get(tvshowtitle, year, imdb, tmdb, meta=None, season=s, idx=False)
 
-            lib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"properties" : ["imdbnumber", "title", "year"]}, "id": 1}')
-            lib = six.ensure_text(lib, errors='ignore')
-            lib = json.loads(lib)['result']['tvshows']
-            lib = [six.ensure_str(i['title']) for i in lib if str(i['imdbnumber']) in id or (six.ensure_str(i['title']) == items[0]['tvshowtitle'] and str(i['year']) == items[0]['year'])][0]
+                try: items = [{'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tvdb': i['tvdb'], 'tmdb': i['tmdb'], 'season': i['season'], 'episode': i['episode'], 'tvshowtitle': i['tvshowtitle'], 'premiered': i['premiered']} for i in items]
+                except: items = []
 
-            lib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "tvshow", "operator": "is", "value": "%s"}]}, "properties": ["season", "episode"]}, "id": 1}' % lib)
-            lib = six.ensure_text(lib, errors='ignore')
-            lib = json.loads(lib)['result']['episodes']
-            lib = ['S%02dE%02d' % (int(i['season']), int(i['episode'])) for i in lib]
+                try:
+                    if not self.dupe_setting == 'true': raise Exception()
+                    if items == []: raise Exception()
 
-            items = [i for i in items if not 'S%02dE%02d' % (int(i['season']), int(i['episode'])) in lib]
+                    id = [items[0]['imdb'], items[0]['tmdb']]
 
-            if self.include_special == 'false':
-                items = [i for i in items if not str(i['season']) == '0']
+                    lib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"properties" : ["imdbnumber", "title", "year"]}, "id": 1}')
+                    lib = six.ensure_text(lib, errors='ignore')
+                    lib = json.loads(lib)['result']['tvshows']
+                    lib = [six.ensure_str(i['title']) for i in lib if str(i['imdbnumber']) in id or (six.ensure_str(i['title']) == items[0]['tvshowtitle'] and str(i['year']) == items[0]['year'])][0]
+
+                    lib = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "tvshow", "operator": "is", "value": "%s"}]}, "properties": ["season", "episode"]}, "id": 1}' % lib)
+                    lib = six.ensure_text(lib, errors='ignore')
+                    lib = json.loads(lib)['result']['episodes']
+                    lib = ['S%02dE%02d' % (int(i['season']), int(i['episode'])) for i in lib]
+
+                    items = [i for i in items if not 'S%02dE%02d' % (int(i['season']), int(i['episode'])) in lib]
+
+                    if self.include_special == 'false':
+                        items = [i for i in items if not str(i['season']) == '0']
+                except:
+                    pass
+
+                files_added = 0
+
+                for i in items:
+                    try:
+                        if control.monitor.abortRequested(): return sys.exit()
+
+                        # if self.check_setting == 'true':
+                            # if i['episode'] == '1':
+                                # self.block = True
+                                # src = lib_tools.check_sources(i['title'], i['year'], i['imdb'], i['tvdb'], i['season'], i['episode'], i['tvshowtitle'], i['premiered'])
+                                # if src: self.block = False
+                            # if self.block == True: raise Exception()
+
+                        premiered = i.get('premiered', '0')
+                        if (premiered != '0' and int(re.sub('[^0-9]', '', str(premiered))) > int(self.date)) or (premiered == '0' and not self.include_unknown):
+                            continue
+
+                        self.strmFile(i)
+                        files_added += 1
+                    except:
+                        pass
+
+            if range == True: return
+
+            if self.infoDialog is True:
+                control.infoDialog(control.lang(32554), time=1)
+
+            if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo') and files_added > 0:
+                control.execute('UpdateLibrary(video)')
         except:
-            pass
-
-        files_added = 0
-
-        for i in items:
-            try:
-                if control.monitor.abortRequested(): return sys.exit()
-
-                if self.check_setting == 'true':
-                    if i['episode'] == '1':
-                        self.block = True
-                        src = lib_tools.check_sources(i['title'], i['year'], i['imdb'], i['tvdb'], i['season'], i['episode'], i['tvshowtitle'], i['premiered'])
-                        if src: self.block = False
-                    if self.block == True: raise Exception()
-
-                premiered = i.get('premiered', '0')
-                if (premiered != '0' and int(re.sub('[^0-9]', '', str(premiered))) > int(self.date)) or (premiered == '0' and not self.include_unknown):
-                    continue
-
-                self.strmFile(i)
-                files_added += 1
-            except:
-                pass
-
-        if range == True: return
-
-        if self.infoDialog is True:
-            control.infoDialog(six.ensure_str(control.lang(32554)), time=1)
-
-        if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo') and files_added > 0:
-            control.execute('UpdateLibrary(video)')
+            log_utils.log('lib_tv_add', 1)
 
     def silent(self, url):
         control.idle()
 
         if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-            control.infoDialog(six.ensure_str(control.lang(32608)), time=10000000)
+            control.infoDialog(control.lang(32608), time=10000000)
             self.infoDialog = True
             self.silentDialog = True
 
@@ -340,7 +350,7 @@ class libtvshows:
         for i in items:
             try:
                 if control.monitor.abortRequested(): return sys.exit()
-                self.add(i['title'], i['year'], i['imdb'], i['tvdb'], range=True)
+                self.add(i['title'], i['year'], i['imdb'], i['tmdb'], range=True)
             except:
                 pass
 
@@ -352,11 +362,11 @@ class libtvshows:
     def range(self, url):
         control.idle()
 
-        yes = control.yesnoDialog(six.ensure_str(control.lang(32555)))
+        yes = control.yesnoDialog(control.lang(32555))
         if not yes: return
 
         if not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-            control.infoDialog(six.ensure_str(control.lang(32552)), time=10000000)
+            control.infoDialog(control.lang(32552), time=10000000)
             self.infoDialog = True
 
         from resources.lib.indexers import tvshows
@@ -366,12 +376,12 @@ class libtvshows:
         for i in items:
             try:
                 if control.monitor.abortRequested(): return sys.exit()
-                self.add(i['title'], i['year'], i['imdb'], i['tvdb'], range=True)
+                self.add(i['title'], i['year'], i['imdb'], i['tmdb'], range=True)
             except:
                 pass
 
         if self.infoDialog == True:
-            control.infoDialog(six.ensure_str(control.lang(32554)), time=1)
+            control.infoDialog(control.lang(32554), time=1)
 
         if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo'):
             control.execute('UpdateLibrary(video)')
@@ -379,15 +389,16 @@ class libtvshows:
 
     def strmFile(self, i):
         try:
-            title, year, imdb, tvdb, season, episode, tvshowtitle, premiered = i['title'], i['year'], i['imdb'], i['tvdb'], i['season'], i['episode'], i['tvshowtitle'], i['premiered']
+            title, year, imdb, tmdb, season, episode, tvshowtitle, premiered = i['title'], i['year'], i['imdb'], i['tmdb'], i['season'], i['episode'], i['tvshowtitle'], i['premiered']
 
-            episodetitle = urllib_parse.quote_plus(title)
-            systitle, syspremiered = urllib_parse.quote_plus(tvshowtitle), urllib_parse.quote_plus(premiered)
+            episodetitle = urllib_parse.quote_plus(cleantitle.normalize(title))
+            systitle, syspremiered = urllib_parse.quote_plus(cleantitle.normalize(tvshowtitle)), urllib_parse.quote_plus(premiered)
 
-            try: transtitle = cleantitle.normalize(tvshowtitle.translate(None, '\/:*?"<>|'))
-            except: transtitle = cleantitle.normalize(tvshowtitle.translate(str.maketrans('', '', '\/:*?"<>|')))
+            try: transtitle = tvshowtitle.translate(None, '\/:*?"<>|')
+            except: transtitle = tvshowtitle.translate(str.maketrans('', '', '\/:*?"<>|'))
+            transtitle = cleantitle.normalize(transtitle)
 
-            content = '%s?action=play&title=%s&year=%s&imdb=%s&tvdb=%s&season=%s&episode=%s&tvshowtitle=%s&date=%s' % (sys.argv[0], episodetitle, year, imdb, tvdb, season, episode, systitle, syspremiered)
+            content = '%s?action=play&title=%s&year=%s&imdb=%s&tmdb=%s&season=%s&episode=%s&tvshowtitle=%s&date=%s' % (sys.argv[0], episodetitle, year, imdb, tmdb, season, episode, systitle, syspremiered)
 
             folder = lib_tools.make_path(self.library_folder, transtitle, year)
             if not os.path.isfile(os.path.join(folder, 'tvshow.nfo')):
@@ -398,6 +409,7 @@ class libtvshows:
             lib_tools.create_folder(folder)
             lib_tools.write_file(os.path.join(folder, lib_tools.legal_filename('%s S%02dE%02d' % (transtitle, int(season), int(episode))) + '.strm'), content)
         except:
+            log_utils.log('strmFile', 1)
             pass
 
 
@@ -410,7 +422,7 @@ class libepisodes:
         self.include_special = control.setting('library.include_special')
         self.property = '%s_service_property' % control.addonInfo('name').lower()
 
-        self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours = 5))
+        self.datetime = datetime.datetime.utcnow()
         if control.setting('library.importdelay') != 'true':
             self.date = self.datetime.strftime('%Y%m%d')
         else:
@@ -451,20 +463,19 @@ class libepisodes:
                     except: pass
                     if tvshowtitle == None or tvshowtitle == '': raise Exception()
 
-                    year, imdb, tvdb = params['year'], params['imdb'], params['tvdb']
+                    year, imdb, tmdb = params['year'], params['imdb'], params.get('tmdb', '0')
 
                     imdb = 'tt' + re.sub('[^0-9]', '', str(imdb))
 
-                    try: tmdb = params['tmdb']
-                    except: tmdb = '0'
-
-                    items.append({'tvshowtitle': tvshowtitle, 'year': year, 'imdb': imdb, 'tmdb': tmdb, 'tvdb': tvdb})
+                    items.append({'tvshowtitle': tvshowtitle, 'year': year, 'imdb': imdb, 'tmdb': tmdb})
                 except:
+                    log_utils.log('lib_ep_upd0', 1)
                     pass
 
             items = [i for x, i in enumerate(items) if i not in items[x + 1:]]
             if len(items) == 0: raise Exception()
         except:
+            log_utils.log('lib_ep_upd1', 1)
             return
 
         try:
@@ -475,7 +486,7 @@ class libepisodes:
             return
 
         if info == 'true' and not control.condVisibility('Window.IsVisible(infodialog)') and not control.condVisibility('Player.HasVideo'):
-            control.infoDialog(six.ensure_str(control.lang(32553)), time=10000000)
+            control.infoDialog(control.lang(32553), time=10000000)
             self.infoDialog = True
 
         try:
@@ -484,6 +495,7 @@ class libepisodes:
             dbcur = dbcon.cursor()
             dbcur.execute("CREATE TABLE IF NOT EXISTS tvshows (""id TEXT, ""items TEXT, ""UNIQUE(id)"");")
         except:
+            log_utils.log('lib_ep_upd2', 1)
             return
 
         try:
@@ -494,19 +506,19 @@ class libepisodes:
         files_added = 0
 
         # __init__ doesn't get called from services so self.date never gets updated and new episodes are not added to the library
-        self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours = 5))
+        self.datetime = datetime.datetime.utcnow()
         if control.setting('library.importdelay') != 'true':
             self.date = self.datetime.strftime('%Y%m%d')
         else:
             self.date = (self.datetime - datetime.timedelta(hours=24)).strftime('%Y%m%d')
-        
+
         for item in items:
             it = None
 
             if control.monitor.abortRequested(): return sys.exit()
 
             try:
-                dbcur.execute("SELECT * FROM tvshows WHERE id = '%s'" % item['tvdb'])
+                dbcur.execute("SELECT * FROM tvshows WHERE id = '%s'" % item['imdb'])
                 fetch = dbcur.fetchone()
                 it = eval(six.ensure_str(fetch[1]))
             except:
@@ -515,33 +527,41 @@ class libepisodes:
             try:
                 if not it == None: raise Exception()
 
-                it = episodes.episodes().get(item['tvshowtitle'], item['year'], item['imdb'], item['tvdb'], idx=False)
+                seasons = episodes.seasons().get(item['tvshowtitle'], item['year'], item['imdb'], item['tmdb'], meta=None, idx=False)
+                season = [i['season'] for i in seasons]
+                for s in season:
+                    #log_utils.log('lib_seasons: ' + str(s))
+                    it = episodes.episodes().get(item['tvshowtitle'], item['year'], item['imdb'], item['tmdb'], meta=None, season=s, idx=False)
+                    #log_utils.log('lib_it: ' + str(it))
 
-                status = it[0]['status'].lower()
+                    status = seasons[0]['status'].lower()
 
-                it = [{'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tvdb': i['tvdb'], 'season': i['season'], 'episode': i['episode'], 'tvshowtitle': i['tvshowtitle'], 'premiered': i['premiered']} for i in it]
+                    it = [{'title': i['title'], 'year': i['year'], 'imdb': i['imdb'], 'tmdb': i['tmdb'], 'season': i['season'], 'episode': i['episode'], 'tvshowtitle': i['tvshowtitle'], 'premiered': i['premiered']} for i in it]
 
-                if status == 'continuing': raise Exception()
-                dbcur.execute("INSERT INTO tvshows Values (?, ?)", (item['tvdb'], repr(it)))
+                if status in ['continuing', 'returning series']: raise Exception()
+                dbcur.execute("INSERT INTO tvshows Values (?, ?)", (item['imdb'], repr(it)))
                 dbcon.commit()
             except:
+                log_utils.log('lib_ep_upd3', 1)
                 pass
 
             try:
-                id = [item['imdb'], item['tvdb']]
-                if not item['tmdb'] == '0': id += [item['tmdb']]
+                id = [item['imdb'], item['tmdb']]
 
                 ep = [six.ensure_str(x['title']) for x in lib if str(x['imdbnumber']) in id or (six.ensure_str(x['title']) == item['tvshowtitle'] and str(x['year']) == item['year'])][0]
                 ep = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "tvshow", "operator": "is", "value": "%s"}]}, "properties": ["season", "episode"]}, "id": 1}' % ep)
-                ep = six.ensure_text(ep, errors='ignore')
+                #if six.PY2: ep = unicode(ep, 'utf-8', errors='ignore')
                 ep = json.loads(ep).get('result', {}).get('episodes', {})
                 ep = [{'season': int(i['season']), 'episode': int(i['episode'])} for i in ep]
                 ep = sorted(ep, key=lambda x: (x['season'], x['episode']))[-1]
+                #log_utils.log('lib_ep: ' + str(ep))
 
                 num = [x for x,y in enumerate(it) if str(y['season']) == str(ep['season']) and str(y['episode']) == str(ep['episode'])][-1]
                 it = [y for x,y in enumerate(it) if x > num]
+                #log_utils.log('lib_it: ' + str(it))
                 if len(it) == 0: continue
             except:
+                log_utils.log('lib_ep_upd4', 1)
                 continue
 
             for i in it:
@@ -558,10 +578,11 @@ class libepisodes:
                     libtvshows().strmFile(i)
                     files_added += 1
                 except:
+                    log_utils.log('lib_ep_upd5', 1)
                     pass
 
         if self.infoDialog == True:
-            control.infoDialog(six.ensure_str(control.lang(32554)), time=1)
+            control.infoDialog(control.lang(32554), time=1)
 
         if self.library_setting == 'true' and not control.condVisibility('Library.IsScanningVideo') and files_added > 0:
             control.execute('UpdateLibrary(video)')
@@ -573,7 +594,7 @@ class libepisodes:
             lib_tools.create_folder(os.path.join(control.transPath(control.setting('library.tv')), ''))
         except:
             pass
-        
+
         try:
             control.makeFile(control.dataPath)
             dbcon = database.connect(control.libcacheFile)

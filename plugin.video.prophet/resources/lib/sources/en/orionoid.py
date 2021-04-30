@@ -19,8 +19,7 @@ import time
 import sys
 import os
 import re
-import xbmc
-import xbmcvfs
+from kodi_six import xbmc, xbmcvfs
 
 from six.moves import urllib_parse
 
@@ -34,7 +33,7 @@ class source:
         self.key = 'VUhYS1NMNUtLOEFGOUg3TkNFQkIzSkxBQktHUkVFTEg='
         self.domains = ['https://orionoid.com']
         self.providers = []
-        self.cachePath = os.path.join(xbmc.translatePath(control.addonInfo('profile')), 'orion.cache')
+        self.cachePath = os.path.join(control.transPath(control.addonInfo('profile')), 'orion.cache')
         self.cacheData = None
         self.resolvers = None
 
@@ -191,7 +190,7 @@ class source:
                 return str('%.2f GB' % size)
         else:
             if fl:
-                return 0
+                return 0.0
             else:
                 return ''
 

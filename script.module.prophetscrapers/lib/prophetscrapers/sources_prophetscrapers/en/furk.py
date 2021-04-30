@@ -26,10 +26,10 @@ class source:
                                 "&match=%s&moderated=%s%s&sort=relevance&type=video&offset=0&limit=%s"
         self.tfile_link = "/api/file/get?api_key=%s&t_files=1&id=%s"
         self.login_link = "/api/login/login?login=%s&pwd=%s"
-        self.user_name = control.addon('plugin.video.prophet').getSetting('furk.user_name')
-        self.user_pass = control.addon('plugin.video.prophet').getSetting('furk.user_pass')
-        self.api_key = control.addon('plugin.video.prophet').getSetting('furk.api')
-        self.search_limit = control.addon('plugin.video.prophet').getSetting('furk.limit')
+        self.user_name = control.addon('plugin.video.theoath').getSetting('furk.user_name')
+        self.user_pass = control.addon('plugin.video.theoath').getSetting('furk.user_pass')
+        self.api_key = control.addon('plugin.video.theoath').getSetting('furk.api')
+        self.search_limit = control.addon('plugin.video.theoath').getSetting('furk.limit')
         self.files = []
 
     def get_api(self):
@@ -50,7 +50,7 @@ class source:
 
                     if p['status'] == 'ok':
                         api_key = p['api_key']
-                        control.addon('plugin.video.prophet').setSetting('furk.api', api_key)
+                        control.addon('plugin.video.theoath').setSetting('furk.api', api_key)
                     else:
                         pass
 

@@ -19,7 +19,7 @@
 """
 
 
-import sys,re,random,datetime,time,traceback
+import sys,re,random,datetime,time
 import simplejson as json
 
 import six
@@ -43,31 +43,33 @@ except: from pysqlite2 import dbapi2 as database
 try: import resolveurl
 except: pass
 
-try: import xbmc
-except: pass
+from kodi_six import xbmc
+
 
 class sources:
     def __init__(self):
         self.getConstants()
         self.sources = []
+        self.f_out_sources = []
 
-    def play(self, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, meta, select):
+    def play(self, title, year, imdb, tmdb, season, episode, tvshowtitle, premiered, meta, select):
 
         try:
             url = None
 
-            items = self.getSources(title, year, imdb, tvdb, season, episode, tvshowtitle, premiered)
+            items = self.getSources(title, year, imdb, tmdb, season, episode, tvshowtitle, premiered)
 
             select = control.setting('hosts.mode') if select == None else select
 
             title = tvshowtitle if not tvshowtitle == None else title
+            title = self.getTitle(title)
 
             if len(items) > 0:
 
                 if select == '1' and 'plugin' in control.infoLabel('Container.PluginName'):
                     control.window.clearProperty(self.itemProperty)
                     control.window.setProperty(self.itemProperty, json.dumps(items))
-                    
+
                     control.window.clearProperty(self.metaProperty)
                     control.window.setProperty(self.metaProperty, meta)
 
@@ -90,7 +92,7 @@ class sources:
             except: pass
 
             from resources.lib.modules.player import player
-            player().run(title, year, season, episode, imdb, tvdb, url, meta)
+            player().run(title, year, season, episode, imdb, tmdb, url, meta)
         except:
             pass
 
@@ -99,7 +101,7 @@ class sources:
 
         def sourcesDirMeta(metadata):
             if metadata == None: return metadata
-            allowed = ['poster', 'icon', 'poster3', 'fanart', 'fanart2', 'thumb', 'title', 'year', 'tvshowtitle', 'season', 'episode', 'rating', 'plot', 'trailer', 'mediatype']
+            allowed = ['icon', 'poster', 'fanart', 'thumb', 'clearlogo', 'clearart', 'discart', 'title', 'year', 'tvshowtitle', 'season', 'episode', 'rating', 'plot', 'trailer', 'mediatype']
             return {k: v for k, v in six.iteritems(metadata) if k in allowed}
 
         control.playlist.clear()
@@ -131,28 +133,23 @@ class sources:
             sysname += urllib_parse.quote_plus(' (%s)' % meta['year'])
 
 
-        poster = meta['poster3'] if 'poster3' in meta else '0'
-        if poster == '0': poster = meta['poster'] if 'poster' in meta else '0'
-
-        fanart = meta['fanart2'] if 'fanart2' in meta else '0'
-        if fanart == '0': fanart = meta['fanart'] if 'fanart' in meta else '0'
-
-        thumb = meta['thumb'] if 'thumb' in meta else '0'
-        if thumb == '0': thumb = poster
-        if thumb == '0': thumb = fanart
+        poster = meta.get('poster') or control.addonPoster()
+        if control.setting('fanart') == 'true':
+            fanart = meta.get('fanart') or control.addonFanart()
+        else:
+            fanart = control.addonFanart()
+        thumb = meta.get('thumb') or poster or fanart
+        clearlogo = meta.get('clearlogo', '') or ''
+        clearart = meta.get('clearart', '') or ''
+        discart = meta.get('discart', '') or ''
 
         #banner = meta['banner'] if 'banner' in meta else '0'
         #if banner == '0': banner = poster
-
-        if poster == '0': poster = control.addonPoster()
         #if banner == '0': banner = control.addonBanner()
-        if not control.setting('fanart') == 'true': fanart = '0'
-        if fanart == '0': fanart = control.addonFanart()
-        if thumb == '0': thumb = control.addonFanart()
 
         sysimage = urllib_parse.quote_plus(six.ensure_str(poster))
 
-        downloadMenu = six.ensure_str(control.lang(32403))
+        downloadMenu = control.lang(32403)
 
 
         for i in list(range(len(items))):
@@ -168,18 +165,19 @@ class sources:
                 if downloads == True:
                     cm.append((downloadMenu, 'RunPlugin(%s?action=download&name=%s&image=%s&source=%s)' % (sysaddon, sysname, sysimage, syssource)))
 
-                item = control.item(label=label)
+                try: item = control.item(label=label, offscreen=True)
+                except: item = control.item(label=label)
                 item.addContextMenuItems(cm)
 
                 if listMeta == 'true':
-                    item.setArt({'thumb': thumb, 'icon': thumb, 'poster': poster, 'fanart': fanart})
+                    item.setArt({'thumb': thumb, 'icon': thumb, 'poster': poster, 'fanart': fanart, 'clearlogo': clearlogo, 'clearart': clearart, 'discart': discart})
                     video_streaminfo = {'codec': 'h264'}
                     item.addStreamInfo('video', video_streaminfo)
                     item.setInfo(type='video', infoLabels=control.metadataClean(meta))
 
                 else:
                     item.setArt({'thumb': thumb})
-                    item.setInfo(type='video', infoLabels=None)
+                    item.setInfo(type='video', infoLabels={})
 
                 control.addItem(handle=syshandle, url=sysurl, listitem=item, isFolder=False)
             except:
@@ -200,6 +198,7 @@ class sources:
 
             imdb = meta['imdb'] if 'imdb' in meta else None
             tvdb = meta['tvdb'] if 'tvdb' in meta else None
+            tmdb = meta['tmdb'] if 'tmdb' in meta else None
 
             next = [] ; prev = [] ; total = []
 
@@ -227,8 +226,7 @@ class sources:
             items = json.loads(source)
             items = [i for i in items+next+prev][:40]
 
-            header = control.addonInfo('name')
-            header2 = header.upper()
+            header = control.addonInfo('name') + ': Resolving...'
 
             progressDialog = control.progressDialog if control.setting('progress.dialog') == '0' else control.progressDialogBG
             progressDialog.create(header, '')
@@ -238,11 +236,12 @@ class sources:
 
             for i in list(range(len(items))):
                 try:
+                    label = re.sub(' {2,}', ' ', str(items[i]['label']))
                     try:
                         if progressDialog.iscanceled(): break
-                        progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']).replace('[CR]    ', ' | '))
+                        progressDialog.update(int((100 / float(len(items))) * i), label)
                     except:
-                        progressDialog.update(int((100 / float(len(items))) * i), str(header2) + '[CR]' + str(items[i]['label']))
+                        progressDialog.update(int((100 / float(len(items))) * i), str(header) + '[CR]' + label)
 
                     if items[i]['source'] == block: raise Exception()
 
@@ -251,20 +250,9 @@ class sources:
 
                     #offset = 60 * 2 if items[i].get('source') in self.hostcapDict else 0
 
-                    '''
-                    if items[i].get('debrid').lower() == 'real-debrid':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('RealDebridResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('RealDebridResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'alldebrid':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('AllDebridResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('AllDebridResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'premiumize.me':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('PremiumizeMeResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('PremiumizeMeResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'linksnappy':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('LinksnappyResolver_cached_only') == 'false'
-                    '''
-
                     if items[i].get('source').lower() in self.hostcapDict:
                         offset = 60 * 2
-                    elif 'torrent' in items[i].get('source').lower():# and no_skip:
+                    elif 'torrent' in items[i].get('source').lower():
                         offset = float('inf')
                     else:
                         offset = 0
@@ -311,7 +299,7 @@ class sources:
                     control.execute('Dialog.Close(yesnoDialog)')
 
                     from resources.lib.modules.player import player
-                    player().run(title, year, season, episode, imdb, tvdb, self.url, meta)
+                    player().run(title, year, season, episode, imdb, tmdb, self.url, meta)
 
                     return self.url
                 except:
@@ -325,8 +313,12 @@ class sources:
         except:
             pass
 
-    def getSources(self, title, year, imdb, tvdb, season, episode, tvshowtitle, premiered, quality='HD', timeout=30):
+
+    def getSources(self, title, year, imdb, tmdb, season, episode, tvshowtitle, premiered, quality='720p', timeout=30):
         progressDialog = control.progressDialog if control.setting('progress.dialog') == '0' else control.progressDialogBG
+        if progressDialog == control.progressDialogBG:
+            control.idle()
+
         progressDialog.create(self.module_name)
         #progressDialog.update(0)
 
@@ -334,14 +326,14 @@ class sources:
 
         sourceDict = self.sourceDict
 
-        progressDialog.update(0, six.ensure_str(control.lang(32600)))
+        progressDialog.update(0, control.lang(32600))
         content = 'movie' if tvshowtitle == None else 'episode'
         if content == 'movie':
             sourceDict = [(i[0], i[1], getattr(i[1], 'movie', None)) for i in sourceDict]
             genres = trakt.getGenre('movie', 'imdb', imdb)
         else:
             sourceDict = [(i[0], i[1], getattr(i[1], 'tvshow', None)) for i in sourceDict]
-            genres = trakt.getGenre('show', 'tvdb', tvdb)
+            genres = trakt.getGenre('show', 'tmdb', tmdb)
 
         sourceDict = [(i[0], i[1], i[2]) for i in sourceDict if not hasattr(i[1], 'genre_filter') or not i[1].genre_filter or any(x in i[1].genre_filter for x in genres)]
         sourceDict = [(i[0], i[1]) for i in sourceDict if not i[2] == None]
@@ -365,152 +357,176 @@ class sources:
         threads = []
 
         if content == 'movie':
-            title = self.getTitle(title)
-            localtitle = self.getLocalTitle(title, imdb, tvdb, content)
+            #title = self.getTitle(title)
+            title, year = cleantitle.scene_title(title, year)
+            log_utils.log('movtitle is '+title+' year is '+year)
+            localtitle = self.getLocalTitle(title, imdb, tmdb, content)
             aliases = self.getAliasTitles(imdb, localtitle, content)
             for i in sourceDict: threads.append(workers.Thread(self.getMovieSource, title, localtitle, aliases, year, imdb, i[0], i[1]))
         else:
-            tvshowtitle = self.getTitle(tvshowtitle)
-            localtvshowtitle = self.getLocalTitle(tvshowtitle, imdb, tvdb, content)
+            #tvshowtitle = self.getTitle(tvshowtitle)
+            tvshowtitle, year, season, episode = cleantitle.scene_tvtitle(tvshowtitle, year, season, episode)
+            log_utils.log('tvtitle is '+tvshowtitle+' year is '+year+' season is '+season)
+            localtvshowtitle = self.getLocalTitle(tvshowtitle, imdb, tmdb, content)
             aliases = self.getAliasTitles(imdb, localtvshowtitle, content)
             #Disabled on 11/11/17 due to hang. Should be checked in the future and possible enabled again.
             #season, episode = thexem.get_scene_episode_number(tvdb, season, episode)
-            for i in sourceDict: threads.append(workers.Thread(self.getEpisodeSource, title, year, imdb, tvdb, season, episode, tvshowtitle, localtvshowtitle, aliases, premiered, i[0], i[1]))
+            for i in sourceDict: threads.append(workers.Thread(self.getEpisodeSource, title, year, imdb, tmdb, season, episode, tvshowtitle, localtvshowtitle, aliases, premiered, i[0], i[1]))
 
         s = [i[0] + (i[1],) for i in zip(sourceDict, threads)]
         s = [(i[3].getName(), i[0], i[2]) for i in s]
 
-        mainsourceDict = [i[0] for i in s if i[2] == 0]
+        # mainsourceDict = [i[0] for i in s if i[2] == 0]
         sourcelabelDict = dict([(i[0], i[1].upper()) for i in s])
 
         [i.start() for i in threads]
 
-        string1 = six.ensure_str(control.lang(32404))
-        string2 = six.ensure_str(control.lang(32405))
-        string3 = six.ensure_str(control.lang(32406))
-        string4 = six.ensure_str(control.lang(32601))
-        string5 = six.ensure_str(control.lang(32602))
-        string6 = six.ensure_str(control.lang(32606))
-        string7 = six.ensure_str(control.lang(32607))
-
-        try: timeout = int(control.setting('scrapers.timeout.1'))
-        except: pass
-
-        min_quality = control.setting('min.quality')
-        if min_quality == '': min_quality = '3'
-        min_quality = int(min_quality)
-
-        max_quality = control.setting('hosts.quality')
-        if max_quality == '': max_quality = '0'
+        max_quality = control.setting('hosts.quality') or '0'
         max_quality = int(max_quality)
-
-        line1 = line3 = ""
-        debrid_only = control.setting('debrid.only')
+        min_quality = control.setting('min.quality') or '3'
+        min_quality = int(min_quality)
 
         pre_emp = control.setting('preemptive.termination')
         pre_emp_limit = int(control.setting('preemptive.limit'))
 
-        source_4k = source_1080 = source_720 = source_sd = total = 0
+        try: timeout = int(control.setting('scrapers.timeout.1'))
+        except: pass
+
+        start_time = time.time()
+        end_time = start_time + timeout
+
+        string1 = control.lang(32404)
+        string2 = control.lang(32405)
+        string3 = control.lang(32406)
+        string4 = control.lang(32601)
+        string5 = control.lang(32602)
+        string6 = control.lang(32606)
+        string7 = control.lang(32607)
+
+        source_4k = source_1080 = source_720 = source_sd = total = source_filtered_out = 0
+
+        line1 = line3 = ""
 
         total_format = '[COLOR %s][B]%s[/B][/COLOR]'
-        pdiag_format = '4K: %s  |  1080P: %s  |  720P: %s  |  SD: %s %s: %s' % ('%s','%s','%s','%s','[CR]TOTAL','%s') if not progressDialog == control.progressDialogBG else \
-                       '4K: %s | 1080P: %s | 720P: %s | SD: %s %s: %s' % ('%s','%s','%s','%s','| T','%s')
+        pdiag_format = '4K: %s | 1080P: %s | 720P: %s | SD: %s | TOTAL: %s[CR][I] Filtered-out: %s[/I]' if not progressDialog == control.progressDialogBG else \
+                       '4K: %s | 1080P: %s | 720P: %s | SD: %s | T: %s (-%s)'
 
         for i in list(range(0, 4 * timeout)):
 
             try:
-                if control.monitor.abortRequested(): return sys.exit()
 
+                if control.monitor.abortRequested(): return sys.exit()
                 try:
                     if progressDialog.iscanceled(): break
                 except:
                     pass
+                try:
+                    if progressDialog.isFinished(): break
+                except:
+                    pass
 
-                if len(self.sources) > 0:
-                    if min_quality == 0:
+                self.sourcesFilter(content)
+
+                #if len(self.sources) > 0:
+                if min_quality == 0:
+                    source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
+                elif min_quality == 1:
+                    source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
+                    if max_quality == 0:
                         source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
-                    elif min_quality == 1:
+                elif min_quality == 2:
+                    source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
+                    if max_quality == 0:
+                        source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
                         source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
-                        if max_quality == 0:
-                            source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
-                    elif min_quality == 2:
+                    elif max_quality == 1:
+                        source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
+                elif min_quality == 3:
+                    source_sd = len([e for e in self.sources if e['quality'] in ['sd', 'scr', 'cam', 'SD', 'SCR', 'CAM']])
+                    if max_quality == 0:
+                        source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
+                        source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
                         source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
-                        if max_quality == 0:
-                            source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
-                            source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
-                        elif max_quality == 1:
-                            source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
-                    elif min_quality == 3:
-                        source_sd = len([e for e in self.sources if e['quality'] in ['sd', 'scr', 'cam', 'SD', 'SCR', 'CAM']])
-                        if max_quality == 0:
-                            source_4k = len([e for e in self.sources if e['quality'] in ['4k', '4K']])
-                            source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
-                            source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
-                        elif max_quality == 1:
-                            source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
-                            source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
-                        elif max_quality == 2:
-                            source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
+                    elif max_quality == 1:
+                        source_1080 = len([e for e in self.sources if e['quality'] in ['1080p', '1080P']])
+                        source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
+                    elif max_quality == 2:
+                        source_720 = len([e for e in self.sources if e['quality'] in ['720p', 'hd', '720P', 'HD']])
 
-                    total = source_4k + source_1080 + source_720 + source_sd
+                total = source_4k + source_1080 + source_720 + source_sd
+                source_filtered_out = len([e for e in self.f_out_sources])
 
                 source_4k_label = total_format % ('red', source_4k) if source_4k == 0 else total_format % ('lime', source_4k)
                 source_1080_label = total_format % ('red', source_1080) if source_1080 == 0 else total_format % ('lime', source_1080)
                 source_720_label = total_format % ('red', source_720) if source_720 == 0 else total_format % ('lime', source_720)
                 source_sd_label = total_format % ('red', source_sd) if source_sd == 0 else total_format % ('lime', source_sd)
                 source_total_label = total_format % ('red', total) if total == 0 else total_format % ('lime', total)
-
-                if (i / 2) < timeout:
-                    try:
-                        mainleft = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True and x.getName() in mainsourceDict]
-                        info = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True]
-                        if i >= timeout and len(mainleft) == 0 and len(self.sources) >= 100 * len(info): break # improve responsiveness
-                        line1 = pdiag_format % (source_4k_label, source_1080_label, source_720_label, source_sd_label, source_total_label)
-                        if len(info) > 6: line3 = string3 % (str(len(info)))
-                        elif len(info) > 0: line3 = string3 % (', '.join(info).replace('[COLOR %s]' % (control.setting('orion.color').upper()), '').replace('[/COLOR]', ''))
-                        else: break
-                        percent = int(100 * float(i) / (2 * timeout) + 0.5)
-                        if not progressDialog == control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
-                        else: progressDialog.update(max(1, percent), line1, line3)
-                    except Exception as e:
-                        log_utils.log('Exception Raised: %s' % str(e), log_utils.LOGERROR)
-                else:
-                    try:
-                        mainleft = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True and x.getName() in mainsourceDict]
-                        info = mainleft
-                        if len(info) > 6: line3 = 'Waiting for: %s' % (str(len(info)))
-                        elif len(info) > 0: line3 = 'Waiting for: %s' % (', '.join(info))
-                        else: break
-                        percent = int(100 * float(i) / (2 * timeout) + 0.5) % 100
-                        if not progressDialog == control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
-                        else: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
-                    except Exception as e:
-                        log_utils.log('Exception Raised: %s' % str(e), log_utils.LOGERROR)
-                        break
+                source_filtered_out_label = total_format % ('red', source_filtered_out)
 
                 if pre_emp == 'true':
                     if max_quality == 0:
-                        if source_4k >= pre_emp_limit: break
+                        if source_4k >= pre_emp_limit:
+                            break
                     elif max_quality == 1:
-                        if source_1080 >= pre_emp_limit: break
+                        if source_1080 >= pre_emp_limit:
+                            break
                     elif max_quality == 2:
-                        if source_720 >= pre_emp_limit: break
+                        if source_720 >= pre_emp_limit:
+                            break
                     elif max_quality == 3:
-                        if source_sd >= pre_emp_limit: break
+                        if source_sd >= pre_emp_limit:
+                            break
 
-                time.sleep(0.5)
+                # if (i / 2) < timeout:
+                try:
+                    # mainleft = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True and x.getName() in mainsourceDict]
+                    info = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True]
+                    # if i >= timeout and len(mainleft) == 0 and len(self.sources) >= 100 * len(info): break # improve responsiveness
+                    line1 = pdiag_format % (source_4k_label, source_1080_label, source_720_label, source_sd_label, source_total_label, source_filtered_out_label)
+                    if len(info) > 6: line3 = string3 % (str(len(info)))
+                    elif len(info) > 0: line3 = string3 % (', '.join(info).replace('[COLOR %s]' % (control.setting('orion.color').upper()), '').replace('[/COLOR]', ''))
+                    else: break
+                    # percent = int(100 * float(i) / (2 * timeout) + 0.5)
+                    current_time = time.time()
+                    current_progress = current_time - start_time
+                    percent = int((current_progress / float(timeout)) * 100)
+                    if not progressDialog == control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
+                    else: progressDialog.update(max(1, percent), self.module_name, line1 + '[CR]' + line3)
+                    # if len(mainleft) == 0: break
+                    if end_time < current_time: break
+                except:
+                    log_utils.log('Source fetching dialog exception', 1)
+                    break
+                # else: # old implementation that makes "priority: 0" scrapers to ignore the timeout setting
+                    # try:
+                        # mainleft = [sourcelabelDict[x.getName()] for x in threads if x.is_alive() == True and x.getName() in mainsourceDict]
+                        # info = mainleft
+                        # if len(info) > 6: line3 = 'Waiting for: %s' % (str(len(info)))
+                        # elif len(info) > 0: line3 = 'Waiting for: %s' % (', '.join(info))
+                        # else: break
+                        # percent = int(100 * float(i) / (2 * timeout) + 0.5) % 100
+                        # if not progressDialog == control.progressDialogBG: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
+                        # else: progressDialog.update(max(1, percent), line1 + '[CR]' + line3)
+                    # except Exception as e:
+                        # log_utils.log('Exception Raised: %s' % str(e))
+                        # break
+
+                control.sleep(250)
             except:
-                failure = traceback.format_exc()
-                log_utils.log('sourcefail: ' + str(failure))
+                log_utils.log('sourcefail', 1)
                 pass
 
-        try: progressDialog.close()
-        except: pass
+        control.sleep(200)
+        self.sourcesFilter(content)
+        progressDialog.close()
         del progressDialog
+        del threads
 
-        self.sourcesFilter()
+        self.sourcesSort()
+        control.idle()
 
         return self.sources
+
 
     def prepareSources(self):
         try:
@@ -586,7 +602,7 @@ class sources:
             pass
 
 
-    def getEpisodeSource(self, title, year, imdb, tvdb, season, episode, tvshowtitle, localtvshowtitle, aliases, premiered, source, call):
+    def getEpisodeSource(self, title, year, imdb, tmdb, season, episode, tvshowtitle, localtvshowtitle, aliases, premiered, source, call):
         try:
             dbcon = database.connect(self.sourceFile)
             dbcur = dbcon.cursor()
@@ -615,7 +631,7 @@ class sources:
             pass
 
         try:
-            if url == None: url = call.tvshow(imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year)
+            if url == None: url = call.tvshow(imdb, tmdb, tvshowtitle, localtvshowtitle, aliases, year)
             if url == None: raise Exception()
             dbcur.execute("DELETE FROM rel_url WHERE source = '%s' AND imdb_id = '%s' AND season = '%s' AND episode = '%s'" % (source, imdb, '', ''))
             dbcur.execute("INSERT INTO rel_url Values (?, ?, ?, ?, ?)", (source, imdb, '', '', repr(url)))
@@ -633,7 +649,7 @@ class sources:
 
         try:
             if url == None: raise Exception()
-            if ep_url == None: ep_url = call.episode(url, imdb, tvdb, title, premiered, season, episode)
+            if ep_url == None: ep_url = call.episode(url, imdb, tmdb, title, premiered, season, episode)
             if ep_url == None: raise Exception()
             dbcur.execute("DELETE FROM rel_url WHERE source = '%s' AND imdb_id = '%s' AND season = '%s' AND episode = '%s'" % (source, imdb, season, episode))
             dbcur.execute("INSERT INTO rel_url Values (?, ?, ?, ?, ?)", (source, imdb, season, episode, repr(ep_url)))
@@ -669,7 +685,7 @@ class sources:
         try:
             control.idle()
 
-            yes = control.yesnoDialog(six.ensure_str(control.lang(32407)))
+            yes = control.yesnoDialog(control.lang(32407))
             if not yes: return
 
             control.makeFile(control.dataPath)
@@ -680,7 +696,7 @@ class sources:
             dbcur.execute("VACUUM")
             dbcon.commit()
 
-            control.infoDialog(six.ensure_str(control.lang(32408)), sound=True, icon='INFO')
+            control.infoDialog(control.lang(32408), sound=True, icon='INFO')
         except:
             pass
 
@@ -705,7 +721,7 @@ class sources:
     def sourcesProcessTorrents(self, torrent_sources):#adjusted Fen code
         if len(torrent_sources) == 0: return
         for i in torrent_sources:
-            if not i.get('debrid', '') in ['Real-Debrid', 'AllDebrid', 'Premiumize.me']:
+            if not i.get('debrid', '') in ['Real-Debrid', 'AllDebrid', 'Premiumize.me', 'Debrid-Link.fr']:
                 return torrent_sources
         start_time = time.time()
         timeout = 20
@@ -730,7 +746,7 @@ class sources:
                 torrent_sources = [i for i in torrent_sources if 'info_hash' in i]
                 hashList = list(set(hashList))
                 control.sleep(500)
-                cachedRDHashes, cachedADHashes, cachedPMHashes = DBCheck.run(hashList)
+                cachedRDHashes, cachedADHashes, cachedPMHashes, cachedDLHashes = DBCheck.run(hashList)
                 #cached
                 cachedRDSources = [dict(i.items()) for i in torrent_sources if (any(v in i.get('info_hash') for v in cachedRDHashes) and i.get('debrid', '') == 'Real-Debrid')]
                 cachedTorrents += cachedRDSources
@@ -738,6 +754,8 @@ class sources:
                 cachedTorrents += cachedADSources
                 cachedPMSources = [dict(i.items()) for i in torrent_sources if (any(v in i.get('info_hash') for v in cachedPMHashes) and i.get('debrid', '') == 'Premiumize.me')]
                 cachedTorrents += cachedPMSources
+                cachedDLSources = [dict(i.items()) for i in torrent_sources if (any(v in i.get('info_hash') for v in cachedDLHashes) and i.get('debrid', '') == 'Debrid-Link.fr')]
+                cachedTorrents += cachedDLSources
                 for i in cachedTorrents: i.update({'source': 'cached torrent'})
                 #uncached
                 uncachedRDSources = [dict(i.items()) for i in torrent_sources if (not any(v in i.get('info_hash') for v in cachedRDHashes) and i.get('debrid', '') == 'Real-Debrid')]
@@ -746,6 +764,8 @@ class sources:
                 uncachedTorrents += uncachedADSources
                 uncachedPMSources = [dict(i.items()) for i in torrent_sources if (not any(v in i.get('info_hash') for v in cachedPMHashes) and i.get('debrid', '') == 'Premiumize.me')]
                 uncachedTorrents += uncachedPMSources
+                uncachedDLSources = [dict(i.items()) for i in torrent_sources if (not any(v in i.get('info_hash') for v in cachedDLHashes) and i.get('debrid', '') == 'Debrid-Link.fr')]
+                uncachedTorrents += uncachedDLSources
                 for i in uncachedTorrents: i.update({'source': '[COLOR dimgrey]uncached torrent[/COLOR]'})
                 #uncheckedTorrents += [dict(i.items()) for i in torrent_sources if i.get('source').lower() == 'torrent']
                 time.sleep(0.1)
@@ -753,39 +773,101 @@ class sources:
             else:
                 return
         except:
-            failure = traceback.format_exc()
-            log_utils.log('Torrent check - Exception: ' + str(failure))
+            log_utils.log('torrent_check', 1)
             control.infoDialog('Error Processing Torrents')
             return
 
 
-    def sourcesFilter(self):
+    def sourcesFilter(self, _content):
 
-        min_quality = control.setting('min.quality')
-        if min_quality == '': min_quality = '3'
-        min_quality = int(min_quality)
-
-        max_quality = control.setting('hosts.quality')
-        if max_quality == '': max_quality = '0'
+        max_quality = control.setting('hosts.quality') or '0'
         max_quality = int(max_quality)
+        min_quality = control.setting('min.quality') or '3'
+        min_quality = int(min_quality)
+        remove_cam = control.setting('remove.cam') or 'false'
 
-        debrid_only = control.setting('debrid.only')
-        if debrid_only == '': debrid_only = 'false'
+        size_filters = control.setting('size.filters') or 'false'
+        mov_min_size = control.setting('min.size.mov') or 0
+        mov_min_size = float(mov_min_size)
+        mov_max_size = control.setting('max.size.mov') or 100
+        mov_max_size = float(mov_max_size)
+        ep_min_size = control.setting('min.size.ep') or 0
+        ep_min_size = float(ep_min_size)
+        ep_max_size = control.setting('max.size.ep') or 20
+        ep_max_size = float(ep_max_size)
 
-        remove_cam = control.setting('remove.cam')
-        if remove_cam == '': remove_cam = 'false'
+        debrid_only = control.setting('debrid.only') or 'false'
 
-        remove_captcha = control.setting('remove.captcha')
-        if remove_captcha == '': remove_captcha = 'false'
+        remove_captcha = control.setting('remove.captcha') or 'false'
 
-        remove_hevc = control.setting('remove.hevc')
-        if remove_hevc == '': remove_hevc = 'false'
+        remove_hevc = control.setting('remove.hevc') or 'false'
 
-        sort_provider = control.setting('hosts.sort.provider')
-        if sort_provider == '': sort_provider = 'true'
+        remove_dups = control.setting('remove.dups') or 'true'
 
-        size_sort = control.setting('torr.sort.size')
-        if size_sort == '': size_sort = 'true'
+        stotal = self.sources
+
+        for i in list(range(len(self.sources))):
+            if self.sources[i]['quality'] in ['hd', 'HD']:
+                self.sources[i].update({'quality': '720p'})
+            if _content == 'episode' and self.sources[i]['quality'] in ['scr', 'cam', 'SCR', 'CAM']:
+                self.sources[i].update({'quality': 'sd'})
+
+        filter = []
+        if max_quality == 0:
+            filter += [i for i in self.sources if i['quality'] in ['4K', '4k']]
+        if max_quality <= 1 and min_quality >= 1:
+            filter += [i for i in self.sources if i['quality'] in ['1080p', '1080P']]
+        if max_quality <= 2 and min_quality >= 2:
+            filter += [i for i in self.sources if i['quality'] in ['720p', '720P']]
+        if max_quality <= 3 and min_quality >= 3:
+            filter += [i for i in self.sources if i['quality'] in ['sd', 'SD']]
+            if remove_cam == 'false':
+                filter += [i for i in self.sources if i['quality'] in ['scr', 'cam', 'SCR', 'CAM']]
+        _sources = filter
+
+        if debrid_only == 'true' and debrid.status():
+            _sources = [i for i in _sources if (i['source'].lower() in self.hostprDict or 'torrent' in i['source'].lower())]# and i['debridonly'] == True]
+
+        try:
+            if remove_dups == 'true' and len(self.sources) > 1:
+                _sources = list(self.uniqueSourcesGen(_sources))
+        except:
+            log_utils.log('DUP - Exception', 1)
+            pass
+
+        if remove_hevc == 'true':
+            _sources = [i for i in _sources if not any(x in i['url'] for x in ['hevc', 'h265', 'x265', 'h.265', 'x.265', 'HEVC', 'H265', 'X265', 'H.265', 'X.265']) and not any(
+                                                       x in i.get('name', '').lower() for x in ['hevc', 'h265', 'x265', 'h.265', 'x.265'])]
+
+        if remove_captcha == 'true':
+            _sources = [i for i in _sources if not (i['source'].lower() in self.hostcapDict and not 'debrid' in i)]
+
+        _sources = [i for i in _sources if not i['source'].lower() in self.hostblockDict]
+
+        if size_filters == 'true':
+            if _content == 'movie':
+                _sources = [i for i in _sources if (mov_min_size <= i.get('size', 0.0) <= mov_max_size) or i.get('size', 0.0) == 0.0]
+            elif _content == 'episode':
+                _sources = [i for i in _sources if (ep_min_size <= i.get('size', 0.0) <= ep_max_size) or i.get('size', 0.0) == 0.0]
+
+        filtered_out = [i for i in stotal if not i in _sources]
+        self.f_out_sources.extend(filtered_out)
+        self.sources[:] = _sources
+
+        return self.sources
+
+
+    def sourcesSort(self):
+
+        main_sort = control.setting('main.sort') or '0'
+
+        size_sort = control.setting('torr.sort.size') or 'true'
+
+        sort_provider = control.setting('hosts.sort.provider') or 'true'
+
+        check_torr_cache = control.setting('check.torr.cache') or 'true'
+
+        remove_uncached = control.setting('remove.uncached') or 'false'
 
         random.shuffle(self.sources)
 
@@ -797,40 +879,11 @@ class sources:
         multi = [x for y,x in enumerate(multi) if x not in multi[:y]]
         multi = True if len(multi) > 1 else False
 
-        for i in list(range(len(self.sources))):
-            if self.sources[i]['quality'] in ['hd', 'HD']:
-                self.sources[i].update({'quality': '720p'})
-
         if sort_provider == 'true':
             self.sources = sorted(self.sources, key=lambda k: k['provider'])
 
         if size_sort == 'true':
-            #for i in self.sources:
-                #if 'magnet:' in i['url']:
-            self.sources = sorted(self.sources, key=lambda k: k.get('size', 0), reverse=True)
-
-        if remove_hevc == 'true':
-            self.sources = [i for i in self.sources if not any(value in i['url'] for value in ['hevc', 'h265', 'h.265', 'x265', 'x.265', 'HEVC', 'H265', 'H.265', 'X265', 'X.265'])]
-
-        if remove_captcha == 'true':
-            self.sources = [i for i in self.sources if not (i['source'].lower() in self.hostcapDict and not 'debrid' in i)]
-
-        self.sources = [i for i in self.sources if not i['source'].lower() in self.hostblockDict]
-
-#        for i in self.sources:
-#            if 'checkquality' in i and i['checkquality'] == True:
-#                if not i['source'].lower() in self.hosthqDict and i['quality'] not in ['SD', 'SCR', 'CAM']: i.update({'quality': 'SD'})
-
-        try:
-            if control.setting('remove.dups') == 'true' and len(self.sources) > 1:
-                stotal = len(self.sources)
-                self.sources = list(self.uniqueSourcesGen(self.sources))
-                dupes = str(stotal - len(self.sources))
-                control.infoDialog(six.ensure_str(control.lang(32089)).format(dupes), icon='INFO')
-        except:
-            failure = traceback.format_exc()
-            log_utils.log('DUP - Exception: ' + str(failure))
-            control.infoDialog('Dupes filter failed', icon='INFO', sound=True)
+            self.sources = sorted(self.sources, key=lambda k: k.get('size', 0.0), reverse=True)
 
         filter = []
 
@@ -838,7 +891,7 @@ class sources:
             valid_hoster = set([i['source'] for i in self.sources])
             valid_hoster = [i for i in valid_hoster if d.valid_url('', i)]
 
-            if control.setting('check.torr.cache') == 'true':
+            if check_torr_cache == 'true':
                 try:
                     for i in self.sources:
                         if 'magnet:' in i['url']:
@@ -848,7 +901,7 @@ class sources:
                     filter += cached
                     unchecked = [i for i in torrentSources if i.get('source').lower() == 'torrent']
                     filter += unchecked
-                    if control.setting('remove.uncached') == 'false' or len(cached) == 0:
+                    if remove_uncached == 'false' or len(cached) == 0:
                         uncached = [i for i in torrentSources if i.get('source') == '[COLOR dimgrey]uncached torrent[/COLOR]']
                         filter += uncached
                     filter += [dict(list(i.items()) + [('debrid', d.name)]) for i in self.sources if i['source'] in valid_hoster and 'magnet:' not in i['url']]
@@ -860,25 +913,22 @@ class sources:
                 filter += [dict(list(i.items()) + [('debrid', d.name)]) for i in self.sources if i.get('source').lower() == 'torrent']
                 filter += [dict(list(i.items()) + [('debrid', d.name)]) for i in self.sources if i['source'] in valid_hoster and 'magnet:' not in i['url']]
 
-        if debrid_only == 'false' or debrid.status() == False:
-            filter += [i for i in self.sources if not i['source'].lower() in self.hostprDict and i['debridonly'] == False]
+        filter += [i for i in self.sources if not i['source'].lower() in self.hostprDict and i['debridonly'] == False]
 
         self.sources = filter
 
         filter = []
         filter += local
 
-        if max_quality == 0:
-            filter += [i for i in self.sources if i['quality'] in ['4K', '4k']]
-        if max_quality <= 1 and min_quality >= 1:
-            filter += [i for i in self.sources if i['quality'] in ['1080p', '1080P']]
-        if max_quality <= 2 and min_quality >= 2:
-            filter += [i for i in self.sources if i['quality'] in ['720p', '720P']]
-        if max_quality <= 3 and min_quality >= 3:
-            filter += [i for i in self.sources if i['quality'] in ['sd', 'SD']]
-            if remove_cam == 'false':
-                filter += [i for i in self.sources if i['quality'] in ['scr', 'cam', 'SCR', 'CAM']]
+        filter += [i for i in self.sources if i['quality'] in ['4K', '4k']]
+        filter += [i for i in self.sources if i['quality'] in ['1080p', '1080P']]
+        filter += [i for i in self.sources if i['quality'] in ['720p', '720P']]
+        filter += [i for i in self.sources if i['quality'] in ['sd', 'SD']]
+        filter += [i for i in self.sources if i['quality'] in ['scr', 'cam', 'SCR', 'CAM']]
         self.sources = filter
+
+        if main_sort == '1':
+            self.sources = [i for i in self.sources if i.get('debrid', '')] + [i for i in self.sources if not i.get('debrid', '')]
 
         if multi == True:
             self.sources = [i for i in self.sources if not i['language'] == 'en'] + [i for i in self.sources if i['language'] == 'en']
@@ -897,12 +947,16 @@ class sources:
         simple = control.setting('linesplit') == '2'
         single_line = control.setting('linesplit') == '0'
 
+        name_setting = control.setting('sources.name') == '0'
+
         for i in list(range(len(self.sources))):
 
             try: d = self.sources[i]['debrid']
             except: d = self.sources[i]['debrid'] = ''
 
-            t = source_utils.getFileType(self.sources[i]['url'])
+            info_fetch = ' '.join((self.sources[i].get('name', ''), self.sources[i]['url']))
+            t = source_utils.getFileType(info_fetch)
+            #t = source_utils.getFileType(self.sources[i]['url'])
 
             u = self.sources[i]['url']
 
@@ -916,9 +970,19 @@ class sources:
 
             l = self.sources[i]['language']
 
-            try: f = (' / '.join(['%s' % info.strip() for info in self.sources[i]['info'].split('|')]))
-            except: f = ''
-
+            try:
+                f = ' / '.join(['%s' % info.strip() for info in self.sources[i].get('info', '').split('|')])
+                if name_setting:
+                    if 'name' in self.sources[i] and not self.sources[i]['name'] == '':
+                        _name = cleantitle.get_title(self.sources[i]['name'])
+                        size_info = self.sources[i].get('info', '').split(' |')[0]
+                        if size_info.rstrip().lower().endswith('gb'):
+                            f = ' / '.join((size_info, _name))
+                        else:
+                            f = _name
+                        t = ''
+            except:
+                f = ''
 
             if d.lower() == 'alldebrid': d = 'AD'
             if d.lower() == 'debrid-link.fr': d = 'DL.FR'
@@ -928,35 +992,44 @@ class sources:
             if d.lower() == 'real-debrid': d = 'RD'
             if d.lower() == 'zevera': d = 'ZVR'
 
-
             if double_line:
                 if not d == '':
-                    label = '[COLOR %s]%02d' % (prem_identify, int(i+1))
+                    label = '[COLOR %s]%03d' % (prem_identify, int(i+1))
                     if multi == True and not l == 'en': label += ' | [B]%s[/B]' % l
                     label += ' | %s | [B]%s[/B] | %s | [B]%s[/B][/COLOR][CR]    [COLOR %s][I]%s /%s[/I][/COLOR]' % (d, q, p, s, sec_identify, f, t)
 
                 else:
-                    label = '%02d' % int(i+1)
+                    label = '%03d' % int(i+1)
                     if multi == True and not l == 'en': label += ' | [B]%s[/B]' % l
                     label += ' | [B]%s[/B] | %s | [B]%s[/B][CR]    [COLOR %s][I]%s /%s[/I][/COLOR]' % (q, p, s, sec_identify, f, t)
 
             elif simple:
-                label = '%02d' % int(i+1)
+                label = '%03d' % int(i+1)
                 if multi == True and not l == 'en': label += ' | [B]%s[/B]' % l
                 label += ' | %s | [B]%s[/B] | %s | [B]%s[/B]' % (d, q, p, s)
 
             else:
                 if not d == '':
-                    label = '[COLOR %s]%02d' % (prem_identify, int(i+1))
+                    label = '[COLOR %s]%03d' % (prem_identify, int(i+1))
                     if multi == True and not l == 'en': label += ' | [B]%s[/B]' % l
                     label += ' | %s | [B]%s[/B] | %s | [B]%s[/B] | [/COLOR][COLOR %s][I]%s /%s[/I][/COLOR]' % (d, q, p, s, sec_identify, f, t)
 
                 else:
-                    label = '%02d' % int(i+1)
+                    label = '%03d' % int(i+1)
                     if multi == True and not l == 'en': label += ' | [B]%s[/B]' % l
                     label += ' | [B]%s[/B] | %s | [B]%s[/B] | [COLOR %s][I]%s /%s[/I][/COLOR]' % (q, p, s, sec_identify, f, t)
 
             label = label.replace(' |  |', ' |').replace('| 0 |', '|').replace('[I] /[/I]', '').replace('[I] /%s[/I]' % t, '[I]%s[/I]' % t).replace('[I]%s /[/I]' % f, '[I]%s[/I]' % f)
+
+            # nasty
+            if double_line:
+                label_up = label.split('[CR]')[0]
+                label_up_clean = label_up.replace('[COLOR %s]' % prem_identify, '').replace('[/COLOR]', '').replace('[B]', '').replace('[/B]', '')
+                label_down = label.split('[CR]')[1]
+                label_down_clean = label_down.replace('[COLOR %s]' % sec_identify, '').replace('[/COLOR]', '').replace('[I]', '').replace('[/I]', '')
+                if len(label_down_clean) > len(label_up_clean):
+                    label_up += (len(label_down_clean) - len(label_up_clean)) * '  '
+                    label = label_up + '[CR]' + label_down
 
             self.sources[i]['label'] = '[UPPERCASE]' + label + '[/UPPERCASE]'
 
@@ -1022,6 +1095,7 @@ class sources:
             return url
         except:
             if info == True: self.errorForSources()
+            #log_utils.log('Resolve failure for url: {}'.format(url), 1)
             return
 
 
@@ -1039,8 +1113,7 @@ class sources:
             items = [items[select]]
             items = [i for i in items+next+prev][:40]
 
-            header = control.addonInfo('name')
-            header2 = header.upper()
+            header = control.addonInfo('name') + ': Resolving...'
 
             progressDialog = control.progressDialog if control.setting('progress.dialog') == '0' else control.progressDialogBG
             progressDialog.create(header, '')
@@ -1055,26 +1128,17 @@ class sources:
                     w = workers.Thread(self.sourcesResolve, items[i])
                     w.start()
 
+                    label = re.sub(' {2,}', ' ', str(items[i]['label']))
+
                     try:
                         if progressDialog.iscanceled(): break
-                        progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']).replace('[CR]    ', ' | '))
+                        progressDialog.update(int((100 / float(len(items))) * i), label)
                     except:
-                        progressDialog.update(int((100 / float(len(items))) * i), str(header2) + '[CR]' + str(items[i]['label']))
-
-                    '''
-                    if items[i].get('debrid').lower() == 'real-debrid':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('RealDebridResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('RealDebridResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'alldebrid':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('AllDebridResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('AllDebridResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'premiumize.me':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('PremiumizeMeResolver_cached_only') == 'false' or control.addon('script.module.resolveurl').getSetting('PremiumizeMeResolver_cached_only') == ''
-                    if items[i].get('debrid').lower() == 'linksnappy':
-                        no_skip = control.addon('script.module.resolveurl').getSetting('LinksnappyResolver_cached_only') == 'false'
-                    '''
+                        progressDialog.update(int((100 / float(len(items))) * i), str(header) + '[CR]' + label)
 
                     if items[i].get('source').lower() in self.hostcapDict:
                         offset = 60 * 2
-                    elif 'torrent' in items[i].get('source').lower():# and no_skip:
+                    elif 'torrent' in items[i].get('source').lower():
                         offset = float('inf')
                     else:
                         offset = 0
@@ -1128,11 +1192,11 @@ class sources:
             except: pass
             del progressDialog
 
-        except Exception as e:
+        except:
             try: progressDialog.close()
             except: pass
             del progressDialog
-            log_utils.log('Error %s' % str(e), log_utils.LOGNOTICE)
+            log_utils.log('sourcesDialog', 1)
 
 
     def sourcesDirect(self, items):
@@ -1142,6 +1206,9 @@ class sources:
         filter = [i for i in items if i['source'].lower() in self.hostblockDict]# and i['debrid'] == '']
         items = [i for i in items if not i in filter]
 
+        filter = [i for i in items if 'uncached' in i['source'].lower()]
+        items = [i for i in items if not i in filter]
+
         items = [i for i in items if ('autoplay' in i and i['autoplay'] == True) or not 'autoplay' in i]
 
         if control.setting('autoplay.sd') == 'true':
@@ -1149,8 +1216,7 @@ class sources:
 
         u = None
 
-        header = control.addonInfo('name')
-        header2 = header.upper()
+        header = control.addonInfo('name') + ': Resolving...'
 
         try:
             control.sleep(1000)
@@ -1162,11 +1228,12 @@ class sources:
             pass
 
         for i in list(range(len(items))):
+            label = re.sub(' {2,}', ' ', str(items[i]['label']))
             try:
                 if progressDialog.iscanceled(): break
-                progressDialog.update(int((100 / float(len(items))) * i), str(items[i]['label']).replace('[CR]    ', ' | '))
+                progressDialog.update(int((100 / float(len(items))) * i), label)
             except:
-                progressDialog.update(int((100 / float(len(items))) * i), str(header2) + '[CR]' + str(items[i]['label']))
+                progressDialog.update(int((100 / float(len(items))) * i), str(header) + '[CR]' + label)
 
             try:
                 if control.monitor.abortRequested(): return sys.exit()
@@ -1184,7 +1251,7 @@ class sources:
         return u
 
     def errorForSources(self):
-        control.infoDialog(six.ensure_str(control.lang(32401)), sound=False, icon='INFO')
+        control.infoDialog(control.lang(32401), sound=False, icon='INFO')
 
 
     def getLanguage(self):
@@ -1193,7 +1260,7 @@ class sources:
         return langDict.get(name, ['en'])
 
 
-    def getLocalTitle(self, title, imdb, tvdb, content):
+    def getLocalTitle(self, title, imdb, tmdb, content):
         lang = self._getPrimaryLang()
         if not lang:
             return title
@@ -1201,7 +1268,7 @@ class sources:
         if content == 'movie':
             t = trakt.getMovieTranslation(imdb, lang)
         else:
-            t = tvmaze.tvMaze().getTVShowTranslation(tvdb, lang)
+            t = trakt.getTVShowTranslation(tmdb, lang)
 
         return t or title
 
@@ -1233,46 +1300,34 @@ class sources:
 
         self.sourceFile = control.providercacheFile
 
-        if control.condVisibility('System.HasAddon(script.module.openscrapers)'):
-            scraperSetting = control.setting('module.provider')
-        else:
-            scraperSetting = control.setting('module.provider.alt')
-
-        oas_module_name = 'ProphetScrapers (' + str(control.addon('script.module.prophetscrapers').getSetting('package.folder')) + ' set):' \
-                          if control.addon('script.module.prophetscrapers').getSetting('package.folder') != 'ProphetScrapers' else 'ProphetScrapers:'
+        scraperSetting = control.setting('module.provider.alt')
 
         import prophetscrapers
         sourceDir1 = prophetscrapers.sources()
         from resources.lib import sources
         sourceDir2 = sources.sources()
-        try:
-            import openscrapers
-            sourceDir3 = openscrapers.sources()
-        except:
-            pass
+
+        oas_module_name = 'ProphetScrapers (' + str(control.addon('script.module.prophetscrapers').getSetting('package.folder')) + ' set):' \
+                          if control.addon('script.module.prophetscrapers').getSetting('package.folder') != 'ProphetScrapers' else 'ProphetScrapers:'
 
         try:
-            if scraperSetting == 'Prophet Scrapers':
+            if scraperSetting == 'ProphetScrapers':
                 self.sourceDict = sourceDir1
                 self.module_name = oas_module_name
-            elif scraperSetting == 'Open Scrapers':
-                self.sourceDict = sourceDir3
-                self.module_name = 'OpenScrapers:'
             elif scraperSetting == 'Built-in':
                 self.sourceDict = sourceDir2
                 self.module_name = 'Built-in providers:'
-            elif scraperSetting == 'Prophet + Built-in':
+            elif scraperSetting == 'ProphetScrapers + Built-in':
                 self.sourceDict = sourceDir1 + sourceDir2
                 self.module_name = 'Built-in + ' + oas_module_name
-            elif scraperSetting == 'Open + Built-in':
-                self.sourceDict = sourceDir3 + sourceDir2
-                self.module_name = 'Built-in + OpenScrapers:'
             else:
                 self.sourceDict = sourceDir1
                 self.module_name = oas_module_name
-                control.setSetting('module.provider', 'Prophet Scrapers')
+                control.setSetting('module.provider', 'ProphetScrapers')
         except:
-            return
+            self.sourceDict = sourceDir1
+            self.module_name = oas_module_name
+            control.setSetting('module.provider', 'ProphetScrapers')
 
         try:
             self.hostDict = resolveurl.relevant_resolvers(order_matters=True)
@@ -1283,7 +1338,7 @@ class sources:
             self.hostDict = []
 
         self.hostprDict = ['1fichier.com', 'dailyuploads.net', 'ddl.to', 'ddownload.com', 'dropapk.to', 'earn4files.com', 'filefactory.com', 'hexupload.net', 'mega.nz', 'multiup.org', 'nitroflare.com', 'oboom.com',
-                           'rapidgator.net', 'rg.to', 'rockfile.co', 'rockfile.eu', 'speed-down.org', 'turbobit.net', 'ul.to', 'uploaded.net', 'uploaded.to', 'uploadgig.com', 'uploadrocket.net', 'usersdrive.com']
+                           'rapidgator.net', 'rg.to', 'rockfile.co', 'rockfile.eu', 'turbobit.net', 'ul.to', 'uploaded.net', 'uploaded.to', 'uploadgig.com', 'uploadrocket.net', 'usersdrive.com']
 
         self.hostcapDict = ['openload.io', 'openload.co', 'oload.tv', 'oload.stream', 'oload.win', 'oload.download', 'oload.info', 'oload.icu', 'oload.fun', 'oload.life', 'openload.pw',
                             'vev.io', 'vidup.me', 'vidup.tv', 'vidup.io', 'vshare.io', 'vshare.eu', 'flashx.tv', 'flashx.to', 'flashx.sx', 'flashx.bz', 'flashx.cc',
@@ -1292,31 +1347,12 @@ class sources:
         self.hosthqDict = ['gvideo', 'google.com', 'thevideo.me', 'raptu.com', 'filez.tv', 'uptobox.com', 'uptostream.com',
                            'xvidstage.com', 'xstreamcdn.com', 'idtbox.com']
 
-        self.hostblockDict = ['zippyshare.com', 'youtube.com', 'facebook.com', 'twitch.tv', 'streamango.com', 'streamcherry.com',
-                              'openload.io', 'openload.co', 'openload.pw', 'oload.tv', 'oload.stream', 'oload.win', 'oload.download', 'oload.info', 'oload.icu', 'oload.fun', 'oload.life', 'oload.space', 'oload.monster',
-                              'rapidvideo.com', 'rapidvideo.is', 'rapidvid.to']
+        self.hostblockDict = ['youtube.com', 'youtu.be', 'youtube-nocookie.com', 'zippyshare.com', 'facebook.com', 'twitch.tv', 'streamango.com', 'streamcherry.com', 'rapidvideo.com', 'rapidvideo.is', 'rapidvid.to',
+                              'openload.io', 'openload.co', 'openload.pw', 'oload.tv', 'oload.stream', 'oload.win', 'oload.download', 'oload.info', 'oload.icu', 'oload.fun', 'oload.life', 'oload.space', 'oload.monster',]
 
         self.sourcecfDict = ['123123movies', '123movieshubz', 'extramovies', 'movie4kis', 'projectfree', 'rapidmoviez', 'rlsbb', 'scenerls', 'timewatch', 'tvmovieflix', '1337x', 'btdb', 'ytsam',
                              'animebase', 'filmpalast', 'hdfilme', 'iload', 'movietown', '1putlocker', 'animetoon', 'azmovie', 'cartoonhdto', 'cmoviestv', 'freefmovies', 'ganoolcam', 'projectfreetv', 'putlockeronl',
                              'sharemovies', 'solarmoviefree', 'tvbox', 'xwatchseries', '0day', '2ddl', 'doublr', 'pirateiro']
-
-    def enableAll(self):
-        try:
-            sourceDict = self.sourceDict
-            for i in sourceDict:
-                source_setting = 'provider.' + i[0].split('_')[0]
-                control.setSetting(source_setting, 'true')
-        except: pass
-        control.openSettings('3.3')
-
-    def disableAll(self):
-        try:
-            sourceDict = self.sourceDict
-            for i in sourceDict:
-                source_setting = 'provider.' + i[0].split('_')[0]
-                control.setSetting(source_setting, 'false')
-        except: pass
-        control.openSettings('3.4')
 
     def getPremColor(self, n):
         if n == '0': n = 'blue'

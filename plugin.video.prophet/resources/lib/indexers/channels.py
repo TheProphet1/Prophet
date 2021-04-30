@@ -79,7 +79,7 @@ class channels:
         [i.start() for i in threads]
         [i.join() for i in threads]
 
-        self.list = metacache.local(self.list, self.tm_img_link, 'poster2', 'fanart')
+        #self.list = metacache.local(self.list, self.tm_img_link, 'poster2', 'fanart')
 
         try: self.list = sorted(self.list, key=lambda k: k['num'])
         except: pass
@@ -199,7 +199,7 @@ class channels:
 
 
     def channelDirectory(self, items):
-        if items == None or len(items) == 0: control.idle() ; sys.exit()
+        if items == None or len(items) == 0: control.idle()# ; sys.exit()
 
         sysaddon = sys.argv[0]
 
@@ -214,13 +214,13 @@ class channels:
 
         isPlayable = 'true' if not 'plugin' in control.infoLabel('Container.PluginName') else 'false'
 
-        playbackMenu = six.ensure_str(control.lang(32063)) if control.setting('hosts.mode') == '2' else six.ensure_str(control.lang(32064))
+        playbackMenu = control.lang(32063) if control.setting('hosts.mode') == '2' else control.lang(32064)
 
-        queueMenu = six.ensure_str(control.lang(32065))
+        queueMenu = control.lang(32065)
 
-        refreshMenu = six.ensure_str(control.lang(32072))
+        refreshMenu = control.lang(32072)
 
-        infoMenu = six.ensure_str(control.lang(32101))
+        infoMenu = control.lang(32101)
 
 
         for i in items:

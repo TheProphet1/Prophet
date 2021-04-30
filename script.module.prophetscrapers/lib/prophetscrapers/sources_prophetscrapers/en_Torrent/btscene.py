@@ -19,10 +19,10 @@ import re
 
 try: from urlparse import parse_qs, urljoin
 except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
+try: from urllib import urlencode, quote_plus, unquote_plus
+except ImportError: from urllib.parse import urlencode, quote_plus, unquote_plus
 
-from prophetscrapers.modules import cleantitle, client, debrid, source_utils, utils
+from prophetscrapers.modules import cleantitle, client, debrid, source_utils
 
 
 class source:
@@ -90,21 +90,21 @@ class source:
                     link = re.findall('a title="Download Torrent Magnet" href="(magnet:.+?)"', post, re.DOTALL)
                     try:
                         size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
-                        dsize, isize = utils._size(size)
+                        dsize, isize = source_utils._size(size)
                     except BaseException:
-                        dsize, isize = 0, ''
+                        dsize, isize = 0.0, ''
                     for url in link:
+                        url = unquote_plus(url).split('&tr')[0].replace('&amp;', '&').replace(' ', '.')
                         if hdlr not in url:
                             continue
-                        url = url.split('&tr')[0]
-                        quality, info = source_utils.get_release_quality(url, url)
+                        name = url.split('&dn=')[1]
+                        quality, info = source_utils.get_release_quality(name, url)
                         if any(x in url for x in ['FRENCH', 'Ita', 'italian', 'TRUEFRENCH', '-lat-', 'Dublado']):
                             continue
                         info.insert(0, isize)
                         info = ' | '.join(info)
-                        sources.append(
-                            {'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                             'direct': False, 'debridonly': True, 'size': dsize})
+                        sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
+                                        'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
             except:
                 return
             return sources

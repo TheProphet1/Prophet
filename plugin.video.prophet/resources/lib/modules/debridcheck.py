@@ -20,7 +20,7 @@ __r_url__ = control.addon('script.module.resolveurl')
 rd_enabled = (__r_url__.getSetting('RealDebridResolver_enabled') == 'true' and __r_url__.getSetting('RealDebridResolver_token') != '')
 ad_enabled = (__r_url__.getSetting('AllDebridResolver_enabled') == 'true' and __r_url__.getSetting('AllDebridResolver_token') != '')
 pm_enabled = (__r_url__.getSetting('PremiumizeMeResolver_enabled') == 'true' and __r_url__.getSetting('PremiumizeMeResolver_token') != '')
-progressDialog = control.progressDialogBG
+dl_enabled = (__r_url__.getSetting('DebridLinkResolver_enabled') == 'true' and __r_url__.getSetting('DebridLinkResolver_token') != '')
 
 
 class RDapi:
@@ -107,6 +107,45 @@ class PMapi:
         except: resp = utils.byteify(response)
         return resp
 
+class DLapi:
+    def __init__(self):
+        self.token = __r_url__.getSetting('DebridLinkResolver_token')
+        self.client_id = 'TH7yOa_pgRD1MRyIs6496Q'
+        self.refresh = __r_url__.getSetting('DebridLinkResolver_refresh')
+        self.rest_base_url = 'https://debrid-link.fr/api/v2/'
+        self.oauth_url = 'https://debrid-link.fr/api/oauth/'
+        self.user_agent = 'ResolveURL for Kodi/{0}'.format(__r_url__.getAddonInfo('version'))
+
+    def _get(self, url):
+        original_url = url
+        url = self.rest_base_url + url
+        headers = {'User-Agent': self.user_agent, 'Authorization': 'Bearer {0}'.format(self.token)}
+        response = requests.get(url, headers=headers).text
+        if 'badToken' in response:
+            self.refreshToken()
+            response = self._get(original_url)
+        try: resp = utils.json_loads_as_str(response)
+        except: resp = utils.byteify(response)
+        return resp
+
+    def check_cache(self, hashes):
+        hash_string = ','.join(hashes) # '%2C'
+        url = 'seedbox/cached?url=%s' % hash_string
+        response = self._get(url)
+        return response
+
+    def refreshToken(self):
+        data = {'client_id': self.client_id,
+                'refresh_token': self.refresh,
+                'grant_type': 'refresh_token'}
+        url = self.oauth_url + 'token'
+        response = requests.post(url, data=data)
+        response = json.loads(response.text)
+        if 'access_token' in response: self.token = response['access_token']
+        if 'refresh_token' in response: self.refresh = response['refresh_token']
+        __r_url__.setSetting('DebridLinkResolver_token', self.token)
+        __r_url__.setSetting('DebridLinkResolver_refresh', self.refresh)
+
 class DebridCheck:
     def __init__(self):
         self.db_cache = DebridCache()
@@ -124,6 +163,10 @@ class DebridCheck:
         self.pm_cached_hashes = []
         self.pm_hashes_unchecked = []
         self.pm_process_results = []
+        self.dl_cached_hashes = []
+        self.dl_hashes_unchecked = []
+        self.dl_query_threads = []
+        self.dl_process_results = []
         self.starting_debrids = []
         self.starting_debrids_display = []
 
@@ -143,6 +186,10 @@ class DebridCheck:
             self.pm_cached_hashes = [str(i[0]) for i in self.cached_hashes if str(i[1]) == 'pm' and str(i[2]) == 'True']
             self.pm_hashes_unchecked = [i for i in self.hash_list if not any([h for h in self.cached_hashes if str(h[0]) == i and str(h[1]) =='pm'])]
             if self.pm_hashes_unchecked: self.starting_debrids.append(('Premiumize.me', self.PM_cache_checker))
+        if dl_enabled:
+            self.dl_cached_hashes = [str(i[0]) for i in self.cached_hashes if str(i[1]) == 'dl' and str(i[2]) == 'True']
+            self.dl_hashes_unchecked = [i for i in self.hash_list if not any([h for h in self.cached_hashes if str(h[0]) == i and str(h[1]) =='dl'])]
+            if self.dl_hashes_unchecked: self.starting_debrids.append(('Debrid-Link.fr', self.DL_cache_checker))
         if self.starting_debrids:
             for i in list(range(len(self.starting_debrids))):
                 self.main_threads.append(Thread(target=self.starting_debrids[i][1]))
@@ -151,9 +198,10 @@ class DebridCheck:
             self.debrid_check_dialog()
             [i.join() for i in self.main_threads]
         control.sleep(500)
-        return self.rd_cached_hashes, self.ad_cached_hashes, self.pm_cached_hashes
+        return self.rd_cached_hashes, self.ad_cached_hashes, self.pm_cached_hashes, self.dl_cached_hashes
 
     def debrid_check_dialog(self):
+        progressDialog = control.progressDialogBG
         timeout = 20
         progressDialog.create('Checking debrid cache, please wait..')
         #progressDialog.update(0)
@@ -200,6 +248,13 @@ class DebridCheck:
         self._pm_lookup(self.pm_hashes_unchecked)
         self._add_to_local_cache(self.pm_process_results, 'pm')
 
+    def DL_cache_checker(self):
+        hash_chunk_list = list(utils.chunks(self.dl_hashes_unchecked, 50))
+        for item in hash_chunk_list: self.dl_query_threads.append(Thread(target=self._dl_lookup, args=(item,)))
+        [i.start() for i in self.dl_query_threads]
+        [i.join() for i in self.dl_query_threads]
+        self._add_to_local_cache(self.dl_process_results, 'dl')
+
     def _rd_lookup(self, chunk):
         try:
             rd_cache_get = RDapi().check_cache(chunk)
@@ -211,7 +266,8 @@ class DebridCheck:
                         self.rd_cached_hashes.append(h)
                         cached = 'True'
                 self.rd_process_results.append((h, cached))
-        except: pass
+        except:
+            pass
 
     def _ad_lookup(self, hash_list):
         try:
@@ -225,7 +281,8 @@ class DebridCheck:
                     self.ad_process_results.append((i['hash'], cached))
             else:
                 for i in hash_list: self.ad_process_results.append((i, 'False'))
-        except: pass
+        except:
+            pass
 
     def _pm_lookup(self, hash_list):
         try:
@@ -236,7 +293,21 @@ class DebridCheck:
                     self.pm_cached_hashes.append(h)
                     cached = 'True'
                 self.pm_process_results.append((h, cached))
-        except: pass
+        except:
+            pass
+
+    def _dl_lookup(self, chunk):
+        try:
+            dl_cache_get = DLapi().check_cache(chunk)
+            for h in chunk:
+                cached = 'False'
+                if dl_cache_get.get('success', False):
+                    if h in dl_cache_get.get('value'):
+                        self.dl_cached_hashes.append(h)
+                        cached = 'True'
+                self.dl_process_results.append((h, cached))
+        except:
+            pass
 
     def _query_local_cache(self, _hash):
         cached = self.db_cache.get_all(_hash)

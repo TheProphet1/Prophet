@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.2" provider-name="The Prophet">
+<addon id="script.module.prophetscrapers" name="Prophet Scrapers" version="2.0.2a" provider-name="The Prophet">
     <requires>
         <!--<import addon="xbmc.python" version="2.20.0" />-->
         <import addon="script.module.beautifulsoup4" />

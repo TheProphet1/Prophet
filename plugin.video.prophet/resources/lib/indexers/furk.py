@@ -1,5 +1,5 @@
 '''
-    Prophet Add-on
+    Incursion Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import simplejson as json
 import six
 from six.moves import urllib_parse
 
-sysaddon = sys.argv[0] ; syshandle = int(sys.argv[1])
 accepted_extensions = ['mkv','mp4','avi', 'm4v']
 
 class furk:
@@ -106,7 +105,7 @@ class furk:
     def search_new(self):
             control.idle()
 
-            t = six.ensure_str(control.lang(32010))
+            t = control.lang(32010)
             k = control.keyboard('', t) ; k.doModal()
             q = k.getText() if k.isConfirmed() else None
 
@@ -166,6 +165,8 @@ class furk:
 
     def addDirectoryItem(self, name, query, thumb, icon, isAction=True):
         try:
+            sysaddon = sys.argv[0]
+            syshandle = int(sys.argv[1])
             name = six.ensure_str(name)
             url = '%s?action=%s' % (sysaddon, query) if isAction == True else query
             item = control.item(label=name)
@@ -175,5 +176,6 @@ class furk:
             pass
 
     def endDirectory(self):
+        syshandle = int(sys.argv[1])
         control.content(syshandle, 'addons')
         control.directory(syshandle, cacheToDisc=True)

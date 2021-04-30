@@ -8,6 +8,9 @@
 # ----------------------------------------------------------------------------
 #######################################################################
 
+# - Converted to py3/2 for TheOath
+
+
 import re
 
 try: from urlparse import parse_qs, urljoin
@@ -17,15 +20,15 @@ except ImportError: from urllib.parse import urlencode, quote_plus
 
 from six import ensure_text
 
-from prophetscrapers.modules import cleantitle, client, source_utils
+from prophetscrapers.modules import cleantitle, client, debrid, source_utils
 
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['300mbfilms.co']
-        self.base_link = 'https://www.300mbfilms.co'
+        self.domains = ['300mbfilms.co', '300mbfilms.ws']
+        self.base_link = 'https://www.300mbfilms.ws'
         self.search_link = '/?s=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -58,8 +61,10 @@ class source:
             return
 
     def sources(self, url, hostDict, hostprDict):
+        sources = []
         try:
-            sources = []
+            if debrid.status() is False:
+                return sources
 
             if url is None:
                 return sources
@@ -96,17 +101,17 @@ class source:
                     if not cleantitle.get(title) in cleantitle.get(name):
                         continue
                     name = client.replaceHTMLCodes(name)
+                    try: _name = name.lower().replace('permalink to', '')
+                    except: _name = name
 
                     quality, info = source_utils.get_release_quality(name, link)
 
                     try:
                         size = re.findall('((?:\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|MB|MiB))', name)[-1]
-                        div = 1 if size.endswith(('GB', 'GiB')) else 1024
-                        size = float(re.sub('[^0-9|/.|/,]', '', size)) / div
-                        size = '%.2f GB' % size
-                        info.insert(0, size)
+                        dsize, isize = source_utils._size(size)
                     except Exception:
-                        pass
+                        dsize, isize = 0.0, ''
+                    info.insert(0, isize)
 
                     info = ' | '.join(info)
 
@@ -132,7 +137,7 @@ class source:
                 #host = host.encode('utf-8')
                 host = ensure_text(host)
 
-                sources.append({'source': host, 'quality': item[1], 'language': 'en', 'url': url, 'info': item[2], 'direct': False, 'debridonly': False})
+                sources.append({'source': host, 'quality': item[1], 'language': 'en', 'url': url, 'info': item[2], 'direct': False, 'debridonly': True, 'size': dsize, 'name': _name})
             return sources
         except Exception:
             return sources

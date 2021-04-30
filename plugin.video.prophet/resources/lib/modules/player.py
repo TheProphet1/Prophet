@@ -19,21 +19,18 @@
 """
 
 
-import re,sys,time,xbmc
+import re, sys, time, os, base64, codecs, gzip
 import simplejson as json
-import hashlib,os,base64,codecs,gzip#,urllib,xmlrpclib, StringIO
+from kodi_six import xbmc
 
 import six
 from six.moves import urllib_parse, xmlrpc_client
 
-try: from sqlite3 import dbapi2 as database
-except: from pysqlite2 import dbapi2 as database
-
+from resources.lib.modules import bookmarks
 from resources.lib.modules import control
 from resources.lib.modules import cleantitle
 from resources.lib.modules import playcount
 from resources.lib.modules import trakt
-
 
 
 class player(xbmc.Player):
@@ -41,7 +38,7 @@ class player(xbmc.Player):
         xbmc.Player.__init__(self)
 
 
-    def run(self, title, year, season, episode, imdb, tvdb, url, meta):
+    def run(self, title, year, season, episode, imdb, tmdb, url, meta):
         try:
             control.sleep(200)
 
@@ -57,16 +54,19 @@ class player(xbmc.Player):
 
             self.DBID = None
             self.imdb = imdb if not imdb == None else '0'
-            self.tvdb = tvdb if not tvdb == None else '0'
-            self.ids = {'imdb': self.imdb, 'tvdb': self.tvdb}
+            self.tmdb = tmdb if not tmdb == None else '0'
+            self.ids = {'imdb': self.imdb, 'tmdb': self.tmdb}
             self.ids = dict((k,v) for k, v in six.iteritems(self.ids) if not v == '0')
 
-            self.offset = bookmarks().get(self.name, season, episode, imdb, self.year)
+            self.offset = bookmarks.get(self.content, imdb, season, episode)
 
-            poster, thumb, meta = self.getMeta(meta)
+            poster, thumb, fanart, clearlogo, clearart, discart, meta = self.getMeta(meta)
 
             item = control.item(path=url)
-            item.setArt({'icon': thumb, 'thumb': thumb, 'poster': poster, 'tvshow.poster': poster, 'season.poster': poster})
+            if self.content == 'movie':
+                item.setArt({'icon': thumb, 'thumb': thumb, 'poster': poster, 'fanart': fanart, 'clearlogo': clearlogo, 'clearart': clearart, 'discart': discart})
+            else:
+                item.setArt({'icon': thumb, 'thumb': thumb, 'tvshow.poster': poster, 'season.poster': poster, 'fanart': fanart, 'clearlogo': clearlogo, 'clearart': clearart})
             item.setInfo(type='video', infoLabels = control.metadataClean(meta))
 
             if 'plugin' in control.infoLabel('Container.PluginName'):
@@ -84,13 +84,16 @@ class player(xbmc.Player):
 
 
     def getMeta(self, meta):
+
         try:
-            poster = meta['poster'] if 'poster' in meta else '0'
-            thumb = meta['thumb'] if 'thumb' in meta else poster
+            poster = meta.get('poster', '') or control.addonPoster()
+            thumb = meta.get('thumb', '') or poster
+            fanart = meta.get('fanart', '') or control.addonFanart()
+            clearlogo = meta.get('clearlogo', '') or ''
+            clearart = meta.get('clearart', '') or ''
+            discart = meta.get('discart', '') or ''
 
-            if poster == '0': poster = control.addonPoster()
-
-            return (poster, thumb, meta)
+            return poster, thumb, fanart, clearlogo, clearart, discart, meta
         except:
             pass
 
@@ -117,7 +120,7 @@ class player(xbmc.Player):
 
             poster = thumb = meta['thumbnail']
 
-            return (poster, thumb, meta)
+            return poster, thumb, '', '', '', '', meta
         except:
             pass
 
@@ -150,13 +153,12 @@ class player(xbmc.Player):
 
             thumb = meta['thumbnail']
 
-            return (poster, thumb, meta)
+            return poster, thumb, '', '', '', '', meta
         except:
             pass
 
-
-        poster, thumb, meta = '', '', {'title': self.name}
-        return (poster, thumb, meta)
+        poster, thumb, fanart, clearlogo, clearart, discart, meta = '', '', '', '', '', '', {'title': self.name}
+        return poster, thumb, fanart, clearlogo, clearart, discart, meta
 
 
     def keepPlaybackAlive(self):
@@ -168,7 +170,7 @@ class player(xbmc.Player):
             overlay = playcount.getMovieOverlay(playcount.getMovieIndicators(), self.imdb)
 
         elif self.content == 'episode':
-            overlay = playcount.getEpisodeOverlay(playcount.getTVShowIndicators(), self.imdb, self.tvdb, self.season, self.episode)
+            overlay = playcount.getEpisodeOverlay(playcount.getTVShowIndicators(), self.imdb, self.tmdb, self.season, self.episode)
 
         else:
             overlay = '6'
@@ -197,7 +199,7 @@ class player(xbmc.Player):
                     self.totalTime = self.getTotalTime()
                     self.currentTime = self.getTime()
 
-                    watcher = (self.currentTime / self.totalTime >= .9)
+                    watcher = (self.currentTime / self.totalTime >= .92)
                     property = control.window.getProperty(pname)
 
                     if watcher == True and not property == '7':
@@ -219,16 +221,16 @@ class player(xbmc.Player):
                     self.totalTime = self.getTotalTime()
                     self.currentTime = self.getTime()
 
-                    watcher = (self.currentTime / self.totalTime >= .9)
+                    watcher = (self.currentTime / self.totalTime >= .92)
                     property = control.window.getProperty(pname)
 
                     if watcher == True and not property == '7':
                         control.window.setProperty(pname, '7')
-                        playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '7')
+                        playcount.markEpisodeDuringPlayback(self.imdb, self.tmdb, self.season, self.episode, '7')
 
                     elif watcher == False and not property == '6':
                         control.window.setProperty(pname, '6')
-                        playcount.markEpisodeDuringPlayback(self.imdb, self.tvdb, self.season, self.episode, '6')
+                        playcount.markEpisodeDuringPlayback(self.imdb, self.tmdb, self.season, self.episode, '6')
                 except:
                     pass
                 xbmc.sleep(2000)
@@ -264,15 +266,15 @@ class player(xbmc.Player):
     def onAVStarted(self):
         control.execute('Dialog.Close(all,true)')
 
-        if control.setting('bookmarks') == 'true' and not self.offset == '0' and self.isPlayingVideo(): 
+        if control.setting('bookmarks') == 'true' and int(self.offset) > 120 and self.isPlayingVideo():
             if control.setting('bookmarks.auto') == 'true':
                 self.seekTime(float(self.offset))
             else:
                 self.pause()
-                minutes, seconds = divmod(float(self.offset), 60);
+                minutes, seconds = divmod(float(self.offset), 60)
                 hours, minutes = divmod(minutes, 60)
                 label = '%02d:%02d:%02d' % (hours, minutes, seconds)
-                label = (control.lang2(12022).format(label))
+                label = control.lang2(12022).format(label)
                 if control.setting('rersume.source') == '1' and trakt.getTraktCredentialsInfo() == True:
                     yes = control.yesnoDialog(label + '[CR]  (Trakt scrobble)', heading=control.lang2(13404))
                 else:
@@ -284,23 +286,23 @@ class player(xbmc.Player):
         subtitles().get(self.name, self.imdb, self.season, self.episode)
         self.idleForPlayback()
 
+
     def onPlayBackStarted(self):
-        if int(control.getKodiVersion()) < 18:
+        if control.getKodiVersion() < 18:
             control.execute('Dialog.Close(all,true)')
 
-            if control.setting('bookmarks') == 'true' and not self.offset == '0' and self.isPlayingVideo(): 
+            if control.setting('bookmarks') == 'true' and int(self.offset) > 120 and self.isPlayingVideo():
                 if control.setting('bookmarks.auto') == 'true':
                     self.seekTime(float(self.offset))
                 else:
                     self.pause()
-                    minutes, seconds = divmod(float(self.offset), 60);
+                    minutes, seconds = divmod(float(self.offset), 60)
                     hours, minutes = divmod(minutes, 60)
                     label = '%02d:%02d:%02d' % (hours, minutes, seconds)
-                    label = (six.ensure_str(control.lang2(12022).format(label)))
+                    label = six.ensure_str(control.lang2(12022).format(label))
                     if control.setting('rersume.source') == '1' and trakt.getTraktCredentialsInfo() == True:
-                        yes = control.yesnoDialog(label + '[CR]  (Trakt scrobble)', heading=control.lang2(13404))
-                    else:
-                        yes = control.yesnoDialog(label, heading=six.ensure_str(control.lang2(13404)))
+                        label += '[CR]  (Trakt scrobble)'
+                    yes = control.yesnoDialog(label, heading=control.lang2(13404))
                     if yes:
                         self.seekTime(float(self.offset))
                     self.pause()
@@ -310,13 +312,13 @@ class player(xbmc.Player):
         else:
             self.onAVStarted()
 
+
     def onPlayBackStopped(self):
-        control.sleep(3000)
-        if int(self.currentTime) > 120:
-            if control.setting('bookmarks') == 'true':
-                bookmarks().reset(self.currentTime, self.totalTime, self.name, self.year)
-            if (trakt.getTraktCredentialsInfo() == True and control.setting('trakt.scrobble') == 'true'):
-                bookmarks().set_scrobble(self.currentTime, self.totalTime, self.content, self.imdb, self.tvdb, self.season, self.episode)
+        #control.sleep(3000)
+        #if control.setting('bookmarks') == 'true':
+        bookmarks.reset(self.currentTime, self.totalTime, self.content, self.imdb, self.season, self.episode)
+        if (trakt.getTraktCredentialsInfo() == True and control.setting('trakt.scrobble') == 'true'):
+            bookmarks.set_scrobble(self.currentTime, self.totalTime, self.content, self.imdb, self.tmdb, self.season, self.episode)
 
         try:
             if float(self.currentTime / self.totalTime) >= 0.92:
@@ -327,7 +329,11 @@ class player(xbmc.Player):
         if control.setting('crefresh') == 'true':
             control.refresh()
 
+
     def onPlayBackEnded(self):
+        bookmarks.reset(1, 1, self.content, self.imdb, self.season, self.episode)
+        if (trakt.getTraktCredentialsInfo() == True and control.setting('trakt.scrobble') == 'true'):
+            bookmarks.set_scrobble(1, 1, self.content, self.imdb, self.tmdb, self.season, self.episode)
         self.libForPlayback()
 
 
@@ -396,7 +402,7 @@ class subtitles:
             content = gzip.GzipFile(fileobj=six.BytesIO(content)).read()
             if six.PY3: content = six.ensure_text(content)
 
-            subtitle = xbmc.translatePath('special://temp/')
+            subtitle = control.transPath('special://temp/')
             subtitle = os.path.join(subtitle, 'TemporarySubs.%s.srt' % lang)
 
             codepage = codePageDict.get(lang, '')
@@ -411,107 +417,14 @@ class subtitles:
             file.write(str(content))
             file.close()
 
-            control.sleep(1000)
-            if control.setting('subtitles.notify') == 'true':
-                if xbmc.Player().isPlayingVideo():
-                    control.infoDialog(subname, heading='{} subtitles downloaded'.format(str(lang).upper()), time=6000)
+            xbmc.sleep(1000)
             xbmc.Player().setSubtitles(subtitle)
+
+            if control.setting('subtitles.notify') == 'true':
+                if xbmc.Player().isPlaying() and xbmc.Player().isPlayingVideo():
+                    control.execute('Dialog.Close(all,true)')
+                    xbmc.sleep(3000)
+                    control.infoDialog(subname, heading='{} subtitles downloaded'.format(str(lang).upper()), time=6000)
         except:
             pass
-
-
-class bookmarks:
-    def get(self, name, season, episode, imdb, year='0'):
-        offset = '0'
-
-        if control.setting('rersume.source') == '1' and trakt.getTraktCredentialsInfo() == True:
-            try:
-
-                if not episode is None:
-
-                    # Looking for a Episode progress
-                    traktInfo = trakt.getTraktAsJson('https://api.trakt.tv/sync/playback/episodes?extended=full')
-                    for i in traktInfo:
-                        if imdb == i['show']['ids']['imdb']:
-                            # Checking Episode Number
-                            if int(season) == i['episode']['season'] and int(episode) == i['episode']['number']:
-                                # Calculating Offset to seconds
-                                offset = (float(i['progress'] / 100) * int(i['episode']['runtime']) * 60)
-                                seekable = 1 < i['progress'] < 95
-                                if not seekable:
-                                    offset = '0'
-                else:
-
-                    # Looking for a Movie Progress
-                    traktInfo = trakt.getTraktAsJson('https://api.trakt.tv/sync/playback/movies?extended=full')
-                    for i in traktInfo:
-                        if imdb == i['movie']['ids']['imdb']:
-                            # Calculating Offset to seconds
-                            offset = (float(i['progress'] / 100) * int(i['movie']['runtime']) * 60)
-                            seekable = 1 < i['progress'] < 95
-                            if not seekable:
-                                offset = '0'
-
-                return offset
-
-            except:
-                return '0'
-
-        else:
-            try:
-                offset = '0'
-
-                idFile = hashlib.md5()
-                for i in name: idFile.update(str(i))
-                for i in year: idFile.update(str(i))
-                idFile = str(idFile.hexdigest())
-
-                dbcon = database.connect(control.bookmarksFile)
-                dbcur = dbcon.cursor()
-                dbcur.execute("SELECT * FROM bookmark WHERE idFile = '%s'" % idFile)
-                match = dbcur.fetchone()
-                self.offset = str(match[1])
-                dbcon.commit()
-                if self.offset == '0':
-                    raise Exception()
-
-                return self.offset
-            except:
-                return offset
-
-
-    def reset(self, current_time, total_time, _name, _year='0'):
-        try:
-            timeInSeconds = str(current_time)
-            ok = int(current_time) > 120 and (current_time / total_time) <= .95
-
-            idFile = hashlib.md5()
-            for i in _name: idFile.update(str(i))
-            for i in _year: idFile.update(str(i))
-            idFile = str(idFile.hexdigest())
-            control.makeFile(control.dataPath)
-            dbcon = database.connect(control.bookmarksFile)
-            dbcur = dbcon.cursor()
-            dbcur.execute("CREATE TABLE IF NOT EXISTS bookmark (""idFile TEXT, ""timeInSeconds TEXT, ""UNIQUE(idFile)"");")
-            dbcur.execute("DELETE FROM bookmark WHERE idFile = '%s'" % idFile)
-            if ok: dbcur.execute("INSERT INTO bookmark Values (?, ?)", (idFile, timeInSeconds))
-            dbcon.commit()
-        except:
-            pass
-
-
-    def set_scrobble(self, current_time, total_time, _content, _imdb='', _tvdb='', _season='', _episode=''):
-        try:
-            percent = float((current_time / total_time)) * 100
-            if percent < 95:
-                trakt.scrobbleMovie(_imdb, percent) if _content == 'movie' else trakt.scrobbleEpisode(_tvdb, _season, _episode, percent)
-                if control.setting('trakt.scrobble.notify') == 'true':
-                    control.infoDialog('Trakt: Scrobbled')
-        except:
-            import traceback
-            from resources.lib.modules import log_utils
-            failure = traceback.format_exc()
-            log_utils.log('Scrobble - Exception: ' + str(failure))
-            control.infoDialog('Scrobble Failed')
-
 

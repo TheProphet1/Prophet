@@ -66,23 +66,22 @@ class source:
             return
 
     def sources(self, url, hostDict, hostprDict):
+        self._sources = []
         try:
-            self._sources = []
             if url is None:
                 return self._sources
 
             if debrid.status() is False:
-                raise Exception()
+                return self._sources
 
             data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            self.title = cleantitle.get_query(self.title)
             self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
-            query = '%s S%02dE%02d' % (
-            data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (
-            data['title'], data['year'])
+            query = '%s S%02dE%02d' % (self.title, int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (self.title, data['year'])
             query = re.sub(r'(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
             if 'tvshowtitle' in data:
                 url = self.search.format('8', quote(query))
@@ -124,7 +123,7 @@ class source:
                 dsize = float(size) / div
                 isize = '%.2f GB' % dsize
             except BaseException:
-                dsize, isize = 0, ''
+                dsize, isize = 0.0, ''
 
             info.insert(0, isize)
 
@@ -132,7 +131,7 @@ class source:
 
             if cleantitle.get(re.sub('(|)', '', t)) == cleantitle.get(self.title):
                 if y == self.hdlr:
-                    self._sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+                    self._sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
 
         except BaseException:
             pass

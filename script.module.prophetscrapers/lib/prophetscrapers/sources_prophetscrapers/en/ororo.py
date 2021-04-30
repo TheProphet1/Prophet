@@ -17,12 +17,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+# - Converted to py3/2 for TheOath
 
-import re,urlparse,json,base64
+
+import re,base64
+
+try: from urlparse import urljoin
+except ImportError: from urllib.parse import urljoin
+
+import simplejson as json
 
 from prophetscrapers.modules import cache
 from prophetscrapers.modules import control
 from prophetscrapers.modules import client
+from prophetscrapers.modules import log_utils
 
 
 class source:
@@ -37,8 +45,8 @@ class source:
         self.show_link = '/api/v2/shows/%s'
         self.episode_link = '/api/v2/episodes/%s'
 
-        self.user = control.addon('plugin.video.prophet').getSetting('ororo.user')
-        self.password = control.addon('plugin.video.prophet').getSetting('ororo.pass')
+        self.user = control.setting('ororo.user')
+        self.password = control.setting('ororo.pass')
         self.headers = {
         'Authorization': 'Basic %s' % base64.b64encode('%s:%s' % (self.user, self.password)),
         'User-Agent': 'Covenant for Kodi'
@@ -54,7 +62,8 @@ class source:
             url= self.movie_link % url
 
             return url
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return
 
 
@@ -67,7 +76,8 @@ class source:
             url= self.show_link % url
 
             return url
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return
 
 
@@ -77,7 +87,7 @@ class source:
 
             if url == None: return
 
-            url = urlparse.urljoin(self.base_link, url)
+            url = urljoin(self.base_link, url)
 
             r = client.request(url, headers=self.headers)
             r = json.loads(r)['episodes']
@@ -89,33 +99,36 @@ class source:
             url= self.episode_link % url[0][0]
 
             return url
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return
 
 
     def ororo_moviecache(self, user):
         try:
-            url = urlparse.urljoin(self.base_link, self.moviesearch_link)
+            url = urljoin(self.base_link, self.moviesearch_link)
 
             r = client.request(url, headers=self.headers)
             r = json.loads(r)['movies']
             r = [(str(i['id']), str(i['imdb_id'])) for i in r]
             r = [(i[0], 'tt' + re.sub('[^0-9]', '', i[1])) for i in r]
             return r
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return
 
 
     def ororo_tvcache(self, user):
         try:
-            url = urlparse.urljoin(self.base_link, self.tvsearch_link)
+            url = urljoin(self.base_link, self.tvsearch_link)
 
             r = client.request(url, headers=self.headers)
             r = json.loads(r)['shows']
             r = [(str(i['id']), str(i['imdb_id'])) for i in r]
             r = [(i[0], 'tt' + re.sub('[^0-9]', '', i[1])) for i in r]
             return r
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return
 
 
@@ -127,14 +140,15 @@ class source:
 
             if (self.user == '' or self.password == ''): raise Exception()
 
-            url = urlparse.urljoin(self.base_link, url)
+            url = urljoin(self.base_link, url)
             url = client.request(url, headers=self.headers)
             url = json.loads(url)['url']
 
             sources.append({'source': 'direct', 'quality': 'HD', 'language': 'en', 'url': url, 'direct': True, 'debridonly': False})
 
             return sources
-        except:
+        except Exception as e:
+            log_utils.log('Ororo: '+str(e))
             return sources
 
 

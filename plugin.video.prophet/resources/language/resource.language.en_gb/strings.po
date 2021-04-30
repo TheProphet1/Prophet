@@ -366,7 +366,7 @@ msgid "[COLOR yellow]Provider Source:[/COLOR]"
 msgstr ""
 
 msgctxt "#32085"
-msgid "[COLOR yellow]Open Prophet Scrapers Settings[/COLOR]"
+msgid "[COLOR yellow]ProphetScrapers Settings[/COLOR]"
 msgstr ""
 
 msgctxt "#32086"
@@ -478,7 +478,7 @@ msgid "[COLOR yellow]Enable metadata on source list[/COLOR]"
 msgstr ""
 
 msgctxt "#32113"
-msgid "[COLOR yellow]Sort torrents by size[/COLOR]"
+msgid "[COLOR yellow]Sort torrents by size if available[/COLOR]"
 msgstr ""
 
 msgctxt "#32114"
@@ -486,7 +486,7 @@ msgid "[COLOR yellow]Verify torrents cache[/COLOR]"
 msgstr ""
 
 msgctxt "#32115"
-msgid "[COLOR yellow]WiP - Supported services: Real-Debrid, AllDebrid, Premiumize[/COLOR]"
+msgid "[COLOR yellow]WiP - Supported services: Real-Debrid, AllDebrid, Premiumize, Debrid-Link[/COLOR]"
 msgstr ""
 
 msgctxt "#32116"
@@ -534,7 +534,80 @@ msgid "[COLOR yellow]Remove uncached torrents if cached exist[/COLOR]"
 msgstr ""
 
 msgctxt "#32127"
-msgid "[COLOR yellow]Min Quality[/COLOR]"
+msgid "[COLOR yellow]Min Resolution[/COLOR]"
+msgstr ""
+""
+
+msgctxt "#32128"
+msgid "[COLOR yellow]Get episodes ratings from Trakt (slow)[/COLOR]"
+msgstr ""
+
+msgctxt "#32129"
+msgid "[COLOR yellow]Enable extra & hq artwork[/COLOR]"
+msgstr ""
+
+msgctxt "#32130"
+msgid "[COLOR yellow]Personal Fanart.tv API key required to be entered on Accounts tab[/COLOR]"
+msgstr ""
+
+msgctxt "#32131"
+msgid "[COLOR yellow]Filename when available[/COLOR]"
+msgstr ""
+
+msgctxt "#32132"
+msgid "[COLOR yellow]Simplified info[/COLOR]"
+msgstr ""
+
+msgctxt "#32133"
+msgid "[COLOR yellow]Min movie size (GB)[/COLOR]"
+msgstr ""
+
+msgctxt "#32134"
+msgid "[COLOR yellow]Max movie size (GB)[/COLOR]"
+msgstr ""
+
+msgctxt "#32135"
+msgid "[COLOR yellow]"Min episode size (GB)[/COLOR]"
+msgstr ""
+
+msgctxt "#32136"
+msgid "[COLOR yellow]Max episode size (GB)[/COLOR]"
+msgstr ""
+
+msgctxt "#32137"
+msgid "[COLOR yellow]Enable size filtering[/COLOR]"
+msgstr ""
+
+msgctxt "#32138"
+msgid "[COLOR yellow]Items per page[/COLOR]"
+msgstr ""
+
+msgctxt "#32139"
+msgid "[COLOR yellow]WARNING: Enable only if you were asked to.[CR]Possible memory leaks.[/COLOR]"
+msgstr ""
+
+msgctxt "#32140"
+msgid "[COLOR yellow]Log file is empty.[CR]Please enable debugging in add-on\'s settings and restart Kodi.[CR]Reproduce the problem and try uploading again.[CR]DISABLE debugging afterwards.[/COLOR]"
+msgstr ""
+
+msgctxt "#32141"
+msgid "[COLOR yellow]Your log file was uploaded to:[CR][CR]    [B]%s[/B][/COLOR]"
+msgstr ""
+
+msgctxt "#32142"
+msgid "[COLOR yellow]Sorting Options[/COLOR]"
+msgstr ""
+
+msgctxt "#32143"
+msgid "[COLOR yellow]Primal sorting parameter[/COLOR]"
+msgstr ""
+
+msgctxt "#32144"
+msgid "[COLOR yellow]Resolution[/COLOR]"
+msgstr ""
+
+msgctxt "#32145"
+msgid "[COLOR yellow]Premium[/COLOR]"
 msgstr ""
 
 msgctxt "#32200"
@@ -774,11 +847,11 @@ msgid "[COLOR yellow]Background[/COLOR]"
 msgstr ""
 
 msgctxt "#32338"
-msgid "[COLOR yellow]Sources Filters and Sorting Options[/COLOR]"
+msgid "[COLOR yellow]Sources Filters[/COLOR]"
 msgstr ""
 
 msgctxt "#32339"
-msgid "[COLOR yellow]Max Quality[/COLOR]"
+msgid "[COLOR yellow]Resolution[/COLOR]"
 msgstr ""
 
 msgctxt "#32340"

@@ -21,14 +21,11 @@
 
 import re
 import simplejson as json
-import xbmc
-import xbmcgui
-import xbmcplugin
-import xbmcvfs
 import os
 import inspect
 import sys
-from io import open
+from kodi_six import xbmc, xbmcgui, xbmcplugin, xbmcvfs
+#from io import open
 
 from six.moves import urllib_parse, urllib_request
 
@@ -37,7 +34,7 @@ def download(name, image, url):
 
     if url == None: return
 
-    from resources.lib.modules import control
+    from resources.lib.modules import control, cleantitle
 
     try: headers = dict(urllib_parse.parse_qsl(url.rsplit('|', 1)[1]))
     except: headers = dict('')
@@ -47,6 +44,7 @@ def download(name, image, url):
     content = re.compile('(.+?)\sS(\d*)E\d*$').findall(name)
     try: transname = name.translate(None, '\/:*?"<>|').strip('.')
     except: transname = name.translate(str.maketrans('', '', '\/:*?"<>|')).strip('.')
+    transname = cleantitle.normalize(transname)
     levels =['../../../..', '../../..', '../..', '..']
 
     if len(content) == 0:
@@ -179,8 +177,8 @@ def doDownload(url, dest, title, image, headers):
 
     print('Download File Size : %dMB %s ' % (mb, dest))
 
-    f = open(dest, mode='wb')
-    #f = xbmcvfs.File(dest, 'w')
+    #f = open(dest, mode='wb')
+    f = xbmcvfs.File(dest, 'w')
 
     chunk  = None
     chunks = []

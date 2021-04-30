@@ -24,24 +24,20 @@ import sys
 import six
 from six.moves import urllib_parse
 
-import xbmc
-import xbmcaddon
-import xbmcgui
-import xbmcplugin
-import xbmcvfs
+from kodi_six import xbmc, xbmcaddon, xbmcgui, xbmcplugin, xbmcvfs
 
-def six_encode(txt, char='utf-8'):
+def six_encode(txt, char='utf-8', errors='replace'):
     if six.PY2 and isinstance(txt, six.text_type):
-        txt = txt.encode(char)
+        txt = txt.encode(char, errors=errors)
     return txt
 
-def six_decode(txt, char='utf-8'):
+def six_decode(txt, char='utf-8', errors='replace'):
     if six.PY3 and isinstance(txt, six.binary_type):
-        txt = txt.decode(char)
+        txt = txt.decode(char, errors=errors)
     return txt
 
 def getKodiVersion():
-    return xbmc.getInfoLabel("System.BuildVersion").split(".")[0]
+    return int(xbmc.getInfoLabel("System.BuildVersion").split(".")[0])
 
 integer = 1000
 
@@ -89,6 +85,8 @@ image = xbmcgui.ControlImage
 
 getCurrentDialogId = xbmcgui.getCurrentWindowDialogId()
 
+getCurrentWinId = xbmcgui.getCurrentWindowId()
+
 keyboard = xbmc.Keyboard
 
 monitor = xbmc.Monitor()
@@ -103,7 +101,7 @@ playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
 
 resolve = xbmcplugin.setResolvedUrl
 
-legalFilename = xbmc.makeLegalFilename if int(getKodiVersion()) < 19 else xbmcvfs.makeLegalFilename
+legalFilename = xbmc.makeLegalFilename if getKodiVersion() < 19 else xbmcvfs.makeLegalFilename
 
 openFile = xbmcvfs.File
 
@@ -115,19 +113,19 @@ deleteDir = xbmcvfs.rmdir
 
 listDir = xbmcvfs.listdir
 
-transPath = xbmc.translatePath
+transPath = xbmc.translatePath if getKodiVersion() < 19 else xbmcvfs.translatePath
 
-skinPath = xbmc.translatePath('special://skin/')
+skinPath = transPath('special://skin/')
 
-addonPath = xbmc.translatePath(addonInfo('path'))
+addonPath = transPath(addonInfo('path'))
 
-dataPath = xbmc.translatePath(addonInfo('profile'))
+dataPath = transPath(addonInfo('profile'))
 
 settingsFile = os.path.join(dataPath, 'settings.xml')
 
 viewsFile = os.path.join(dataPath, 'views.db')
 
-bookmarksFile = os.path.join(dataPath, 'bookmarks.db')
+bookmarksFile = os.path.join(dataPath, 'bookmarks.2.db')
 
 providercacheFile = os.path.join(dataPath, 'providers.13.db')
 
@@ -135,7 +133,7 @@ metacacheFile = os.path.join(dataPath, 'meta.5.db')
 
 searchFile = os.path.join(dataPath, 'search.1.db')
 
-libcacheFile = os.path.join(dataPath, 'library.db')
+libcacheFile = os.path.join(dataPath, 'library.1.db')
 
 cacheFile = os.path.join(dataPath, 'cache.db')
 
@@ -208,8 +206,7 @@ def get_plugin_url(queries):
         query = urllib_parse.urlencode(queries)
     except UnicodeEncodeError:
         for k in queries:
-            if isinstance(queries[k], six.text_type):
-                queries[k] = six_encode(queries[k])
+            queries[k] = six.ensure_str(queries[k])
         query = urllib_parse.urlencode(queries)
     addon_id = sys.argv[0]
     if not addon_id: addon_id = addonId()
@@ -241,12 +238,25 @@ def infoDialog(message, heading=addonInfo('name'), icon='', time=3000, sound=Fal
 
 
 def yesnoDialog(message, heading=addonInfo('name'), nolabel='', yeslabel=''):
-    if int(getKodiVersion()) < 19: return dialog.yesno(heading, message, '', '', nolabel, yeslabel)
+    if getKodiVersion() < 19: return dialog.yesno(heading, message, '', '', nolabel, yeslabel)
     else: return dialog.yesno(heading, message, nolabel, yeslabel)
 
 
 def selectDialog(list, heading=addonInfo('name')):
     return dialog.select(heading, list)
+
+
+def textViewer(file, heading=addonInfo('name'), monofont=True):
+    sleep(200)
+    if not os.path.exists(file):
+        w = open(file, 'w')
+        w.close()
+    with open(file, 'rb') as r:
+        text = r.read()
+    if not text: text = ' '
+    head = '[COLOR yellow][I]%s[/I][/COLOR]' % six.ensure_str(heading, errors='replace')
+    if getKodiVersion() >= 18: return dialog.textviewer(head, text, monofont)
+    else: return dialog.textviewer(head, text)
 
 def metaFile():
     if condVisibility('System.HasAddon(script.prophet.metadata)'):
@@ -254,11 +264,20 @@ def metaFile():
 
 
 def apiLanguage(ret_name=None):
-    langDict = {'Bulgarian': 'bg', 'Chinese': 'zh', 'Croatian': 'hr', 'Czech': 'cs', 'Danish': 'da', 'Dutch': 'nl', 'English': 'en', 'Finnish': 'fi', 'French': 'fr', 'German': 'de', 'Greek': 'el', 'Hebrew': 'he', 'Hungarian': 'hu', 'Italian': 'it', 'Japanese': 'ja', 'Korean': 'ko', 'Norwegian': 'no', 'Polish': 'pl', 'Portuguese': 'pt', 'Romanian': 'ro', 'Russian': 'ru', 'Serbian': 'sr', 'Slovak': 'sk', 'Slovenian': 'sl', 'Spanish': 'es', 'Swedish': 'sv', 'Thai': 'th', 'Turkish': 'tr', 'Ukrainian': 'uk'}
+    langDict = {'Bulgarian': 'bg', 'Chinese': 'zh', 'Croatian': 'hr', 'Czech': 'cs', 'Danish': 'da', 'Dutch': 'nl', 'English': 'en', 'Finnish': 'fi', 'French': 'fr', 'German': 'de', 'Greek': 'el', 'Hebrew': 'he',
+                'Hungarian': 'hu', 'Italian': 'it', 'Japanese': 'ja', 'Korean': 'ko', 'Norwegian': 'no', 'Polish': 'pl', 'Portuguese': 'pt', 'Romanian': 'ro', 'Russian': 'ru', 'Serbian': 'sr', 'Slovak': 'sk',
+                'Slovenian': 'sl', 'Spanish': 'es', 'Swedish': 'sv', 'Thai': 'th', 'Turkish': 'tr', 'Ukrainian': 'uk'}
 
     trakt = ['bg','cs','da','de','el','en','es','fi','fr','he','hr','hu','it','ja','ko','nl','no','pl','pt','ro','ru','sk','sl','sr','sv','th','tr','uk','zh']
     tvdb = ['en','sv','no','da','fi','nl','de','it','es','fr','pl','hu','el','tr','ru','he','ja','pt','zh','cs','sl','hr','ko']
-    youtube = ['gv', 'gu', 'gd', 'ga', 'gn', 'gl', 'ty', 'tw', 'tt', 'tr', 'ts', 'tn', 'to', 'tl', 'tk', 'th', 'ti', 'tg', 'te', 'ta', 'de', 'da', 'dz', 'dv', 'qu', 'zh', 'za', 'zu', 'wa', 'wo', 'jv', 'ja', 'ch', 'co', 'ca', 'ce', 'cy', 'cs', 'cr', 'cv', 'cu', 'ps', 'pt', 'pa', 'pi', 'pl', 'mg', 'ml', 'mn', 'mi', 'mh', 'mk', 'mt', 'ms', 'mr', 'my', 've', 'vi', 'is', 'iu', 'it', 'vo', 'ii', 'ik', 'io', 'ia', 'ie', 'id', 'ig', 'fr', 'fy', 'fa', 'ff', 'fi', 'fj', 'fo', 'ss', 'sr', 'sq', 'sw', 'sv', 'su', 'st', 'sk', 'si', 'so', 'sn', 'sm', 'sl', 'sc', 'sa', 'sg', 'se', 'sd', 'lg', 'lb', 'la', 'ln', 'lo', 'li', 'lv', 'lt', 'lu', 'yi', 'yo', 'el', 'eo', 'en', 'ee', 'eu', 'et', 'es', 'ru', 'rw', 'rm', 'rn', 'ro', 'be', 'bg', 'ba', 'bm', 'bn', 'bo', 'bh', 'bi', 'br', 'bs', 'om', 'oj', 'oc', 'os', 'or', 'xh', 'hz', 'hy', 'hr', 'ht', 'hu', 'hi', 'ho', 'ha', 'he', 'uz', 'ur', 'uk', 'ug', 'aa', 'ab', 'ae', 'af', 'ak', 'am', 'an', 'as', 'ar', 'av', 'ay', 'az', 'nl', 'nn', 'no', 'na', 'nb', 'nd', 'ne', 'ng', 'ny', 'nr', 'nv', 'ka', 'kg', 'kk', 'kj', 'ki', 'ko', 'kn', 'km', 'kl', 'ks', 'kr', 'kw', 'kv', 'ku', 'ky']
+    youtube = ['gv', 'gu', 'gd', 'ga', 'gn', 'gl', 'ty', 'tw', 'tt', 'tr', 'ts', 'tn', 'to', 'tl', 'tk', 'th', 'ti', 'tg', 'te', 'ta', 'de', 'da', 'dz', 'dv', 'qu', 'zh', 'za', 'zu', 'wa', 'wo', 'jv', 'ja',
+               'ch', 'co', 'ca', 'ce', 'cy', 'cs', 'cr', 'cv', 'cu', 'ps', 'pt', 'pa', 'pi', 'pl', 'mg', 'ml', 'mn', 'mi', 'mh', 'mk', 'mt', 'ms', 'mr', 'my', 've', 'vi', 'is', 'iu', 'it', 'vo', 'ii', 'ik',
+               'io', 'ia', 'ie', 'id', 'ig', 'fr', 'fy', 'fa', 'ff', 'fi', 'fj', 'fo', 'ss', 'sr', 'sq', 'sw', 'sv', 'su', 'st', 'sk', 'si', 'so', 'sn', 'sm', 'sl', 'sc', 'sa', 'sg', 'se', 'sd', 'lg', 'lb',
+               'la', 'ln', 'lo', 'li', 'lv', 'lt', 'lu', 'yi', 'yo', 'el', 'eo', 'en', 'ee', 'eu', 'et', 'es', 'ru', 'rw', 'rm', 'rn', 'ro', 'be', 'bg', 'ba', 'bm', 'bn', 'bo', 'bh', 'bi', 'br', 'bs', 'om',
+               'oj', 'oc', 'os', 'or', 'xh', 'hz', 'hy', 'hr', 'ht', 'hu', 'hi', 'ho', 'ha', 'he', 'uz', 'ur', 'uk', 'ug', 'aa', 'ab', 'ae', 'af', 'ak', 'am', 'an', 'as', 'ar', 'av', 'ay', 'az', 'nl', 'nn',
+               'no', 'na', 'nb', 'nd', 'ne', 'ng', 'ny', 'nr', 'nv', 'ka', 'kg', 'kk', 'kj', 'ki', 'ko', 'kn', 'km', 'kl', 'ks', 'kr', 'kw', 'kv', 'ku', 'ky']
+    tmdb = ['ar', 'be', 'bg', 'bn', 'ca', 'ch', 'cs', 'da', 'de', 'el', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fr', 'gl', 'he', 'hi', 'hu', 'id', 'it', 'ja', 'ka', 'kk', 'kn', 'ko', 'lt', 'lv', 'ml', 'ms',
+            'nb', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'si', 'sk', 'sl', 'sr', 'sv', 'ta', 'te', 'th', 'tl', 'tr', 'uk', 'vi', 'zh', 'zu-ZA']
 
     name = None
     name = setting('api.language')
@@ -272,11 +291,13 @@ def apiLanguage(ret_name=None):
     lang = {'trakt': name} if name in trakt else {'trakt': 'en'}
     lang['tvdb'] = name if name in tvdb else 'en'
     lang['youtube'] = name if name in youtube else 'en'
+    lang['tmdb'] = name if name in tmdb else 'en'
 
     if ret_name:
         lang['trakt'] = [i[0] for i in six.iteritems(langDict)if i[1] == lang['trakt']][0]
         lang['tvdb'] = [i[0] for i in six.iteritems(langDict) if i[1] == lang['tvdb']][0]
         lang['youtube'] = [i[0] for i in six.iteritems(langDict) if i[1] == lang['youtube']][0]
+        lang['tmdb'] = [i[0] for i in six.iteritems(langDict) if i[1] == lang['tmdb']][0]
 
     return lang
 
@@ -296,7 +317,7 @@ def cdnImport(uri, name):
     from resources.lib.modules import client
 
     path = os.path.join(dataPath, 'py' + name)
-    path = six_decode(path)
+    path = six.ensure_text(path)
 
     deleteDir(os.path.join(path, ''), force=True)
     makeFile(dataPath) ; makeFile(path)
@@ -316,7 +337,7 @@ def openSettings(query=None, id=addonInfo('id')):
         execute('Addon.OpenSettings(%s)' % id)
         if query == None: raise Exception()
         c, f = query.split('.')
-        if int(getKodiVersion()) >= 18:
+        if getKodiVersion() >= 18:
             execute('SetFocus(%i)' % (int(c) - 100))
             execute('SetFocus(%i)' % (int(f) - 80))
         else:
@@ -336,12 +357,12 @@ def refresh():
 
 
 def busy():
-    if int(getKodiVersion()) >= 18: return execute('ActivateWindow(busydialognocancel)')
+    if getKodiVersion() >= 18: return execute('ActivateWindow(busydialognocancel)')
     else: return execute('ActivateWindow(busydialog)')
 
 
 def idle():
-    if int(getKodiVersion()) >= 18: return execute('Dialog.Close(busydialognocancel)')
+    if getKodiVersion() >= 18: return execute('Dialog.Close(busydialognocancel)')
     else: return execute('Dialog.Close(busydialog)')
 
 
@@ -351,12 +372,14 @@ def queueItem():
 
 def metadataClean(metadata): # Filter out non-existing/custom keys. Otherise there are tons of errors in Kodi 18 log.
     if metadata == None: return metadata
-    allowed = ['genre', 'country', 'year', 'episode', 'season', 'sortepisode', 'sortseason', 'episodeguide', 'showlink', 'top250', 'setid', 'tracknumber', 'rating', 'userrating', 'watched', 'playcount', 'overlay', 'cast', 'castandrole', 'director', 'mpaa', 'plot', 'plotoutline', 'title', 'originaltitle', 'sorttitle', 'duration', 'studio', 'tagline', 'writer', 'tvshowtitle', 'premiered', 'status', 'set', 'setoverview', 'tag', 'imdbnumber', 'code', 'aired', 'credits', 'lastplayed', 'album', 'artist', 'votes', 'path', 'trailer', 'dateadded', 'mediatype', 'dbid']
+    allowed = ['genre', 'country', 'year', 'episode', 'season', 'sortepisode', 'sortseason', 'episodeguide', 'showlink', 'top250', 'setid', 'tracknumber', 'rating', 'userrating', 'watched', 'playcount', 'overlay',
+               'cast', 'castandrole', 'director', 'mpaa', 'plot', 'plotoutline', 'title', 'originaltitle', 'sorttitle', 'duration', 'studio', 'tagline', 'writer', 'tvshowtitle', 'premiered', 'status', 'set', 'setoverview',
+               'tag', 'imdbnumber', 'code', 'aired', 'credits', 'lastplayed', 'album', 'artist', 'votes', 'path', 'trailer', 'dateadded', 'mediatype', 'dbid', 'totalteasons', 'totalepisodes']
     return {k: v for k, v in six.iteritems(metadata) if k in allowed}
 
 
 def installAddon(addon_id):
-    addon_path = os.path.join(xbmc.translatePath('special://home/addons'), addon_id)
+    addon_path = os.path.join(transPath('special://home/addons'), addon_id)
     if not os.path.exists(addon_path) == True:
         xbmc.executebuiltin('InstallAddon(%s)' % (addon_id))
     else:
@@ -365,9 +388,8 @@ def installAddon(addon_id):
 
 def clean_settings():#Fen code
     import xml.etree.ElementTree as ET
-    kodi_version = int(getKodiVersion())
     def _make_content(dict_object):
-        if kodi_version >= 18:
+        if getKodiVersion() >= 18:
             content = '<settings version="2">'
             for item in dict_object:
                 if item['id'] in active_settings:
@@ -391,8 +413,8 @@ def clean_settings():#Fen code
             active_settings = []
             current_user_settings = []
             addon = xbmcaddon.Addon(id=addon_id)
-            addon_dir = xbmc.translatePath(addon.getAddonInfo('path'))
-            profile_dir = xbmc.translatePath(addon.getAddonInfo('profile'))
+            addon_dir = transPath(addon.getAddonInfo('path'))
+            profile_dir = transPath(addon.getAddonInfo('profile'))
             addon_name = addon.getAddonInfo('name')
             active_settings_xml = os.path.join(addon_dir, 'resources', 'settings.xml')
             root = ET.parse(active_settings_xml).getroot()
@@ -406,7 +428,7 @@ def clean_settings():#Fen code
                 dict_item = {}
                 setting_id = item.get('id')
                 setting_default = item.get('default')
-                if kodi_version >= 18: setting_value = item.text
+                if getKodiVersion() >= 18: setting_value = item.text
                 else: setting_value = item.get('value')
                 dict_item['id'] = setting_id
                 if setting_value: dict_item['value'] = setting_value
@@ -416,7 +438,7 @@ def clean_settings():#Fen code
             nfo_file = xbmcvfs.File(settings_xml, 'w')
             nfo_file.write(new_content)
             nfo_file.close()
-            infoDialog(six_encode(lang(32110)).format(str(len(removed_settings))), heading=addon_name)
+            infoDialog(lang(32110).format(str(len(removed_settings))), heading=addon_name)
     except:
         infoDialog('Error Cleaning Settings.xml. Old settings.xml files Restored.', heading=addon_name)
     sleep(200)

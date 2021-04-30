@@ -2,6 +2,7 @@
 """
 **Created by Tempest**
 """
+# - Converted to py3/2 for TheOath
 
 import re
 
@@ -16,7 +17,6 @@ from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import utils
 from prophetscrapers.sources_prophetscrapers import cfScraper
 
 
@@ -72,10 +72,11 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            title = cleantitle.get_query(title)
 
             hdlr = 's%02de%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
-            query = '%s s%02de%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
+            query = '%s s%02de%02d' % (title, int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (title, data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
             try:
@@ -83,6 +84,7 @@ class source:
                 url = urljoin(self.base_link, url)
 
                 r = cfScraper.get(url).content
+                r = ensure_text(r, errors='replace')
 
                 posts = client.parseDOM(r, 'div', attrs={'class': 'post'})
 
@@ -113,10 +115,10 @@ class source:
                     quality, info = source_utils.get_release_quality(name, item[1])
 
                     try:
-                        dsize, isize = utils._size(item[2])
-                        info.insert(0, isize)
+                        dsize, isize = source_utils._size(item[2])
                     except:
-                        dsize, isize = 0, ''
+                        dsize, isize = 0.0, ''
+                    info.insert(0, isize)
 
                     info = ' | '.join(info)
 
@@ -132,7 +134,7 @@ class source:
                     host = client.replaceHTMLCodes(host)
                     host = ensure_text(host)
 
-                    sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True})
+                    sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
                 except:
                     pass
 

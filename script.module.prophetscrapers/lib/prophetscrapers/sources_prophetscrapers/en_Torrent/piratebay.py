@@ -11,25 +11,26 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, unquote_plus, quote
-except ImportError: from urllib.parse import urlencode, unquote_plus, quote
+try:
+    from urlparse import parse_qs, urljoin
+    from urllib import urlencode, unquote_plus, quote
+except ImportError:
+    from urllib.parse import parse_qs, urljoin, urlencode, unquote_plus, quote
 
 from prophetscrapers.modules import cache
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import utils
+from prophetscrapers.modules import log_utils
 
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['pirateproxy.live', 'thepiratebay.org', 'thepiratebay.fun', 'thepiratebay.asia', 'tpb.party',
-                                'thehiddenbay.com', 'piratebay.live', 'thepiratebay.zone']
+        self.domains = ['pirateproxy.live', 'thepiratebay0.org', 'thepiratebay10.org', 'thehiddenbay.com', 'thepiratebay.zone', 'thepiratebay.asia',
+                        'tpb.party', 'thepiratebay.party', 'piratebay.party', 'piratebay.live', 'piratebayproxy.live', 'piratebay.casa']
         self._base_link = None
         # self.search_link = '/s/?q=%s&page=1&&video=on&orderby=99' #-page flip does not work
         self.search_link = '/search/%s/1/99/200' #-direct link can flip pages
@@ -87,16 +88,15 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-            title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU')
+            title = cleantitle.get_query(title)
 
-            hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
+            hdlr = 's%02de%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
             query = '%s %s' % (title, hdlr)
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
             url = self.search_link % quote(query)
             url = urljoin(self.base_link, url)
-            # log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
 
             html = client.request(url)
             html = html.replace('&nbsp;', ' ')
@@ -133,9 +133,9 @@ class source:
                     try:
                         name = re.findall('class="detLink" title=".+?">(.+?)</a>', entry, re.DOTALL)[0]
                         name = client.replaceHTMLCodes(name)
-                        name = unquote_plus(name).replace(' ', '.')
+                        name = unquote_plus(name).replace(' ', '.').lower()
 
-                        t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and').replace('.US.', '.').replace('.us.', '.')
+                        t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and').replace('.US.', '.').replace('.us.', '.').lower()
                         if cleantitle.get(t) != cleantitle.get(title):
                             continue
                     except:
@@ -148,22 +148,23 @@ class source:
 
                     try:
                         size = re.findall('((?:\d+\.\d+|\d+\,\d+|\d+)\s*(?:GB|GiB|MB|MiB))', entry)[-1]
-                        dsize, isize = utils._size(size)
+                        dsize, isize = source_utils._size(size)
                     except:
-                        dsize, isize = 0, ''
+                        dsize, isize = 0.0, ''
 
                     info.insert(0, isize)
 
                     info = ' | '.join(info)
 
                     sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
-                                                'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
+                                    'info': info, 'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
                 except:
                     continue
 
             return sources
 
         except:
+            log_utils.log('tpb_exc', 1)
             return sources
 
 
@@ -172,9 +173,9 @@ class source:
             for domain in self.domains:
                 try:
                     url = 'https://%s' % domain
-                    result = client.request(url, limit=1, timeout='10')
-                    result = re.findall('<input type="submit" title="(.+?)"', result, re.DOTALL)[0]
-                    if result and 'Pirate Search' in result:
+                    result = client.request(url, limit=1, timeout='4')
+                    search_n = re.findall('<title>(.+?)</title>', result, re.DOTALL)[0]
+                    if result and 'Pirate' in search_n:
                         return url
                 except:
                     pass

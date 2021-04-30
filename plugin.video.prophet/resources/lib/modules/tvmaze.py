@@ -29,7 +29,6 @@ import requests
 from resources.lib.modules import cache
 from resources.lib.modules import client
 
-
 class tvMaze:
     def __init__(self, show_id = None):
         self.api_url = 'https://api.tvmaze.com/%s%s'

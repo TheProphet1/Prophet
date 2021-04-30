@@ -10,7 +10,6 @@
 
 
 import re
-import traceback
 
 try: from urlparse import parse_qs, urljoin, urlparse
 except ImportError: from urllib.parse import parse_qs, urljoin, urlparse
@@ -19,7 +18,7 @@ except ImportError: from urllib.parse import urlencode, quote_plus
 
 from six import ensure_text
 
-from prophetscrapers.modules import client, debrid, log_utils, source_utils
+from prophetscrapers.modules import cleantitle, client, debrid, log_utils, source_utils
 from prophetscrapers.sources_prophetscrapers import cfScraper
 
 
@@ -27,20 +26,20 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['rlsbb.com', 'rlsbb.ru', 'rlsbb.to']
-        self.base_link = 'http://rlsbb.ru/'
+        self.domains = ['rlsbb.com', 'rlsbb.ru', 'rlsbb.to', 'proxybb.com']
+        self.base_link = 'http://proxybb.com/'
+        self.old_base_link = 'http://old3.proxybb.com/'
         self.search_base_link = 'http://search.rlsbb.ru/'
         self.search_cookie = 'serach_mode=rlsbb'
-        self.search_link = '/lib/search526049.php?phrase=%s&pindex=1&content=true'
+        self.search_link = 'lib/search526049.php?phrase=%s&pindex=1&content=true'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urlencode(url)
             return url
-        except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('RLSBB - Exception: \n' + str(failure))
+        except:
+            log_utils.log('RLSBB - Exception', 1)
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -48,9 +47,8 @@ class source:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
             url = urlencode(url)
             return url
-        except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('RLSBB - Exception: \n' + str(failure))
+        except:
+            log_utils.log('RLSBB - Exception', 1)
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -63,9 +61,8 @@ class source:
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
             url = urlencode(url)
             return url
-        except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('RLSBB - Exception: \n' + str(failure))
+        except:
+            log_utils.log('RLSBB - Exception', 1)
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -83,27 +80,24 @@ class source:
             data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-            hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
+            year = data['year']
+            title = cleantitle.get_query(title)
+            hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
             premDate = ''
 
-            query = '%s S%02dE%02d' % (
-                data['tvshowtitle'],
-                int(data['season']),
-                int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (
-                data['title'],
-                data['year'])
+            query = '%s S%02dE%02d' % ( title, int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (title, year)
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
-
-            query = query.replace("&", "and")
-            query = query.replace("  ", " ")
             query = query.replace(" ", "-")
 
-            url = self.search_link % quote_plus(query)
-            url = urljoin(self.base_link, url)
+            _base_link = self.base_link if int(year) >= 2021 else self.old_base_link
 
-            url = "http://rlsbb.ru/" + query
+            #url = self.search_link % quote_plus(query)
+            #url = urljoin(_base_link, url)
+
+            url = _base_link + query
 
             r = cfScraper.get(url).content
+            r = ensure_text(r, errors='replace')
 
             if r is None and 'tvshowtitle' in data:
                 season = re.search('S(.*?)E', hdlr)
@@ -114,24 +108,26 @@ class source:
                 query = query.replace("&", "and")
                 query = query.replace("  ", " ")
                 query = query.replace(" ", "-")
-                url = "http://rlsbb.ru/" + query
+                url = _base_link + query
                 r = cfScraper.get(url).content
+                r = ensure_text(r, errors='replace')
 
             for loopCount in list(range(0, 2)):
-                if loopCount == 1 or(r is None and 'tvshowtitle' in data):
+                if loopCount == 1 or (r is None and 'tvshowtitle' in data):
 
                     #premDate = re.sub('[ \.]', '-', data['premiered'])
-                    query = re.sub(r'[\\\\:;*?"<>|/\-\']', '', data['tvshowtitle'])
+                    query = re.sub(r'[\\\\:;*?"<>|/\-\']', '', title)
                     query = query.replace(
                         "&", " and ").replace(
                         "  ", " ").replace(
                         " ", "-")  # throw in extra spaces around & just in case
                     #query = query + "-" + premDate
 
-                    url = "http://rlsbb.ru/" + query
+                    url = _base_link + query
                     url = url.replace('The-Late-Show-with-Stephen-Colbert', 'Stephen-Colbert')
 
                     r = cfScraper.get(url).content
+                    r = ensure_text(r, errors='replace')
 
                 posts = client.parseDOM(r, "div", attrs={"class": "content"})
                 #hostDict = hostprDict + hostDict
@@ -146,13 +142,11 @@ class source:
                                     items.append(name)
                                 #elif len(premDate) > 0 and premDate in name.replace(".", "-"):
                                     #items.append(name)
-                            except Exception:
-                                failure = traceback.format_exc()
-                                log_utils.log('RLSBB - Exception: \n' + str(failure))
+                            except:
+                                log_utils.log('RLSBB - Exception', 1)
                                 pass
-                    except Exception:
-                        failure = traceback.format_exc()
-                        log_utils.log('RLSBB - Exception: \n' + str(failure))
+                    except:
+                        log_utils.log('RLSBB - Exception', 1)
                         pass
 
                 if len(items) > 0:
@@ -198,17 +192,15 @@ class source:
                     host = ensure_text(host)
                     sources.append({'source': host, 'quality': quality, 'language': 'en',
                                     'url': host2, 'info': info, 'direct': False, 'debridonly': True})
-                except Exception:
-                    failure = traceback.format_exc()
-                    log_utils.log('RLSBB - Exception: \n' + str(failure))
+                except:
+                    log_utils.log('RLSBB - Exception', 1)
                     pass
             check = [i for i in sources if not i['quality'] == 'CAM']
             if check:
                 sources = check
             return sources
-        except Exception:
-            failure = traceback.format_exc()
-            log_utils.log('RLSBB - Exception: \n' + str(failure))
+        except:
+            log_utils.log('RLSBB - Exception', 1)
             return sources
 
     def resolve(self, url):

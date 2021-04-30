@@ -15,7 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, traceback
+# - Converted to py3/2 for TheOath
+
+
+import re
 
 try: from urlparse import parse_qs, urljoin
 except ImportError: from urllib.parse import parse_qs, urljoin
@@ -43,9 +46,8 @@ class source:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urlencode(url)
             return url
-        except Exception:
-            fail = traceback.format_exc()
-            log_utils.log('filmxy: '+str(fail))
+        except:
+            log_utils.log('filmxy', 1)
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -116,8 +118,7 @@ class source:
                     pass
             return sources
         except:
-            fail = traceback.format_exc()
-            log_utils.log('filmxy: '+str(fail))
+            log_utils.log('filmxy', 1)
             return sources
 
     def resolve(self, url):

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, traceback
+import re
 
 try: from urlparse import parse_qs, urljoin
 except ImportError: from urllib.parse import parse_qs, urljoin
@@ -26,14 +26,14 @@ from prophetscrapers.modules import debrid
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import source_utils
-from prophetscrapers.modules import utils, log_utils
+from prophetscrapers.modules import log_utils
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
         self.domains = ['torrentquest.com']
-        self.base_link = 'https://www.magnetdl.com/'
+        self.base_link = 'https://www.magnetdl.com'
         self.search_link = '/{0}/{1}'
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -41,9 +41,8 @@ class source:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urlencode(url)
             return url
-        except BaseException:
-            failure = traceback.format_exc()
-            log_utils.log('Magnetdl - Exception: \n' + str(failure))
+        except:
+            log_utils.log('Magnetdl - Exception', 1)
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -51,9 +50,8 @@ class source:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
             url = urlencode(url)
             return url
-        except BaseException:
-            failure = traceback.format_exc()
-            log_utils.log('Magnetdl - Exception: \n' + str(failure))
+        except:
+            log_utils.log('Magnetdl - Exception', 1)
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -65,16 +63,15 @@ class source:
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
             url = urlencode(url)
             return url
-        except BaseException:
-            failure = traceback.format_exc()
-            log_utils.log('Magnetdl - Exception: \n' + str(failure))
+        except:
+            log_utils.log('Magnetdl - Exception', 1)
             return
 
     def sources(self, url, hostDict, hostprDict):
         sources = []
         try:
             if debrid.status() is False:
-                raise Exception()
+                return sources
 
             if url is None:
                 return sources
@@ -83,10 +80,11 @@ class source:
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            title = cleantitle.get_query(title)
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 
-            query = '%s s%02de%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode']))\
-                if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
+            query = '%s s%02de%02d' % (title, int(data['season']), int(data['episode']))\
+                if 'tvshowtitle' in data else '%s %s' % (title, data['year'])
             query = re.sub(u'(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
             url = urljoin(self.base_link, self.search_link.format(query[0].lower(), cleantitle.geturl(query)))
@@ -115,26 +113,20 @@ class source:
                 quality, info = source_utils.get_release_quality(name, url)
                 try:
                     size = re.findall(r'((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
-                    dsize, isize = utils._size(size)
+                    dsize, isize = source_utils._size(size)
                 except:
-                    dsize, isize = 0, ''
+                    dsize, isize = 0.0, ''
 
                 info.insert(0, isize)
-
-                #try:
-                    #info.append(name)
-                #except Exception:
-                    #pass
 
                 info = ' | '.join(info)
 
                 sources.append({'source': 'Torrent', 'quality': quality, 'language': 'en', 'url': url, 'info': info,
-                                'direct': False, 'debridonly': True, 'size': dsize})
+                                'direct': False, 'debridonly': True, 'size': dsize, 'name': name})
 
             return sources
-        except BaseException:
-            failure = traceback.format_exc()
-            log_utils.log('Magnetdl - Exception: \n' + str(failure))
+        except:
+            log_utils.log('Magnetdl - Exception', 1)
             return sources
 
     def resolve(self, url):

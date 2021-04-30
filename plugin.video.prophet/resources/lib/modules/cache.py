@@ -308,8 +308,9 @@ def cache_version_check():
     if _find_cache_version():
         cache_clear()
         cache_clear_providers()
+        #cache_clear_meta()
         #control.execute('RunPlugin(plugin://%s)' % 'plugin.video.prophet/?action=cleanSettings')
-        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
+        control.infoDialog(control.lang(32057), sound=True, icon='INFO')
 
 
 def _find_cache_version():
