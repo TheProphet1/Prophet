@@ -34,7 +34,7 @@ from resources.lib.modules import api_keys
 from resources.lib.modules import log_utils
 from resources.lib.indexers import navigator
 
-import os,sys,re,datetime,base64
+import os,sys,re,datetime
 import simplejson as json
 
 import six
@@ -67,7 +67,7 @@ class tvshows:
         self.imdb_user = control.setting('imdb.user').replace('ur', '')
         self.fanart_tv_user = control.setting('fanart.tv.user')
         self.user = control.setting('fanart.tv.user') + str('')
-        self.items_per_page = str(control.setting('items.per.page')) or '40'
+        self.items_per_page = str(control.setting('items.per.page')) or '20'
         self.lang = control.apiLanguage()['tmdb'] or 'en'
 
         self.tm_user = control.setting('tm.user') or api_keys.tmdb_key
@@ -1077,7 +1077,7 @@ class tvshows:
         self.meta = []
         total = len(self.list)
 
-        self.fanart_tv_headers = {'api-key': '5c06a6c6f543147b420c813fd1d2c866'}
+        self.fanart_tv_headers = {'api-key': api_keys.fanarttv_key}
         if not self.fanart_tv_user == '':
             self.fanart_tv_headers.update({'client-key': self.fanart_tv_user})
 

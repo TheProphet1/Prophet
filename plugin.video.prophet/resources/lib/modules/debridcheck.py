@@ -224,10 +224,7 @@ class DebridCheck:
                 if current_time > end_time: break
             except Exception:
                 pass
-        try:
-            progressDialog.close()
-        except Exception:
-            pass
+        progressDialog.close()
         control.sleep(200)
 
     def RD_cache_checker(self):
@@ -346,7 +343,7 @@ class DebridCache:
             dbcon.commit()
         except: pass
 
-    def set_many(self, hash_list, debrid, expiration=datetime.timedelta(hours=1)):
+    def set_many(self, hash_list, debrid, expiration=datetime.timedelta(hours=2)):
         try:
             expires = self._get_timestamp(datetime.datetime.now() + expiration)
             insert_list = [(i[0], debrid, i[1], expires) for i in hash_list]

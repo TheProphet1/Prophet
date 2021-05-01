@@ -21,12 +21,12 @@
 import sys
 import simplejson as json
 import re
-import base64
 import six
 from six.moves import urllib_parse
 
 from resources.lib.modules import client
 from resources.lib.modules import control
+from resources.lib.modules import api_keys
 from resources.lib.modules import log_utils
 
 
@@ -36,7 +36,7 @@ class trailer:
         self.content = control.infoLabel('Container.Content')
         self.base_link = 'https://www.youtube.com'
         self.key = control.addon('plugin.video.youtube').getSetting('youtube.api.key')
-        if self.key == '': self.key = 'AIzaSyBW-Z3TneLX-aG9TC5G061BTc9bBgftmPA'
+        if self.key == '': self.key = api_keys.yt_key
         try: self.key_link = '&key=%s' % self.key
         except: pass
         if self.mode == '1':

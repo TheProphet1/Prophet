@@ -15,13 +15,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import urllib, urlparse, re
+import re
+
+from six import ensure_str
+
+from prophetscrapers import parse_qs, urljoin, urlencode, quote_plus
 
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import source_utils
 from prophetscrapers.modules import dom_parser2
-from prophetscrapers.modules import tvmaze
+from prophetscrapers.modules import log_utils
 
 
 class source:
@@ -29,13 +33,13 @@ class source:
         self.priority = 1
         self.language = ['gr']
         self.domains = ['xrysoi.se']
-        self.base_link = 'http://xrysoi.se/'
+        self.base_link = 'https://xrysoi.pro/'
         self.search_link = 'search/%s/feed/rss2/'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'localtitle': localtitle, 'title': title, 'aliases': aliases,'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -43,7 +47,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -52,10 +56,10 @@ class source:
         try:
             if url == None: return
 
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -63,60 +67,64 @@ class source:
     def sources(self, url, hostDict, hostprDict):
         sources = []
         try:
-            sources = []
 
             if url == None: return sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-            hdlr = 's%02de%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
-            query = '%s s%02de%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
+            year = data['year']
+            hdlr = 's%02de%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else year
+            query = '%s %s' % (title, year)
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
+            query = quote_plus(query)
 
-            url = self.search_link % urllib.quote_plus(query)
-            url = urlparse.urljoin(self.base_link, url)
+            url = urljoin(self.base_link, self.search_link % query)
 
             r = client.request(url)
             posts = client.parseDOM(r, 'item')
 
             for post in posts:
                 try:
-                        name = client.parseDOM(post, 'title')[0]
-                        name = client.replaceHTMLCodes(name)
+                    name = client.parseDOM(post, 'title')[0]
+                    name = client.replaceHTMLCodes(name)
+                    name = ensure_str(name, errors='ignore')
 
-                        t = re.sub('(\.|\(|\[|\s)(\d{4}|S\d+E\d+|S\d+|3D)(\.|\)|\]|\s|)(.+|)', '', name, re.I)
+                    y = re.findall('(\d{4}|S\d+E\d+|S\d+)', name, re.I)[0]
 
-                        if not re.findall('\w+', cleantitle.get(t))[0] == cleantitle.get(title): raise Exception()
+                    t = re.sub('(\.|\(|\[|\s)(\d{4}|S\d+E\d+|S\d+|3D)(\.|\)|\]|\s|)(.+|)', '', name, re.I)
 
-                        y = re.findall('(\d{4}|S\d+E\d+|S\d+)', name, re.I)[0]
-                        year = data['year']
-                        if not y == year: raise Exception()
-                        if not 'tvshowtitle' in data:
-                            links = client.parseDOM(post, 'a', ret='href')
-                        else:
-                            ep = '%02d' % int(data['episode'])
-                            pattern = '>Season[\s|\:]%d<(.+?)(?:<b>Season|</content)' % int(data['season'])
-                            data = re.findall(pattern, post, re.S|re.I)
-                            data = dom_parser2.parse_dom(data, 'a', req='href')
-                            links = [(i.attrs['href'], i.content.lower()) for i in data]
-                            links = [i[0] for i in links if (hdlr in i[0] or hdlr in i[1] or ep == i[1])]
+                    if not (re.findall('\w+', cleantitle.get(t))[0] == cleantitle.get(title) and year == y): raise Exception()
 
-                        for url in links:
-                            if any(x in url for x in ['.online', 'xrysoi.se', 'filmer', '.bp', '.blogger']): continue
+                    if not 'tvshowtitle' in data:
+                        links = client.parseDOM(post, 'a', ret='href')
+                    else:
+                        ep = '%02d' % int(data['episode'])
+                        pattern = '>Season[\s|\:]%d<(.+?)(?:<b>Season|</content)' % int(data['season'])
+                        data = re.findall(pattern, post, re.S|re.I)
+                        data = dom_parser2.parse_dom(data, 'a', req='href')
+                        links = [(i.attrs['href'], i.content.lower()) for i in data]
+                        links = [i[0] for i in links if (hdlr in i[0] or hdlr in i[1] or ep == i[1])]
+
+                    for url in links:
+                        try:
+                            if any(x in url for x in ['.online', 'xrysoi.', 'filmer', '.bp', '.blogger']): continue
 
                             url = client.replaceHTMLCodes(url)
-                            url = url.encode('utf-8')
                             valid, host = source_utils.is_host_valid(url,hostDict)
-                            if 'hdvid' in host: valid = True
+                            #if 'hdvid' in host: valid = True
                             if not valid: continue
-                            quality = 'SD'
-                            info = 'SUB'
+                            # try: dub = re.findall('ΜΕΤΑΓΛΩΤΙΣΜΕΝΟ', post, re.S|re.I)[0]
+                            # except: dub = None
+                            # info = ' / '.join((name, 'DUB')) if dub else name
 
-                            sources.append({'source': host, 'quality': quality, 'language': 'gr', 'url': url, 'info': info, 'direct': False, 'debridonly': False})
+                            sources.append({'source': host, 'quality': 'sd', 'language': 'gr', 'url': url, 'direct': False, 'debridonly': False})
+                        except:
+                            pass
 
                 except:
+                    log_utils.log('xrysoi_exc', 1)
                     pass
 
             return sources

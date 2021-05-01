@@ -360,14 +360,14 @@ class sources:
             #title = self.getTitle(title)
             title, year = cleantitle.scene_title(title, year)
             log_utils.log('movtitle is '+title+' year is '+year)
-            localtitle = self.getLocalTitle(title, imdb, tmdb, content)
+            localtitle = self.getLocalTitle(title, imdb, content)
             aliases = self.getAliasTitles(imdb, localtitle, content)
             for i in sourceDict: threads.append(workers.Thread(self.getMovieSource, title, localtitle, aliases, year, imdb, i[0], i[1]))
         else:
             #tvshowtitle = self.getTitle(tvshowtitle)
             tvshowtitle, year, season, episode = cleantitle.scene_tvtitle(tvshowtitle, year, season, episode)
             log_utils.log('tvtitle is '+tvshowtitle+' year is '+year+' season is '+season)
-            localtvshowtitle = self.getLocalTitle(tvshowtitle, imdb, tmdb, content)
+            localtvshowtitle = self.getLocalTitle(tvshowtitle, imdb, content)
             aliases = self.getAliasTitles(imdb, localtvshowtitle, content)
             #Disabled on 11/11/17 due to hang. Should be checked in the future and possible enabled again.
             #season, episode = thexem.get_scene_episode_number(tvdb, season, episode)
@@ -467,13 +467,13 @@ class sources:
                     if max_quality == 0:
                         if source_4k >= pre_emp_limit:
                             break
-                    elif max_quality == 1:
+                    if max_quality == 1:
                         if source_1080 >= pre_emp_limit:
                             break
-                    elif max_quality == 2:
+                    if max_quality == 2:
                         if source_720 >= pre_emp_limit:
                             break
-                    elif max_quality == 3:
+                    if max_quality == 3:
                         if source_sd >= pre_emp_limit:
                             break
 
@@ -516,13 +516,16 @@ class sources:
                 log_utils.log('sourcefail', 1)
                 pass
 
-        control.sleep(200)
+        control.sleep(300)
+        if progressDialog == control.progressDialogBG:
+            progressDialog.close()
+        self.sourcesSort()
         self.sourcesFilter(content)
         progressDialog.close()
+
         del progressDialog
         del threads
 
-        self.sourcesSort()
         control.idle()
 
         return self.sources
@@ -1260,7 +1263,7 @@ class sources:
         return langDict.get(name, ['en'])
 
 
-    def getLocalTitle(self, title, imdb, tmdb, content):
+    def getLocalTitle(self, title, imdb, content):
         lang = self._getPrimaryLang()
         if not lang:
             return title
@@ -1268,7 +1271,7 @@ class sources:
         if content == 'movie':
             t = trakt.getMovieTranslation(imdb, lang)
         else:
-            t = trakt.getTVShowTranslation(tmdb, lang)
+            t = trakt.getTVShowTranslation(imdb, lang)
 
         return t or title
 

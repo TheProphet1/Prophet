@@ -13,7 +13,6 @@ from orion import *
 #import urllib
 #import urlparse
 import pkgutil
-import base64
 import simplejson as json
 import time
 import sys
@@ -24,13 +23,14 @@ from kodi_six import xbmc, xbmcvfs
 from six.moves import urllib_parse
 
 from resources.lib.modules import control
+from resources.lib.modules import api_keys
 
 class source:
 
     def __init__(self):
         self.priority = 1
         self.language = ['ab', 'aa', 'af', 'ak', 'sq', 'am', 'ar', 'an', 'hy', 'as', 'av', 'ae', 'ay', 'az', 'bm', 'ba', 'eu', 'be', 'bn', 'bh', 'bi', 'nb', 'bs', 'br', 'bg', 'my', 'ca', 'ch', 'ce', 'ny', 'zh', 'cv', 'kw', 'co', 'cr', 'hr', 'cs', 'da', 'dv', 'nl', 'dz', 'en', 'eo', 'et', 'ee', 'fo', 'fj', 'fi', 'fr', 'ff', 'gd', 'gl', 'lg', 'ka', 'de', 'el', 'gr', 'gn', 'gu', 'ht', 'ha', 'he', 'hz', 'hi', 'ho', 'hu', 'is', 'io', 'ig', 'id', 'ia', 'ie', 'iu', 'ik', 'ga', 'it', 'ja', 'jv', 'kl', 'kn', 'kr', 'ks', 'kk', 'km', 'ki', 'rw', 'rn', 'kv', 'kg', 'ko', 'ku', 'kj', 'ky', 'lo', 'la', 'lv', 'li', 'ln', 'lt', 'lu', 'lb', 'mk', 'mg', 'ms', 'ml', 'mt', 'gv', 'mi', 'mr', 'mh', 'mn', 'na', 'nv', 'ng', 'ne', 'nd', 'se', 'no', 'ii', 'nn', 'oc', 'oj', 'or', 'om', 'os', 'pi', 'ps', 'fa', 'pl', 'pt', 'pa', 'qu', 'ro', 'rm', 'ru', 'sm', 'sg', 'sa', 'sc', 'sr', 'sn', 'sd', 'si', 'cu', 'sk', 'sl', 'so', 'nr', 'st', 'es', 'su', 'sw', 'ss', 'sv', 'tl', 'ty', 'tg', 'ta', 'tt', 'te', 'th', 'bo', 'ti', 'to', 'ts', 'tn', 'tr', 'tk', 'tw', 'uk', 'ur', 'ug', 'uz', 've', 'vi', 'vo', 'wa', 'cy', 'fy', 'wo', 'xh', 'yi', 'yo', 'za', 'zu']
-        self.key = 'VUhYS1NMNUtLOEFGOUg3TkNFQkIzSkxBQktHUkVFTEg='
+        self.key = api_keys.orion_key
         self.domains = ['https://orionoid.com']
         self.providers = []
         self.cachePath = os.path.join(control.transPath(control.addonInfo('profile')), 'orion.cache')
@@ -203,7 +203,7 @@ class source:
         sources = []
         try:
             if url == None: raise Exception()
-            key_ = base64.b64decode(self.key)
+            key_ = self.key
             orion = Orion(key_)
             if not orion.userEnabled() or not orion.userValid(): raise Exception()
 

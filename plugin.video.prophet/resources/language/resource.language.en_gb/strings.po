@@ -478,7 +478,7 @@ msgid "[COLOR yellow]Enable metadata on source list[/COLOR]"
 msgstr ""
 
 msgctxt "#32113"
-msgid "[COLOR yellow]Sort torrents by size if available[/COLOR]"
+msgid "[COLOR yellow]Sort by size if available[/COLOR]"
 msgstr ""
 
 msgctxt "#32114"
@@ -486,7 +486,7 @@ msgid "[COLOR yellow]Verify torrents cache[/COLOR]"
 msgstr ""
 
 msgctxt "#32115"
-msgid "[COLOR yellow]WiP - Supported services: Real-Debrid, AllDebrid, Premiumize, Debrid-Link[/COLOR]"
+msgid "[COLOR yellow]Supported services: Real-Debrid, AllDebrid,[CR]   Premiumize, Debrid-Link[/COLOR]"
 msgstr ""
 
 msgctxt "#32116"
@@ -1219,7 +1219,7 @@ msgid "[COLOR yellow]Protected Link. Please enter account credentials in the set
 msgstr ""
 
 msgctxt "#32580"
-msgid "[COLOR yellow]Films/TV Movies[/COLOR]"
+msgid "[COLOR yellow]Recently Released[/COLOR]"
 msgstr ""
 
 msgctxt "#32581"
@@ -1247,7 +1247,7 @@ msgid "[COLOR yellow]Recently watched[/COLOR]"
 msgstr ""
 
 msgctxt "#32587"
-msgid "[COLOR yellow]Show Extra Source Info[/COLOR]"
+msgid "[COLOR yellow]Extra Source Info[/COLOR]"
 msgstr ""
 
 msgctxt "#32588"

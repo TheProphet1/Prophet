@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-from six import iteritems
-
 import os
+from six import iteritems
 from . import en, en_Torrent, gr
 
 

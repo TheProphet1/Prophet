@@ -33,6 +33,7 @@ from resources.lib.modules import client
 from resources.lib.modules import control
 from resources.lib.modules import log_utils
 from resources.lib.modules import utils
+from resources.lib.modules import api_keys
 
 if six.PY2:
     str = unicode
@@ -474,7 +475,7 @@ def getTVShowSummary(id, full=True):
         return
 
 
-def getPeople(id, content_type, full=True):
+def getPeople(id, content_type, full=False):
     try:
         url = '/%s/%s/people' % (content_type, id)
         if full: url += '?extended=full'
