@@ -19,12 +19,12 @@
 
 import urllib, urlparse, re, base64,json
 
-from prophetcrapers.modules import cleantitle
-from prophetcrapers.modules import client
-from prophetcrapers.modules import source_utils
-from prophetcrapers.modules import dom_parser2 as dom
-from prophetcrapers.modules import unjuice
-from prophetcrapers.modules import directstream
+from prophetscrapers.modules import cleantitle
+from prophetscrapers.modules import client
+from prophetscrapers.modules import source_utils
+from prophetscrapers.modules import dom_parser2 as dom
+from prophetscrapers.modules import unjuice
+from prophetscrapers.modules import directstream
 
 
 class source:

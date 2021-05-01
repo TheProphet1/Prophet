@@ -8,13 +8,9 @@ import simplejson as json
 import base64
 import time
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, unquote_plus, quote
-except ImportError: from urllib.parse import urlencode, unquote_plus, quote
-
 import six
 
+from prophetscrapers import parse_qs, urljoin, urlparse, urlencode, quote, unquote_plus
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import directstream

@@ -20,11 +20,7 @@ import re
 import requests
 import simplejson as json
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
-
+from prophetscrapers import parse_qs, urljoin, urlencode, quote_plus
 from prophetscrapers.modules import control
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client

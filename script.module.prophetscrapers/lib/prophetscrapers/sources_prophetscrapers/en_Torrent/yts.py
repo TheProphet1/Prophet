@@ -11,13 +11,9 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote
-except ImportError: from urllib.parse import urlencode, quote
-
+from prophetscrapers import parse_qs, urljoin, urlencode, quote
 from prophetscrapers.modules import cleantitle, client, debrid, source_utils
-#from prophetscrapers.sources_prophetscrapers import cfScraper
+#from prophetscrapers import cfScraper
 
 
 class source:

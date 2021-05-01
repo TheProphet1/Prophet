@@ -20,13 +20,9 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode
-except ImportError: from urllib.parse import urlencode
-
 from six import ensure_text
 
+from prophetscrapers import parse_qs, urljoin, urlencode
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import source_utils, log_utils

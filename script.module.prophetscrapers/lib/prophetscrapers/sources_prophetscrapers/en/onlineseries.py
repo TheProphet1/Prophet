@@ -15,8 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, urllib, urlparse, time
+import re, time
 
+from prophetscrapers import parse_qs, urljoin, urlencode
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import dom_parser2
@@ -35,7 +36,7 @@ class source:
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except Exception:
             return
@@ -43,7 +44,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except BaseException:
             return
@@ -52,10 +53,10 @@ class source:
         try:
             if url is None: return
 
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except Exception:
             return
@@ -65,7 +66,7 @@ class source:
             self._sources = []
             if url is None: return self._sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -77,7 +78,7 @@ class source:
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
             query = self.search_link % cleantitle.geturl(query)
-            url = urlparse.urljoin(self.base_link, query)
+            url = urljoin(self.base_link, query)
             r = client.request(url)
             posts = dom_parser2.parse_dom(r, 'div', {'class':'eTitle'})
             posts = [dom_parser2.parse_dom(i.content, 'a', req='href') for i in posts if i]
@@ -110,7 +111,7 @@ class source:
                 div = 1 if size.endswith(('GB', 'GiB')) else 1024
                 size = float(re.sub('[^0-9|/.|/,]', '', size)) / div
                 size = '%.2f GB' % size
-                info.append(size)
+                info.insert(0, size)
             except Exception:
                 pass
             info = ' | '.join(info)
@@ -124,9 +125,7 @@ class source:
                 if not valid: continue
 
                 host = client.replaceHTMLCodes(host)
-                host = host.encode('utf-8')
                 quality, info2 = source_utils.get_release_quality(title, url)
-                if url in str(self._sources): continue
 
                 self._sources.append(
                     {'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False,

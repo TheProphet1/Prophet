@@ -3,21 +3,16 @@
 
 import re
 
-try:
-    from urlparse import parse_qs, urljoin
-    from urllib import urlencode, quote
-except ImportError:
-    from urllib.parse import parse_qs, urljoin, urlencode, quote
-
 from six import ensure_text
 
+from prophetscrapers import cfScraper
+from prophetscrapers import parse_qs, urljoin, urlencode, quote
 from prophetscrapers.modules import cache
 from prophetscrapers.modules import client
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import source_utils
 from prophetscrapers.modules import log_utils
-from prophetscrapers.sources_prophetscrapers import cfScraper
 
 
 class source:

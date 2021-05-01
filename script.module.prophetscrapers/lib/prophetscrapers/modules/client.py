@@ -20,11 +20,11 @@
 
 from __future__ import absolute_import, division, print_function
 
-import re, sys, gzip, time, random, base64, traceback
+import re, sys, gzip, time, random, base64
 
 import simplejson as json
 
-from prophetscrapers.modules import cache, dom_parser, log_utils, control
+from prophetscrapers.modules import cache, control, dom_parser, log_utils
 
 import six
 from six.moves import range as x_range
@@ -75,7 +75,7 @@ def request(url, close=True, redirect=True, error=False, verify=True, proxy=None
     """
 
     try:
-        url = url.decode('utf-8')
+        url = six.ensure_text(url, errors='ignore')
     except Exception:
         pass
 
@@ -314,7 +314,7 @@ def request(url, close=True, redirect=True, error=False, verify=True, proxy=None
 
             if not as_bytes:
 
-                result = six.ensure_text(result)
+                result = six.ensure_text(result, errors='ignore')
 
             return result, headers, content, cookie
 
@@ -366,16 +366,14 @@ def request(url, close=True, redirect=True, error=False, verify=True, proxy=None
             response.close()
 
         if not as_bytes:
-            result = six.ensure_text(result)
+
+            result = six.ensure_text(result, errors='ignore')
 
         return result
 
-    except Exception as reason:
+    except:
 
-        _, __, tb = sys.exc_info()
-
-        print(traceback.print_tb(tb))
-        log_utils.log('Client module failed, reason of failure: ' + repr(reason))
+        log_utils.log('Client request failed on url: ' + url + ' | Reason', 1)
 
         return
 
@@ -457,6 +455,9 @@ def replaceHTMLCodes(txt):
     txt = txt.replace("&gt;", ">")
     txt = txt.replace("&#38;", "&")
     txt = txt.replace("&nbsp;", "")
+    txt = txt.replace('&#8230;', '...')
+    txt = txt.replace('&#8217;', '\'')
+    txt = txt.replace('&#8211;', '-')
     txt = txt.strip()
     return txt
 
@@ -548,11 +549,10 @@ class Cfcookie:
             self.cookie = None
             self._get_cookie(netloc, ua, timeout)
             if self.cookie is None:
-                log_utils.log('%s returned an error. Could not collect tokens.' % netloc, log_utils.LOGDEBUG)
+                log_utils.log('%s returned an error. Could not collect tokens.' % netloc)
             return self.cookie
         except Exception as e:
-            log_utils.log('%s returned an error. Could not collect tokens - Error: %s.' % (netloc, str(e)),
-                          log_utils.LOGDEBUG)
+            log_utils.log('%s returned an error. Could not collect tokens - Error: %s.' % (netloc, str(e)))
             return self.cookie
 
     def _get_cookie(self, netloc, ua, timeout):

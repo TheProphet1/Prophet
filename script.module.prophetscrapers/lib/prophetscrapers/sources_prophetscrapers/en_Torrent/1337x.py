@@ -3,17 +3,12 @@
 
 import re
 
-try:
-    from urlparse import parse_qs, urljoin
-    from urllib import urlencode, quote
-except ImportError:
-    from urllib.parse import parse_qs, urljoin, urlencode, quote
-
 from six import ensure_text
 
+from prophetscrapers import cfScraper
+from prophetscrapers import parse_qs, urljoin, urlencode, quote
 from prophetscrapers.modules import cache, cleantitle, client, debrid, log_utils, source_utils, workers
 from prophetscrapers.modules import dom_parser2 as dom
-from prophetscrapers.sources_prophetscrapers import cfScraper
 
 class source:
     def __init__(self):

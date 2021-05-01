@@ -22,8 +22,6 @@
 import re
 import time
 import base64
-#import urllib
-#import urlparse
 
 import six
 from six.moves import urllib_parse
@@ -61,19 +59,22 @@ def __getTrakt(url, post=None):
 
         result = client.request(url, post=post, headers=headers, output='extended', error=True)
 
+        result = utils.byteify(result)
+
         resp_code = result[1]
         resp_header = result[2]
         result = result[0]
 
-        if resp_code in ['500', '502', '503', '504', '520', '521', '522', '524']:
-            log_utils.log('Temporary Trakt Error: %s' % resp_code, log_utils.LOGWARNING)
-            control.infoDialog('Trakt Error: ' + str(resp_code), sound=True, icon='WARNING')
-            return
-        elif resp_code in ['404']:
-            log_utils.log('Object Not Found : %s' % resp_code, log_utils.LOGWARNING)
+        if resp_code in ['423', '500', '502', '503', '504', '520', '521', '522', '524']:
+            log_utils.log('Trakt Error: %s' % str(resp_code))
+            control.infoDialog('Trakt Error: ' + str(resp_code), sound=True)
             return
         elif resp_code in ['429']:
-            log_utils.log('Trakt Rate Limit Reached: %s' % resp_code, log_utils.LOGWARNING)
+            log_utils.log('Trakt Rate Limit Reached: %s' % str(resp_code))
+            control.infoDialog('Trakt Rate Limit Reached: ' + str(resp_code), sound=True)
+            return
+        elif resp_code in ['404']:
+            log_utils.log('Object Not Found : %s' % str(resp_code))
             return
 
         if resp_code not in ['401', '405']:
@@ -93,9 +94,10 @@ def __getTrakt(url, post=None):
         headers['Authorization'] = 'Bearer %s' % token
 
         result = client.request(url, post=post, headers=headers, output='extended', error=True)
+        result = utils.byteify(result)
         return result[0], result[2]
-    except Exception as e:
-        log_utils.log('Unknown Trakt Error: %s' % e, log_utils.LOGWARNING)
+    except:
+        log_utils.log('getTrakt Error', 1)
         pass
 
 def getTraktAsJson(url, post=None):
@@ -120,7 +122,7 @@ def authTrakt():
 
         result = getTraktAsJson('/oauth/device/code', {'client_id': V2_API_KEY})
         verification_url = control.lang(32513) % result['verification_url']
-        user_code = six.ensure_str(control.lang(32514) % result['user_code'])
+        user_code = six.ensure_text(control.lang(32514) % result['user_code'])
         expires_in = int(result['expires_in'])
         device_code = result['device_code']
         interval = result['interval']
@@ -161,7 +163,7 @@ def authTrakt():
         control.addon('plugin.video.prophet').setSetting(id='trakt.refresh', value=refresh)
         raise Exception()
     except:
-        control.openSettings('2.1')
+        control.openSettings('4.1')
 
 
 def getTraktCredentialsInfo():
@@ -200,15 +202,15 @@ def getTraktAddonEpisodeInfo():
     else: return False
 
 
-def manager(name, imdb, tvdb, content):
+def manager(name, imdb, tmdb, content):
     try:
-        post = {"movies": [{"ids": {"imdb": imdb}}]} if content == 'movie' else {"shows": [{"ids": {"tvdb": tvdb}}]}
+        post = {"movies": [{"ids": {"imdb": imdb}}]} if content == 'movie' else {"shows": [{"ids": {"tmdb": tmdb}}]}
 
-        items = [(six.ensure_str(control.lang(32516)), '/sync/collection')]
-        items += [(six.ensure_str(control.lang(32517)), '/sync/collection/remove')]
-        items += [(six.ensure_str(control.lang(32518)), '/sync/watchlist')]
-        items += [(six.ensure_str(control.lang(32519)), '/sync/watchlist/remove')]
-        items += [(six.ensure_str(control.lang(32520)), '/users/me/lists/%s/items')]
+        items = [(control.lang(32516), '/sync/collection')]
+        items += [(control.lang(32517), '/sync/collection/remove')]
+        items += [(control.lang(32518), '/sync/watchlist')]
+        items += [(control.lang(32519), '/sync/watchlist/remove')]
+        items += [(control.lang(32520), '/users/me/lists/%s/items')]
 
         result = getTraktAsJson('/users/me/lists')
         lists = [(i['name'], i['ids']['slug']) for i in result]
@@ -219,26 +221,26 @@ def manager(name, imdb, tvdb, content):
             lists[i] = ((six.ensure_str(control.lang(32522) % lists[i][0])), '/users/me/lists/%s/items/remove' % lists[i][1])
         items += lists
 
-        select = control.selectDialog([i[0] for i in items], six.ensure_str(control.lang(32515)))
+        select = control.selectDialog([i[0] for i in items], control.lang(32515))
 
         if select == -1:
             return
         elif select == 4:
-            t = six.ensure_str(control.lang(32520))
+            t = control.lang(32520)
             k = control.keyboard('', t) ; k.doModal()
             new = k.getText() if k.isConfirmed() else None
             if (new == None or new == ''): return
             result = __getTrakt('/users/me/lists', post={"name": new, "privacy": "private"})[0]
 
             try: slug = utils.json_loads_as_str(result)['ids']['slug']
-            except: return control.infoDialog(six.ensure_str(control.lang(32515)), heading=str(name), sound=True, icon='ERROR')
+            except: return control.infoDialog(control.lang(32515), heading=str(name), sound=True, icon='ERROR')
             result = __getTrakt(items[select][1] % slug, post=post)[0]
         else:
             result = __getTrakt(items[select][1], post=post)[0]
 
         icon = control.infoLabel('ListItem.Icon') if not result == None else 'ERROR'
 
-        control.infoDialog(six.ensure_str(control.lang(32515)), heading=str(name), sound=True, icon=icon)
+        control.infoDialog(control.lang(32515), heading=str(name), sound=True, icon=icon)
     except:
         return
 
@@ -248,6 +250,8 @@ def slug(name):
     name = name.lower()
     name = re.sub('[^a-z0-9_]', '-', name)
     name = re.sub('--+', '-', name)
+    if name.endswith('-'):
+        name = name.rstrip('-')
     return name
 
 
@@ -344,6 +348,7 @@ def cachesyncTVShows(timeout=0):
 
 def timeoutsyncTVShows():
     timeout = cache.timeout(syncTVShows, control.addon('plugin.video.prophet').getSetting('trakt.user').strip())
+    if not timeout: timeout = 0
     return timeout
 
 
@@ -374,7 +379,7 @@ def syncTraktStatus():
     try:
         cachesyncMovies()
         cachesyncTVShows()
-        control.infoDialog(six.ensure_str(control.lang(32092)))
+        control.infoDialog(control.lang(32092))
     except:
         control.infoDialog('Trakt sync failed')
         pass
@@ -390,32 +395,33 @@ def markMovieAsNotWatched(imdb):
     return __getTrakt('/sync/history/remove', {"movies": [{"ids": {"imdb": imdb}}]})[0]
 
 
-def markTVShowAsWatched(tvdb):
-    return __getTrakt('/sync/history', {"shows": [{"ids": {"tvdb": tvdb}}]})[0]
+def markTVShowAsWatched(imdb):
+    return __getTrakt('/sync/history', {"shows": [{"ids": {"imdb": imdb}}]})[0]
 
 
-def markTVShowAsNotWatched(tvdb):
-    return __getTrakt('/sync/history/remove', {"shows": [{"ids": {"tvdb": tvdb}}]})[0]
+def markTVShowAsNotWatched(imdb):
+    return __getTrakt('/sync/history/remove', {"shows": [{"ids": {"imdb": imdb}}]})[0]
 
 
-def markEpisodeAsWatched(tvdb, season, episode):
+def markEpisodeAsWatched(imdb, season, episode):
     season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-    return __getTrakt('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})[0]
+    return __getTrakt('/sync/history', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb}}]})[0]
 
 
-def markEpisodeAsNotWatched(tvdb, season, episode):
+def markEpisodeAsNotWatched(imdb, season, episode):
     season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-    return __getTrakt('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"tvdb": tvdb}}]})[0]
+    return __getTrakt('/sync/history/remove', {"shows": [{"seasons": [{"episodes": [{"number": episode}], "number": season}], "ids": {"imdb": imdb}}]})[0]
 
 
-def scrobbleMovie(imdb, watched_percent):
+def scrobbleMovie(imdb, watched_percent, action):
     if not imdb.startswith('tt'): imdb = 'tt' + imdb
-    return __getTrakt('/scrobble/pause', {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})[0]
+    return __getTrakt('/scrobble/%s' % action, {"movie": {"ids": {"imdb": imdb}}, "progress": watched_percent})[0]
 
 
-def scrobbleEpisode(tvdb, season, episode, watched_percent):
+def scrobbleEpisode(imdb, season, episode, watched_percent, action):
+    if not imdb.startswith('tt'): imdb = 'tt' + imdb
     season, episode = int('%01d' % int(season)), int('%01d' % int(episode))
-    return __getTrakt('/scrobble/pause', {"show": {"ids": {"tvdb": tvdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})[0]
+    return __getTrakt('/scrobble/%s' % action, {"show": {"ids": {"imdb": imdb}}, "episode": {"season": season, "number": episode}, "progress": watched_percent})[0]
 
 
 def getMovieTranslation(id, lang, full=False):
@@ -468,7 +474,7 @@ def getTVShowSummary(id, full=True):
         return
 
 
-def getPeople(id, content_type, full=True):
+def getPeople(id, content_type, full=False):
     try:
         url = '/%s/%s/people' % (content_type, id)
         if full: url += '?extended=full'

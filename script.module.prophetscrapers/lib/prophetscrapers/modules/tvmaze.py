@@ -27,7 +27,7 @@ from six.moves import urllib_parse
 import requests
 
 from prophetscrapers.modules import cache
-from prophetscrapers.modules import client, control
+from prophetscrapers.modules import client
 
 
 class tvMaze:

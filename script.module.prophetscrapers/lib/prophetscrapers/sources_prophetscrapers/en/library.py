@@ -18,9 +18,12 @@
 '''
 
 
-import urllib,urlparse,json
+import simplejson as json
 
-from prophetscrapers.modules import cleantitle, control
+from six import ensure_str, ensure_text
+
+from prophetscrapers import urlparse, urlencode, parse_qs
+from prophetscrapers.modules import cleantitle, control, log_utils
 
 class source:
     def __init__(self):
@@ -30,14 +33,16 @@ class source:
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
-            return urllib.urlencode({'imdb': imdb, 'title': title, 'localtitle': localtitle,'year': year})
+            return urlencode({'imdb': imdb, 'title': title, 'localtitle': localtitle,'year': year})
         except:
+            log_utils.log('lib_scraper_fail1', 1)
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
-            return urllib.urlencode({'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'localtvshowtitle': localtvshowtitle, 'year': year})
+            return urlencode({'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'localtvshowtitle': localtvshowtitle, 'year': year})
         except:
+            log_utils.log('lib_scraper_fail2', 1)
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -45,11 +50,12 @@ class source:
             if url is None:
                 return
 
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url.update({'premiered': premiered, 'season': season, 'episode': episode})
-            return urllib.urlencode(url)
+            return urlencode(url)
         except:
+            log_utils.log('lib_scraper_fail3', 1)
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -59,7 +65,7 @@ class source:
             if url is None:
                 return sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             content_type = 'episode' if 'tvshowtitle' in data else 'movie'
@@ -72,14 +78,14 @@ class source:
                 ids = [data['imdb']]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties": ["imdbnumber", "title", "originaltitle", "file"]}, "id": 1}' % years)
-                r = unicode(r, 'utf-8', errors='ignore')
+                r = ensure_text(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['movies']
 
-                r = [i for i in r if str(i['imdbnumber']) in ids or title in [cleantitle.get(i['title'].encode('utf-8')), cleantitle.get(i['originaltitle'].encode('utf-8'))]]
-                r = [i for i in r if not i['file'].encode('utf-8').endswith('.strm')][0]
+                r = [i for i in r if str(i['imdbnumber']) in ids or title in [cleantitle.get(ensure_str(i['title'])), cleantitle.get(ensure_str(i['originaltitle']))]]
+                r = [i for i in r if not ensure_str(i['file']).endswith('.strm')][0]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["streamdetails", "file"], "movieid": %s }, "id": 1}' % str(r['movieid']))
-                r = unicode(r, 'utf-8', errors='ignore')
+                r = ensure_text(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['moviedetails']
             elif content_type == 'episode':
                 title = data['tvshowtitle']
@@ -87,30 +93,30 @@ class source:
                 season, episode = data['season'], data['episode']
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties": ["imdbnumber", "title"]}, "id": 1}' % years)
-                r = unicode(r, 'utf-8', errors='ignore')
+                r = ensure_text(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['tvshows']
 
-                r = [i for i in r if title in (i['title'].encode('utf-8'))][0]
+                r = [i for i in r if title in (ensure_str(i['title']))][0]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["file"], "tvshowid": %s }, "id": 1}' % (str(season), str(episode), str(r['tvshowid'])))
-                r = unicode(r, 'utf-8', errors='ignore')
+                r = ensure_text(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['episodes']
 
-                r = [i for i in r if not i['file'].encode('utf-8').endswith('.strm')][0]
+                r = [i for i in r if not ensure_str(i['file']).endswith('.strm')][0]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails", "file"], "episodeid": %s }, "id": 1}' % str(r['episodeid']))
-                r = unicode(r, 'utf-8', errors='ignore')
+                r = ensure_text(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['episodedetails']
 
-            url = r['file'].encode('utf-8')
+            url = ensure_str(r['file'])
 
-            try: quality = int(r['streamdetails']['video'][0]['width'])
-            except: quality = -1
+            try: qual = int(r['streamdetails']['video'][0]['width'])
+            except: qual = -1
 
-            if quality >= 2160: quality = '4K'
-            if 1920 <= quality < 2000: quality = '1080p'
-            if 1280 <= quality < 1900: quality = '720p'
-            if quality < 1280: quality = 'SD'
+            if qual >= 2160: quality = '4K'
+            elif 1920 <= qual < 2000: quality = '1080p'
+            elif 1280 <= qual < 1900: quality = '720p'
+            elif qual < 1280: quality = 'SD'
 
             info = []
 
@@ -143,12 +149,13 @@ class source:
             except: pass
             
             info = ' | '.join(info)
-            info = info.encode('utf-8')
+            #info = info.encode('utf-8')
 
             sources.append({'source': '', 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'local': True, 'direct': True, 'debridonly': False})
 
             return sources
         except:
+            log_utils.log('lib_scraper_fail0', 1)
             return sources
 
     def resolve(self, url):

@@ -11,12 +11,7 @@
 
 import re
 
-try:
-    from urlparse import parse_qs, urljoin
-    from urllib import urlencode, unquote_plus, quote
-except ImportError:
-    from urllib.parse import parse_qs, urljoin, urlencode, unquote_plus, quote
-
+from prophetscrapers import parse_qs, urljoin, urlencode, quote, unquote_plus
 from prophetscrapers.modules import cache
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client

@@ -5,14 +5,11 @@ import re
 
 from six import ensure_text
 
-try: from urlparse import parse_qs
-except ImportError: from urllib.parse import parse_qs
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
-
 import simplejson as json
+
+from prophetscrapers import cfScraper
+from prophetscrapers import parse_qs, urlencode, quote_plus
 from prophetscrapers.modules import cleantitle, client, debrid, source_utils, log_utils, control
-from prophetscrapers.sources_prophetscrapers import cfScraper
 
 
 class source:

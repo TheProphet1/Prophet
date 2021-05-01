@@ -21,17 +21,13 @@ import re
 
 from six import ensure_text
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
-
+from prophetscrapers import parse_qs, urljoin, urlencode, quote_plus
 from prophetscrapers.modules import debrid
 from prophetscrapers.modules import cleantitle
 from prophetscrapers.modules import client
 from prophetscrapers.modules import source_utils
 from prophetscrapers.modules import log_utils
-#from prophetscrapers.sources_prophetscrapers import cfScraper
+#from prophetscrapers import cfScraper
 
 class source:
     def __init__(self):

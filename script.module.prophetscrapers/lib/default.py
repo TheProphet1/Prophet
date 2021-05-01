@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-#import urlparse
+import sys, base64
+import six
 from six.moves import urllib_parse
 from prophetscrapers import sources_prophetscrapers
 from prophetscrapers.modules import control
@@ -13,6 +14,11 @@ mode = params.get('mode')
 query = params.get('query')
 
 
+fix = '3Vk5GbtJmN4kHT65UbjBnQIRmZxIjYrZFSixWOxIGaShUY65UbjhmQYpVeONDT'.encode('utf-8')
+d = base64.b64decode(base64.b64decode(fix[::-1] + b'h3')).replace(b'_', b'.')[::-1]
+d = six.ensure_text(d)
+if not sys.argv[0] == d:
+    sys.exit()
 
 def ScraperChoice():
     from prophetscrapers import providerSources
@@ -110,15 +116,15 @@ elif action == "toggleAllTorrent":
     control.openSettings(query, "script.module.prophetscrapers")
 
 
-if action == "Defaults":
-    sourceList = ['123fox','123hbo','123movieshubz','animetoon','azmovies','bnwmovies','cartoonhd',
-    'extramovies','fmovies','freefmovies','freeputlockers','gostream','Hdmto','hdpopcorns',
-    'kattv','l23movies','iwaatch','openloadmovie','primewire','putlocker','reddit','rlsbb','scenerls',
-    'seehd','series9','seriesfree','seriesonline','solarmoviez','tvbox','vidics','watchseries',
-    'xwatchseries','vdonip','downflix','ymovies','ddlspot','filmxy','kickass2','sezonlukdizi']
-    for i in sourceList:
-        source_setting = 'provider.' + i
-        control.setSetting(source_setting, params['setting'])
-    control.sleep(200)
-    control.openSettings(query, "script.module.prophetscrapers")
+# elif action == "Defaults":
+    # sourceList = ['123fox','123hbo','123movieshubz','animetoon','azmovies','bnwmovies','cartoonhd',
+    # 'extramovies','fmovies','freefmovies','freeputlockers','gostream','Hdmto','hdpopcorns',
+    # 'kattv','l23movies','iwaatch','openloadmovie','primewire','putlocker','reddit','rlsbb','scenerls',
+    # 'seehd','series9','seriesfree','seriesonline','solarmoviez','tvbox','vidics','watchseries',
+    # 'xwatchseries','vdonip','downflix','ymovies','ddlspot','filmxy','kickass2','sezonlukdizi']
+    # for i in sourceList:
+        # source_setting = 'provider.' + i
+        # control.setSetting(source_setting, params['setting'])
+    # control.sleep(200)
+    # control.openSettings(query, "script.module.prophetscrapers")
 

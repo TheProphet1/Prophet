@@ -17,11 +17,7 @@
 
 import re
 
-try: from urlparse import parse_qs, urljoin
-except ImportError: from urllib.parse import parse_qs, urljoin
-try: from urllib import urlencode, quote_plus, unquote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus, unquote_plus
-
+from prophetscrapers import parse_qs, urljoin, urlencode, quote_plus, unquote_plus
 from prophetscrapers.modules import cleantitle, client, debrid, source_utils
 
 

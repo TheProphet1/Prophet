@@ -22,11 +22,9 @@
 
 import re,base64
 
-try: from urlparse import urljoin
-except ImportError: from urllib.parse import urljoin
-
 import simplejson as json
 
+from prophetscrapers import urljoin
 from prophetscrapers.modules import cache
 from prophetscrapers.modules import control
 from prophetscrapers.modules import client

@@ -3,8 +3,12 @@
 import pkgutil
 import os
 
-from . import sources_prophetscrapers
+try:
+    from .modules import cfscrape
+    cfScraper = cfscrape.create_scraper()
+except: pass
 
+from six.moves.urllib_parse import parse_qs, urljoin, urlparse, urlencode, quote, unquote, quote_plus, unquote_plus
 
 try:
     from kodi_six import xbmcaddon
@@ -12,6 +16,7 @@ try:
 except:
     __addon__ = None
     pass
+
 
 def sources():
     try:

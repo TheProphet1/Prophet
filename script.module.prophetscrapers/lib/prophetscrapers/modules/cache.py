@@ -20,11 +20,9 @@
 from __future__ import absolute_import
 
 import hashlib
-import os
 import re
 import time
-import xbmc
-
+import os
 from ast import literal_eval as evaluate
 import six
 
@@ -41,7 +39,7 @@ elif six.PY3:
     str = unicode = basestring = str
 
 cache_table = 'cache'
-data_path = xbmc.translatePath(control.addon('plugin.video.prophet').getAddonInfo('profile'))
+data_path = control.transPath(control.addon('plugin.video.prophet').getAddonInfo('profile'))
 
 def get(function_, duration, *args, **table):
 
@@ -117,7 +115,6 @@ def get(function_, duration, *args, **table):
     except Exception:
         return evaluate(r)
 
-
 def timeout(function_, *args):
     try:
         key = _hash_function(function_, args)
@@ -125,7 +122,6 @@ def timeout(function_, *args):
         return int(result['date'])
     except Exception:
         return None
-
 
 def cache_get(key):
     # type: (str, str) -> dict or None
@@ -155,7 +151,6 @@ def cache_insert(key, value):
         )
 
     cursor.connection.commit()
-
 
 def cache_clear():
     try:
@@ -217,7 +212,7 @@ def cache_clear_all():
     cache_clear()
     cache_clear_meta()
     cache_clear_providers()
-        
+
 def _get_connection_cursor():
     conn = _get_connection()
     return conn.cursor()

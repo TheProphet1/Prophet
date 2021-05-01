@@ -4,15 +4,11 @@
 
 import re, base64
 
-try: from urlparse import urlparse, parse_qs, urljoin
-except ImportError: from urllib.parse import urlparse, parse_qs, urljoin
-try: from urllib import urlencode, quote_plus
-except ImportError: from urllib.parse import urlencode, quote_plus
-
 import six
 
+from prophetscrapers import cfScraper
+from prophetscrapers import parse_qs, urljoin, urlparse, urlencode, quote_plus
 from prophetscrapers.modules import client, cleantitle, source_utils, log_utils
-from prophetscrapers.sources_prophetscrapers import cfScraper
 
 
 class source:

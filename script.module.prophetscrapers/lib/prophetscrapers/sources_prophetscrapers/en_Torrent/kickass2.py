@@ -13,14 +13,9 @@
 
 import re
 
-try:
-    from urlparse import parse_qs, urljoin
-    from urllib import urlencode, quote_plus, unquote
-except ImportError:
-    from urllib.parse import parse_qs, urljoin, urlencode, quote_plus, unquote
-
 import six
 
+from prophetscrapers import parse_qs, urljoin, urlencode, unquote, quote_plus
 from prophetscrapers.modules import cache, cleantitle, client, debrid, log_utils, source_utils
 
 
