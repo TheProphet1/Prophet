@@ -928,7 +928,7 @@ class sources:
         self.sources = filter
 
         if main_sort == '1':
-            self.sources = [i for i in self.sources if i.get('debrid', '')] + [i for i in self.sources if not i.get('debrid', '')]
+            self.sources = local + [i for i in self.sources if i.get('debrid', '')] + [i for i in self.sources if not i.get('debrid', '') and not i in local]
 
         if multi == True:
             self.sources = [i for i in self.sources if not i['language'] == 'en'] + [i for i in self.sources if i['language'] == 'en']
