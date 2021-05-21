@@ -19,7 +19,9 @@
 '''
 
 
-import re,json
+import re
+import simplejson as json
+import six
 
 from resources.lib.modules import client
 from resources.lib.modules import workers
@@ -28,7 +30,7 @@ from resources.lib.modules import workers
 class youtube(object):
     def __init__(self, key=''):
         self.list = [] ; self.data = []
-        self.base_link = 'http://www.youtube.com'
+        self.base_link = 'https://www.youtube.com'
         self.key_link = '&key=%s' % key
         self.playlists_link = 'https://www.googleapis.com/youtube/v3/playlists?part=snippet&maxResults=50&channelId=%s'
         self.playlist_link = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=%s'
@@ -62,7 +64,7 @@ class youtube(object):
         except:
             pass
 
-        for i in range(1, 5):
+        for i in list(range(1, 5)):
             try:
                 if not 'nextPageToken' in result: raise Exception()
                 next = url + '&pageToken=' + result['nextPageToken']
@@ -75,14 +77,14 @@ class youtube(object):
         for item in items:
             try:
                 title = item['snippet']['title']
-                title = title.encode('utf-8')
+                title = six.ensure_str(title)
 
                 url = item['id']
-                url = url.encode('utf-8')
+                url = six.ensure_str(url)
 
                 image = item['snippet']['thumbnails']['high']['url']
                 if '/default.jpg' in image: raise Exception()
-                image = image.encode('utf-8')
+                image = six.ensure_str(image)
 
                 self.list.append({'title': title, 'url': url, 'image': image})
             except:
@@ -99,7 +101,7 @@ class youtube(object):
         except:
             pass
 
-        for i in range(1, 5):
+        for i in list(range(1, 5)):
             try:
                 if pagination == True: raise Exception()
                 if not 'nextPageToken' in result: raise Exception()
@@ -119,15 +121,15 @@ class youtube(object):
         for item in items: 
             try:
                 title = item['snippet']['title']
-                title = title.encode('utf-8')
+                title = six.ensure_str(title)
 
                 try: url = item['snippet']['resourceId']['videoId']
                 except: url = item['id']['videoId']
-                url = url.encode('utf-8')
+                url = six.ensure_str(url)
 
                 image = item['snippet']['thumbnails']['high']['url']
                 if '/default.jpg' in image: raise Exception()
-                image = image.encode('utf-8')
+                image = six.ensure_str(image)
 
                 append = {'title': title, 'url': url, 'image': image}
                 if not next == '': append['next'] = next
@@ -136,12 +138,12 @@ class youtube(object):
                 pass
 
         try:
-            u = [range(0, len(self.list))[i:i+50] for i in range(len(range(0, len(self.list))))[::50]]
+            u = [list(range(0, len(self.list)))[i:i+50] for i in list(range(len(list(range(0, len(self.list))))))[::50]]
             u = [','.join([self.list[x]['url'] for x in i]) for i in u]
             u = [self.content_link % i + self.key_link for i in u]
 
             threads = []
-            for i in range(0, len(u)):
+            for i in list(range(0, len(u))):
                 threads.append(workers.Thread(self.thread, u[i], i))
                 self.data.append('')
             [i.start() for i in threads]
@@ -152,7 +154,7 @@ class youtube(object):
         except:
             pass
 
-        for item in range(0, len(self.list)):
+        for item in list(range(0, len(self.list))):
             try:
                 vid = self.list[item]['url']
 
@@ -184,5 +186,3 @@ class youtube(object):
             self.data[i] = result
         except:
             return
-
-

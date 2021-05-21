@@ -17,17 +17,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+import os,sys
 
-import os, base64, sys, urllib2, urlparse
-import xbmc, xbmcaddon, xbmcgui
+import six
 
 from resources.lib.modules import control
 from resources.lib.modules import trakt
 from resources.lib.modules import cache
 
-sysaddon = sys.argv[0] ; syshandle = int(sys.argv[1]) ;
+sysaddon = sys.argv[0]
+syshandle = int(sys.argv[1])
 
-artPath = control.artPath() ; addonFanart = control.addonFanart()
+artPath = control.artPath()
+addonFanart = control.addonFanart()
 
 imdbCredentials = False if control.setting('imdb.user') == '' else True
 
@@ -35,14 +37,14 @@ traktCredentials = trakt.getTraktCredentialsInfo()
 
 traktIndicators = trakt.getTraktIndicatorsInfo()
 
-queueMenu = control.lang(32065).encode('utf-8')
+queueMenu = six.ensure_str(control.lang(32065))
 
 
 class navigator:
 
     def root(self):
 																								 
-        self.addDirectoryItem('[B][COLOR yellow]Kpolyamass Updates[/COLOR][/B]',  'ShowChangelog',  'icon.png',  'DefaultFolder.png')
+    #    self.addDirectoryItem('[B][COLOR yellow]Kpolyamass Updates[/COLOR][/B]',  'ShowChangelog',  'icon.png',  'DefaultFolder.png')
         self.addDirectoryItem(32001, 'movieNavigator', 'movies.png', 'DefaultMovies.png')
         self.addDirectoryItem(32002, 'tvNavigator', 'tvshows.png', 'DefaultTVShows.png')
 
@@ -92,12 +94,12 @@ class navigator:
             self.showText('[B][Kpolyamass User Agreement and Privacy Policy[/B][/I][/COLOR]', compfile)
         
     def open_news_url(self, url):
-            req = urllib2.Request(url)
+            req = urllib_parse.Request(url)
             req.add_header('User-Agent', 'klopp')
-            response = urllib2.urlopen(req)
+            response = urllib_parse.urlopen(req)
             link=response.read()
             response.close()
-            print link
+            print(link)
             return link
 
     def showText(self, heading, text):
@@ -227,44 +229,47 @@ class navigator:
 
 
     def mytvshows(self, lite=False):
-        self.accountCheck()
+        try:
+            self.accountCheck()
 
-        if traktCredentials == True and imdbCredentials == True:
-            self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
-            self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
-            self.addDirectoryItem(32034, 'tvshows&url=imdbwatchlist', 'imdb.png', 'DefaultTVShows.png')
+            if traktCredentials == True and imdbCredentials == True:
+                self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
+                self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
+                self.addDirectoryItem(32034, 'tvshows&url=imdbwatchlist', 'imdb2.png', 'DefaultTVShows.png')
 
-        elif traktCredentials == True:
-            self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
-            self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
+            elif traktCredentials == True:
+                self.addDirectoryItem(90050, 'calendar&url=onDeck', 'trakt.png', 'DefaultTVShows.png')
+                self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
+                self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
 
-        elif imdbCredentials == True:
-            self.addDirectoryItem(32032, 'tvshows&url=imdbwatchlist', 'imdb.png', 'DefaultTVShows.png')
-            self.addDirectoryItem(32033, 'tvshows&url=imdbwatchlist2', 'imdb.png', 'DefaultTVShows.png')
+            elif imdbCredentials == True:
+                self.addDirectoryItem(32032, 'tvshows&url=imdbwatchlist', 'imdb2.png', 'DefaultTVShows.png')
+                self.addDirectoryItem(32033, 'tvshows&url=imdbwatchlist2', 'imdb2.png', 'DefaultTVShows.png')
 
-        if traktCredentials == True:
-            self.addDirectoryItem(32035, 'tvshows&url=traktfeatured', 'trakt.png', 'DefaultTVShows.png')
+            if traktCredentials == True:
+                self.addDirectoryItem(32035, 'tvshows&url=traktfeatured', 'trakt2.png', 'DefaultTVShows.png')
 
-        elif imdbCredentials == True:
-            self.addDirectoryItem(32035, 'tvshows&url=trending', 'imdb.png', 'DefaultMovies.png', queue=True)
+            elif imdbCredentials == True:
+                self.addDirectoryItem(32035, 'tvshows&url=trending', 'imdb2.png', 'DefaultMovies.png', queue=True)
 
-        if traktIndicators == True:
-            self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt.png', 'DefaultTVShows.png', queue=True)
-            self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
-            self.addDirectoryItem(32038, 'calendar&url=mycalendar', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
+            if traktIndicators == True:
+                self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt2.png', 'DefaultTVShows.png', queue=True)
+                self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt2.png','DefaultRecentlyAddedEpisodes.png', queue=True)
+                self.addDirectoryItem(32038, 'calendar&url=mycalendar','trakt2.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
 
-        self.addDirectoryItem(32040, 'tvUserlists', 'userlists.png', 'DefaultTVShows.png')
+            self.addDirectoryItem(32040, 'tvUserlists','userlists2.png', 'DefaultTVShows.png')
 
-        if traktCredentials == True:
-            self.addDirectoryItem(32041, 'episodeUserlists', 'userlists.png', 'DefaultTVShows.png')
+            if traktCredentials == True:
+                self.addDirectoryItem(32041, 'episodeUserlists', 'userlists2.png', 'DefaultTVShows.png')
 
-        if lite == False:
-            self.addDirectoryItem(32031, 'tvliteNavigator', 'tvshows.png', 'DefaultTVShows.png')
-            self.addDirectoryItem(32028, 'tvPerson', 'people-search.png', 'DefaultTVShows.png')
-            self.addDirectoryItem(32010, 'tvSearch', 'search.png', 'DefaultTVShows.png')
+            if lite == False:
+                self.addDirectoryItem(32031, 'tvliteNavigator', 'tvshows.png', 'DefaultTVShows.png')
+                self.addDirectoryItem(32028, 'tvPerson', 'people-search2.png', 'DefaultTVShows.png')
+                self.addDirectoryItem(32010, 'tvSearch', 'search2.png', 'DefaultTVShows.png')
 
-        self.endDirectory()
-
+            self.endDirectory()
+        except:
+            print("ERROR")
 
     def tools(self):
         self.addDirectoryItem(32043, 'openSettings&query=0.0', 'tools.png', 'DefaultAddonProgram.png')
@@ -282,7 +287,7 @@ class navigator:
         self.addDirectoryItem(32614, 'clearMetaCache', 'tools.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem(32613, 'clearAllCache', 'tools.png', 'DefaultAddonProgram.png')
         self.addDirectoryItem(32073, 'authTrakt', 'trakt.png', 'DefaultAddonProgram.png')
-        self.addDirectoryItem(32609, 'urlResolverRDTorrent', 'urlresolver.png', 'DefaultAddonProgram.png')
+        self.addDirectoryItem(32609, 'ResolveUrlTorrent','resolveurl.png', 'DefaultAddonProgram.png')
 
         self.endDirectory()
 
@@ -311,12 +316,11 @@ class navigator:
 
         self.endDirectory()
 
-
     def search(self):
-        self.addDirectoryItem(32001, 'movieSearch', 'search.png', 'DefaultMovies.png')
-        self.addDirectoryItem(32002, 'tvSearch', 'search.png', 'DefaultTVShows.png')
-        self.addDirectoryItem(32029, 'moviePerson', 'people-search.png', 'DefaultMovies.png')
-        self.addDirectoryItem(32030, 'tvPerson', 'people-search.png', 'DefaultTVShows.png')
+        self.addDirectoryItem(32001, 'movieSearch','search.png', 'DefaultMovies.png')
+        self.addDirectoryItem(32002, 'tvSearch', 'search2.png', 'DefaultTVShows.png')
+        self.addDirectoryItem(32029, 'moviePerson','people-search.png', 'DefaultMovies.png')
+        self.addDirectoryItem(32030, 'tvPerson', 'people-search2.png', 'DefaultTVShows.png')
 
         self.endDirectory()
 
@@ -324,25 +328,29 @@ class navigator:
         try:
             control.idle()
 
-            items = [ (control.lang(32001).encode('utf-8'), 'movies'), (control.lang(32002).encode('utf-8'), 'tvshows'), (control.lang(32054).encode('utf-8'), 'seasons'), (control.lang(32038).encode('utf-8'), 'episodes') ]
+            items = [ (six.ensure_str(control.lang(32001)), 'movies'), (six.ensure_str(control.lang(32002)), 'tvshows'), (six.ensure_str(control.lang(32054)), 'seasons'), (six.ensure_str(control.lang(32038)), 'episodes') ]
 
-            select = control.selectDialog([i[0] for i in items], control.lang(32049).encode('utf-8'))
+            select = control.selectDialog([i[0] for i in items], six.ensure_str(control.lang(32049)))
 
-            if select == -1: return
+            if select == -1:
+                return
 
             content = items[select][1]
 
             title = control.lang(32059).encode('utf-8')
             url = '%s?action=addView&content=%s' % (sys.argv[0], content)
 
-            poster, banner, fanart = control.addonPoster(), control.addonBanner(), control.addonFanart()
+            poster, banner, fanart = control.addonPoster(
+            ), control.addonBanner(), control.addonFanart()
 
             item = control.item(label=title)
-            item.setInfo(type='Video', infoLabels = {'title': title})
-            item.setArt({'icon': poster, 'thumb': poster, 'poster': poster, 'banner': banner})
+            item.setInfo(type='Video', infoLabels={'title': title})
+            item.setArt({'icon': poster, 'thumb': poster,
+                         'poster': poster, 'banner': banner})
             item.setProperty('Fanart_Image', fanart)
 
-            control.addItem(handle=int(sys.argv[1]), url=url, listitem=item, isFolder=False)
+            control.addItem(handle=int(
+                sys.argv[1]), url=url, listitem=item, isFolder=False)
             control.content(int(sys.argv[1]), content)
             control.directory(int(sys.argv[1]), cacheToDisc=True)
 
@@ -355,66 +363,73 @@ class navigator:
     def accountCheck(self):
         if traktCredentials == False and imdbCredentials == False:
             control.idle()
-            control.infoDialog(control.lang(32042).encode('utf-8'), sound=True, icon='WARNING')
+            control.infoDialog(six.ensure_str(control.lang(32042)), sound=True, icon='WARNING')
             sys.exit()
 
 
     def infoCheck(self, version):
         try:
-            control.infoDialog('', control.lang(32074).encode('utf-8'), time=5000, sound=False)
+            control.infoDialog('', six.ensure_str(control.lang(32074)), time=5000, sound=False)
             return '1'
         except:
             return '1'
 
-
     def clearCache(self):
-        control.idle()
-        yes = control.yesnoDialog(control.lang(32056).encode('utf-8'), '', '')
+        #control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear()
-        control.infoDialog(control.lang(32057).encode('utf-8'), sound=True, icon='INFO')
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheMeta(self):
-        control.idle()
-        yes = control.yesnoDialog(control.lang(32056).encode('utf-8'), '', '')
+        #control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear_meta()
-        control.infoDialog(control.lang(32057).encode('utf-8'), sound=True, icon='INFO')
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheProviders(self):
-        control.idle()
-        yes = control.yesnoDialog(control.lang(32056).encode('utf-8'), '', '')
-        if not yes: return
+        #control.idle()
+#        yes = control.yesnoDialog(control.lang(32056))
+#        if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear_providers()
-        control.infoDialog(control.lang(32057).encode('utf-8'), sound=True, icon='INFO')
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheSearch(self):
-        control.idle()
-        yes = control.yesnoDialog(control.lang(32056).encode('utf-8'), '', '')
+        #control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear_search()
-        control.infoDialog(control.lang(32057).encode('utf-8'), sound=True, icon='INFO')
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
+
+    def clearDebridCheck(self):
+        #control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
+        if not yes: return
+        from resources.lib.modules import cache
+        cache.cache_clear_debrid()
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheAll(self):
-        control.idle()
-        yes = control.yesnoDialog(control.lang(32056).encode('utf-8'), '', '')
+        #control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear_all()
-        control.infoDialog(control.lang(32057).encode('utf-8'), sound=True, icon='INFO')
+        control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def addDirectoryItem(self, name, query, thumb, icon, context=None, queue=False, isAction=True, isFolder=True):
-        try: name = control.lang(name).encode('utf-8')
+        try: name = six.ensure_str(control.lang(name))
         except: pass
         url = '%s?action=%s' % (sysaddon, query) if isAction == True else query
         thumb = os.path.join(artPath, thumb) if not artPath == None else icon
         cm = []
         if queue == True: cm.append((queueMenu, 'RunPlugin(%s?action=queueItem)' % sysaddon))
-        if not context == None: cm.append((control.lang(context[0]).encode('utf-8'), 'RunPlugin(%s?action=%s)' % (sysaddon, context[1])))
+        if not context == None: cm.append((six.ensure_str(control.lang(context[0])), 'RunPlugin(%s?action=%s)' % (sysaddon, context[1])))
         item = control.item(label=name)
         item.addContextMenuItems(cm)
         item.setArt({'icon': thumb, 'thumb': thumb})

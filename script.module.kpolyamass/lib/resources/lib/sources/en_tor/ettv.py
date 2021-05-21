@@ -17,8 +17,11 @@
 '''
 
 import re
-import urllib
-import urlparse
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus
+except ImportError: from urllib.parse import urlencode, quote_plus
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -32,14 +35,14 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domain = ['ettv.to']
-        self.base_link = 'https://www.ettvdl.com'
+        self.base_link = 'https://www.ettvcentral.com'
         self.search_link = '/torrents-search.php?search=%s'
 
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -48,7 +51,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -58,10 +61,10 @@ class source:
         try:
             if url is None:
                 return
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -76,7 +79,7 @@ class source:
             if debrid.status() is False:
                 return self.sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -88,8 +91,8 @@ class source:
             query = '%s %s' % (self.title, self.hdlr)
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
-            url = self.search_link % urllib.quote_plus(query)
-            url = urlparse.urljoin(self.base_link, url)
+            url = self.search_link % quote_plus(query)
+            url = urljoin(self.base_link, url)
             # log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
 
             try:
@@ -120,7 +123,8 @@ class source:
                 raise Exception()
 
             url = 'magnet:%s' % (re.findall('a href="magnet:(.+?)"', result, re.DOTALL)[0])
-            url = urllib.unquote(url).decode('utf8').replace('&amp;', '&')
+            try: url = unquote(url).decode('utf8')
+            except: pass
             url = url.split('&xl=')[0]
 
             if url in str(self.sources):

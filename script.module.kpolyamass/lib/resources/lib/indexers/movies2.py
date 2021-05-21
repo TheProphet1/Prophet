@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-import os,sys,re,json,urllib,urlparse,base64,datetime
+
+import os,sys,re,base64,datetime
 import unicodedata
-try: action = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))['action']
+import six
+from six.moves import urllib_parse
+import simplejson as json
+try: action = dict(urllib_parse.parse_qsl(sys.argv[2].replace('?','')))['action']
 except: action = None
 
 from resources.lib.modules import trakt
@@ -24,7 +28,7 @@ class movies:
         self.imdb_link = 'http://www.imdb.com'
 		
         self.tmdb_key = control.setting('tmdb_apikey')
-        if self.tmdb_key == '' or self.tmdb_key == None: self.tmdb_key = base64.b64decode('Zjk4MGUwMzNiODhhNDNiMGJhMTA4NzY4OGU0ODgxOWI=')
+        if self.tmdb_key == '' or self.tmdb_key == None: self.tmdb_key = base64.b64decode('NjgxMjg0NTFkOTIxZmYzYjdmMWI3NjEwYjNjYmVhZDA=')
 		
         
         self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours = 5))
@@ -624,7 +628,7 @@ class movies:
 
             control.window.setProperty('%s.movie.search' % control.addonInfo('id'), self.query)
 
-            url = self.search_link % ('%s', urllib.quote_plus(self.query))
+            url = self.search_link % ('%s', urllib_parse.quote_plus(self.query))
             self.list = cache.get(self.tmdb_list, 0, url)
 
             self.worker()
@@ -979,7 +983,7 @@ class movies:
         try:
             q = dict(urlparse.parse_qsl(urlparse.urlsplit(url).query))
             q.update({'extended': 'full,images'})
-            q = (urllib.urlencode(q)).replace('%2C', ',')
+            q = (urllib_parse.urlencode(q)).replace('%2C', ',')
             u = url.replace('?' + urlparse.urlparse(url).query, '') + '?' + q
 
             result = trakt.getTrakt(u)
@@ -999,7 +1003,7 @@ class movies:
             p = str(int(q['page']) + 1)
             if p == '5': raise Exception()
             q.update({'page': p})
-            q = (urllib.urlencode(q)).replace('%2C', ',')
+            q = (urllib_parse.urlencode(q)).replace('%2C', ',')
             next = url.replace('?' + urlparse.urlparse(url).query, '') + '?' + q
             next = next.encode('utf-8')
         except:
@@ -1519,8 +1523,8 @@ class movies:
                 label = '%s' % (i['title'])
                 tmdb, imdb, title, year = i['tmdb'], i['imdb'], i['originaltitle'], i['year']
 
-                sysname = urllib.quote_plus('%s (%s)' % (title, year))
-                systitle = urllib.quote_plus(title)
+                sysname = urllib_parse.quote_plus('%s (%s)' % (title, year))
+                systitle = urllib_parse.quote_plus(title)
 
 
                 poster, banner, fanart = i['poster'], i['banner'], i['fanart']
@@ -1530,7 +1534,7 @@ class movies:
                 if banner == '0': banner = addonBanner
 
 
-                meta = dict((k,v) for k, v in i.iteritems() if not v == '0')
+                meta = dict((k,v) for k, v in i.items() if not v == '0')
                 meta.update({'mediatype': 'movie'})
                 meta.update({'trailer': '%s?action=trailer&name=%s' % (sysaddon, sysname)})
                 
@@ -1545,12 +1549,12 @@ class movies:
                 if "tt" in imdb: sysmetalliq = "plugin://plugin.video.metalliq/movies/add_to_library_parsed/imdb/%s/direct.Bone Crusher.q" % imdb
                 elif not tmdb == "0" or tmdb == None: sysmetalliq = "plugin://plugin.video.metalliq/movies/add_to_library_parsed/tmdb/%s/direct.Bone Crusher.q" % tmdb
                 else: sysmetalliq = "0"
-                sysmeta = urllib.quote_plus(json.dumps(meta))
+                sysmeta = urllib_parse.quote_plus(json.dumps(meta))
                 
                 url_alt = '%s?action=play_alter&title=%s&year=%s&imdb=%s&meta=%s&t=%s' % (sysaddon, systitle, year, imdb, sysmeta, self.systime)
 
                 url = '%s?action=play&title=%s&year=%s&imdb=%s&meta=%s&t=%s' % (sysaddon, systitle, year, imdb, sysmeta, self.systime)
-                sysurl = urllib.quote_plus(url)
+                sysurl = urllib_parse.quote_plus(url)
 
                 path = '%s?action=play&title=%s&year=%s&imdb=%s' % (sysaddon, systitle, year, imdb)
 
@@ -1559,7 +1563,7 @@ class movies:
 
                 cm.append((queueMenu, 'RunPlugin(%s?action=queueItem)' % sysaddon))
                 cm.append(('Trailer', 'RunPlugin(%s?action=trailer&name=%s)' % (sysaddon, sysname)))
-                cm.append((playbackMenu, 'RunPlugin(%s?action=alterSources&url=%s&meta=%s)' % (sysaddon, urllib.quote_plus(url_alt), sysmeta)))
+                cm.append((playbackMenu, 'RunPlugin(%s?action=alterSources&url=%s&meta=%s)' % (sysaddon, urllib_parse.quote_plus(url_alt), sysmeta)))
                 if not action == 'movieFavourites':cm.append(('Add to Watchlist', 'RunPlugin(%s?action=addFavourite&meta=%s&content=movies)' % (sysaddon, sysmeta)))
                 if action == 'movieFavourites': cm.append(('Remove From Watchlist', 'RunPlugin(%s?action=deleteFavourite&meta=%s&content=movies)' % (sysaddon, sysmeta)))
                 if action == 'movieProgress': cm.append(('Remove From Progress', 'RunPlugin(%s?action=deleteProgress&meta=%s&content=movies)' % (sysaddon, sysmeta)))
@@ -1604,7 +1608,7 @@ class movies:
             if url == '': raise Exception()
 
             icon = control.addonNext()
-            url = '%s?action=moviePage&url=%s' % (sysaddon, urllib.quote_plus(url))
+            url = '%s?action=moviePage&url=%s' % (sysaddon, urllib_parse.quote_plus(url))
 
             item = control.item(label=nextMenu)
 
@@ -1640,7 +1644,7 @@ class movies:
                 else: thumb = addonThumb
 
                 url = '%s?action=%s' % (sysaddon, i['action'])
-                try: url += '&url=%s' % urllib.quote_plus(i['url'])
+                try: url += '&url=%s' % urllib_parse.quote_plus(i['url'])
                 except: pass
 
                 cm = []

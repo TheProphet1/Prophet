@@ -17,9 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import sys,urllib,urlparse
+import sys
+from six.moves import urllib_parse
+import xbmcgui
+from resources.lib.modules import control, log_utils
 
-params = dict(urlparse.parse_qsl(sys.argv[2].replace('?','')))
+params = dict(urllib_parse.parse_qsl(sys.argv[2].replace('?','')))
 
 action = params.get('action')
 
@@ -60,7 +63,7 @@ content = params.get('content')
 windowedtrailer = params.get('windowedtrailer')
 windowedtrailer = int(windowedtrailer) if windowedtrailer in ("0","1") else 0
 
-if action is None:
+if action == None:
     from resources.lib.indexers import navigator
     from resources.lib.modules import cache
     cache.cache_version_check()
@@ -429,14 +432,7 @@ elif action == 'authTrakt':
     from resources.lib.modules import trakt
     trakt.authTrakt()
 
-elif action == 'urlResolver':
-    try:
-        import resolveurl
-    except Exception:
-        pass
-    resolveurl.display_settings()
-
-elif action == 'urlResolverRDTorrent':
+elif action == 'ResolveUrlTorrent':
     from resources.lib.modules import control
     control.openSettings(query, "script.module.resolveurl")
 
@@ -492,22 +488,34 @@ elif action == 'random':
         rand = randint(1,len(rlist))-1
         for p in ['title','year','imdb','tvdb','season','episode','tvshowtitle','premiered','select']:
             if rtype == "show" and p == "tvshowtitle":
-                try: r += '&'+p+'='+urllib.quote_plus(rlist[rand]['title'])
-                except: pass
+                try:
+                    r += '&'+p+'='+urllib_parse.quote_plus(rlist[rand]['title'])
+                except:
+                    pass
             else:
-                try: r += '&'+p+'='+urllib.quote_plus(rlist[rand][p])
-                except: pass
-        try: r += '&meta='+urllib.quote_plus(json.dumps(rlist[rand]))
-        except: r += '&meta='+urllib.quote_plus("{}")
+                try:
+                    r += '&'+p+'='+urllib_parse.quote_plus(rlist[rand][p])
+                except:
+                    pass
+        try:
+            r += '&meta='+urllib_parse.quote_plus(json.dumps(rlist[rand]))
+        except:
+            r += '&meta='+urllib_parse.quote_plus("{}")
         if rtype == "movie":
-            try: control.infoDialog(rlist[rand]['title'], control.lang(32536).encode('utf-8'), time=30000)
-            except: pass
+            try:
+                control.infoDialog(rlist[rand]['title'], control.lang(
+                    32536), time=30000)
+            except:
+                pass
         elif rtype == "episode":
-            try: control.infoDialog(rlist[rand]['tvshowtitle']+" - Season "+rlist[rand]['season']+" - "+rlist[rand]['title'], control.lang(32536).encode('utf-8'), time=30000)
-            except: pass
+            try:
+                control.infoDialog(rlist[rand]['tvshowtitle']+" - Season "+rlist[rand]['season'] +
+                                   " - "+rlist[rand]['title'], control.lang(32536), time=30000)
+            except:
+                pass
         control.execute('RunPlugin(%s)' % r)
     except:
-        control.infoDialog(control.lang(32537).encode('utf-8'), time=8000)
+        control.infoDialog(control.lang(32537), time=8000)
 
 elif action == 'movieToLibrary':
     from resources.lib.modules import libtools

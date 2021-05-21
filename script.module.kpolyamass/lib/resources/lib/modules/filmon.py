@@ -2,14 +2,15 @@
 
 
 
-import re,urlparse,json
+import re
+import simplejson as json
 from resources.lib.modules import client
 
 def resolve(url):
     try:
         if '/vod/' in url:
             url = re.compile('/(\d+)').findall(url)[-1]
-            url = 'http://www.filmon.com/vod/info/%s' % url
+            url = 'https://www.filmon.com/vod/info/%s' % url
         elif '/tv/' in url:
             url = url.replace('/tv/', '/channel/')
         elif not '/channel/' in url:
@@ -26,7 +27,7 @@ def resolve(url):
 
         headers = {'X-Requested-With': 'XMLHttpRequest', 'Referer': url}
 
-        url = 'http://www.filmon.com/ajax/getChannelInfo?channel_id=%s' % cid
+        url = 'https://www.filmon.com/ajax/getChannelInfo?channel_id=%s' % cid
 
         result = client.request(url, cookie=cookie, headers=headers)
 

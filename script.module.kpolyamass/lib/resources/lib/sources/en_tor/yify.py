@@ -18,10 +18,13 @@
 
 import re
 import traceback
-import urllib
-import urlparse
 
 from resources.lib.modules import cleantitle, client, control, debrid, log_utils, source_utils
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, quote
+except ImportError: from urllib.parse import urlencode, quote_plus, quote
 
 
 class source:
@@ -39,7 +42,7 @@ class source:
 
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except Exception:
             return
@@ -51,13 +54,13 @@ class source:
             if url is None:
                 return sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             query = '%s %s' % (data['title'], data['year'])
 
-            url = self.search_link % urllib.quote(query)
-            url = urlparse.urljoin(self.base_link, url)
+            url = self.search_link % quote(query)
+            url = urljoin(self.base_link, url)
             html = client.request(url)
 
             try:

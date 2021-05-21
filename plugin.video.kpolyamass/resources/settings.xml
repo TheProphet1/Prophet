@@ -8,18 +8,18 @@
         <setting id="indicators" type="enum" label="32313" lvalues="32314" default="0" visible="eq(-2,)" />
         <setting id="api.language" type="select" label="32316" values="AUTO|Bulgarian|Chinese|Croatian|Czech|Danish|Dutch|English|Finnish|French|German|Greek|Hebrew|Hungarian|Italian|Japanese|Korean|Norwegian|Polish|Portuguese|Romanian|Russian|Serbian|Slovak|Slovenian|Spanish|Swedish|Thai|Turkish|Ukrainian" default="AUTO" />
         <setting id="providers.lang" type="select" label="32360" values="English" default="English" visible="false" />
-        <setting id="flatten.tvshows" type="bool" label="32317" default="false" />
-        <setting id="show_season0" type="bool" label="32630" default="false"/>
         <setting id="fanart" type="bool" label="32318" default="true" />
+        <setting id="page.item.limit" type="slider" label="90191" default="25" range="10,60" option="int" />
+        <setting id="hidecinema" type="bool" label="90190" default="false" />
+        <setting id="hidecinema.rollback" type="slider" label="90192" enable="eq(-1,true)" default="6" range="1,12" option="int" />
+        <setting type="lsep" label="90183" />
+        <setting id="flatten.tvshows" type="bool" label="32317" default="false" />
         <setting id="showunaired" type="bool" label="32570" default="true" />
-        <setting id="unaired.identify" type="enum" label="32608" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="1" />
-        <setting id="hidecinema" type="bool" label="32571" default="false" />
-        <setting type="lsep" label="32319" />
-        <setting id="movie.widget" type="enum" label="32320" lvalues="32302|32321|32322|32323|32324|32580" default="1" />
-        <setting id="tv.widget.alt" type="enum" label="32325" lvalues="32302|32326|32327|32328" default="2" visible="!eq(-11,)" />
-        <setting id="tv.widget" type="enum" label="32325" lvalues="32302|32326" default="1" visible="eq(-12,)" />
-        <setting id="prgr.sortorder" type="enum" label="32584" lvalues="32585|32586" default="1" visible="!eq(-13,)" />
-        <setting id="lists.widget" type="enum" label="32329" lvalues="32302|32301" default="1" />
+        <setting id="unaired.identify" type="enum" label="90003" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="1" />
+        <setting id="tv.specials" type="bool" label="90116" default="true" />
+        <setting id="tv.widget.alt" type="enum" label="32325" lvalues="32302|32326|32327|32328" default="2" visible="!eq(-12,)" />
+        <setting id="tv.widget" type="enum" label="32325" lvalues="32302|32326" default="1" visible="eq(-13,)" />
+        <setting id="movie.widget" type="enum" label="32320" lvalues="32302|32321|32322|32323|32324|32580" visible="false" default="1" />
     </category>
     <category label="32621">
         <setting type="lsep" label="32622" />
@@ -52,84 +52,103 @@
         <setting id="navi.tvCalendar" type="bool" label="32027" default="true" />
     </category>
     <category label="32330">
-        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="1" />
-        <setting id="sourcelist.multiline" type="bool" label="Multiline source list" default="false" enable="eq(-1,1)" />
         <setting id="progress.dialog" type="enum" label="32335" lvalues="32336|32337" default="0" />
-        <setting id="prem.identify" type="enum" label="32588" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="0" />
-        <setting type="lsep" label="32635" />
-        <setting id="torrent.enabled" type="bool" label="32636" default="true" />
-        <setting id="torrent.identify" type="enum" label="32634"  enable="eq(-1,true)" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="32595" />
-        <setting id="torrent.min.seeders" type="slider" label="32638" enable="eq(-2,true)" default="10" range="1,100" option="int" />
-        <setting id="torrent.sort.them.up" type="bool" label="32639" enable="eq(-3,true)"  default="false" />
-        <setting id="torrent.resolveurl" type="action" label="32637" enable="eq(-4,true)" option="close" action="RunPlugin(plugin://plugin.video.kpolyamass/?action=urlResolverRDTorrent&query=1.36)" />
-        <setting id="torrent.resolveurlRD" type="action" label="32640" enable="eq(-5,true)" option="close" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_rd)" />
-        <setting type="lsep" label="32338" />
+        <setting id="hosts.mode" type="enum" label="32331" lvalues="32332|32333|32334" default="1" />
         <setting id="hosts.quality" type="enum" label="32339" values="4K|1440p|1080p|720p|480p" default="0" />
-        <setting id="debrid.only" type="bool" label="Debrid Only" default="" />
-        <setting id="preemptive.termination" type="bool" label="Pre-emptive Termination" default="false" />
-        <setting id="preemptive.limit" type="slider" label="Pre-emptive Limit" default="10" range="1,50" option="int" />
-        <setting id="autoplay.sd" type="bool" label="32340" default="false" />
-        <setting id="sources.extrainfo" type="bool" label="32587" default="true" />
+        <setting id="hosts.screener" type="bool" label="32361" default="true" />
+        <setting id="scrapers.timeout.1" type="slider" label="32312" default="30" range="10,60" option="int" />
+        <setting id="returned.sources" type="slider" label="Returned Sources" enable="true" default="1000" range="1,1500" option="int" />
+        <setting id="sourcelist.multiline" type="bool" label="90119" default="false" />
+        <setting id="sources.extrainfo" type="bool" label="32587" default="true" visible="false" />
+        <setting id="hosts.captcha" type="bool" label="32341" default="true" />
+        <setting type="lsep" label="32338" />
+        <setting id="debrid.only" type="bool" label="90120" default="" />
+        <setting id="prem.identify" type="enum" label="32588" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="5" />
+        <setting id="preemptive.termination" type="bool" label="90121" default="false" />
+        <setting id="preemptive.limit" type="slider" label="90122" default="10" range="1,50" option="int" />
         <setting id="remove.dups" type="bool" label="32090" default="true" />
         <setting id="HEVC" type="bool" label="32363" default="true" />
-        <setting id="hosts.captcha" type="bool" label="32341" default="true" />
         <setting id="hosts.sort.provider" type="bool" label="32342" default="false" />
+        <setting id="autoplay.sd" type="bool" label="32340" default="false" />
+        <setting type="lsep" label="32635" />
+        <setting id="torrent.enabled" type="bool" label="32636" default="true" />
+        <setting id="torrent.identify" type="enum" label="32634" enable="eq(-1,true)" lvalues="32589|32590|32591|32592|32593|32594|32595|32596|32597|32598" default="7" />
+        <setting id="torrent.min.seeders" type="slider" label="32638" enable="eq(-2,true)" default="10" range="1,100" option="int" />
+        <setting id="torrent.sort.the.kpolyamass" type="bool" label="32639" enable="eq(-3,true)" default="true" />
+        <setting id="torrent.resolveurl" type="action" label="32637" enable="eq(-4,true)" option="close" action="RunPlugin(plugin://plugin.video.kpolyamass/?action=ResolveUrlTorrent&amp;query=1.58)" />
+        <setting id="check.torr.cache" type="bool" label="32632" default="true" />
+        <setting id="remove.uncached" type="bool" label="32091" default="true" enable="eq(-1,true)" subsetting="true" />
         <setting type="lsep" label="32343" />
         <setting id="bookmarks" type="bool" label="32344" default="true" />
-        <setting type="lsep" label="32372" />
-        <setting id="crefresh" type="bool" label="32373" default="false" />
+        <setting id="bookmarks.auto" type="bool" label="90124" default="false" enable="!eq(-1,false)" />
     </category>
+        <category label ="32315">
+        <setting type="lsep" label="32315" />
+        <setting id="bookmarks.trakt" type="bool" label="90123" default="false" />
+        <setting id="lists.widget" type="enum" label="32329" lvalues="32302|32301" default="1" />
+        <setting id="prgr.sortorder" type="enum" label="32584" lvalues="32585|32586" default="1" />
+        <setting type="lsep" label="90183" />
+        <setting id="autoTraktOnStart" type="bool" label="90125" default="False" />
+        <setting id="schedTraktTime" type="slider" label="90126" default="0" range="0,24" option="int" />
+        <setting type="lsep" label="Account Information" />
+        <setting id="trakt.auth" type="text" default="" visible="hidden"/>
+        <setting type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.kpolyamass/?action=authTrakt)" />
+        <setting id="trakt.user" type="text" label="Account" default="" visible="true" enable="false" />
+        <setting id="trakt.token" type="text" visible="hidden" label="" default="" />
+        <setting id="trakt.refresh" type="text" visible="hidden" label="" default="" />
+    </category>
+    <!--Clear-->
     <category label="32345">
-        <setting label="English" type="lsep" />
-        <setting id="provider.5movies" type="bool" label="$NUMBER[5]MOVIES" default="true" /> 
-        <setting id="provider.cartoonhd" type="bool" label="CARTOONHD" default="true" /> 
-        <setting id="provider.filepursuit" type="bool" label="FILEPURSUIT" default="true" />
+        <setting id="provider.allmoviesforyou" type="bool" label="ALLMOVIESFORYOU" default="true" />
+        <setting id="provider.cartoonhd" type="bool" label="CARTOONHD" default="true" />
+        <setting id="provider.dbgo" type="bool" label="DBGO" default="true" />
+        <setting id="provider.easynews" type="bool" label="EASYNEWS" default="true" />
         <setting id="provider.filmxy" type="bool" label="FILMXY" default="true" />
-        <setting id="provider.gowatchseries" type="bool" label="GOWATCHSERIES" default="true" />
+        <setting id="provider.furk" type="bool" label="FURK" default="true" />
+        <setting id="provider.hdmto" type="bool" label="HDMTO" default="true" />
+        <setting id="provider.ororo" type="bool" label="ORORO" default="true" />
         <setting id="provider.plockers" type="bool" label="PLOCKERS" default="true" />
+        <setting id="provider.soap2day" type="bool" label="SOAP2DAY" default="true" />
         <setting id="provider.watchepisodes" type="bool" label="WATCHEPISODES" default="true" />
-        <setting id="provider.watchserieshd" type="bool" label="WATCHSERIESHD" default="true" />  
     </category>
-    <category label="70001">
-        <setting label="70001" type="lsep" />
-        <setting id="provider.2ddl" type="bool" label="$NUMBER[2]DDL" default="true" /> 
-        <setting id="provider.300mbfilms" type="bool" label="$NUMBER[300]MBFILMS" default="true" />         
-        <setting id="provider.crazyhdsource" type="bool" label="CRAZYHDSOURCE" default="true" />
-        <setting id="provider.downduck" type="bool" label="DOWNDUCK" default="true" /> 
+    <category label="90004">
+        <setting id="provider.2ddl" type="bool" label="2DDL" default="true" />
+        <setting id="provider.300mbfilms" type="bool" label="300MBFILMS" default="true" />
         <setting id="provider.maxrls" type="bool" label="MAXRLS" default="true" />
-        <setting id="provider.myvideolinks" type="bool" label="MYVIDEOLINKS" default="true" /> 
+        <setting id="provider.myvideolinks" type="bool" label="MYVIDEOLINKS" default="true" />
+        <setting id="provider.onlineseries" type="bool" label="ONLINESERIES" default="true" />
         <setting id="provider.rapidmoviez" type="bool" label="RAPIDMOVIEZ" default="true" />
+        <setting id="provider.rlsbb" type="bool" label="RLSBB" default="true" />
         <setting id="provider.scenerls" type="bool" label="SCENERLS" default="true" />
     </category>
-    <category label="70002">
-        <setting label="70002" type="lsep" />
-        <setting id="provider.7torrents" type="bool" label="$NUMBER[7]TORRENTS" default="true" />  
-        <setting id="provider.1337x" type="bool" label="$NUMBER[1337]" default="true" />
+    <category label="90005">
+        <setting id="provider.1337x" type="bool" label="1337X" default="true" />
         <setting id="provider.bitlord" type="bool" label="BITLORD" default="true" />
-        <setting id="provider.btdb" type="bool" label="BTDB" default="true" />
-        <setting id="provider.btscene" type="bool" label="BTSCENE" default="true" />                  
+        <setting id="provider.bt4g" type="bool" label="BT4G" default="true" />
+        <setting id="provider.btdig" type="bool" label="BTDIG" default="true" />
+        <setting id="provider.btscene" type="bool" label="BTSCENE" default="true" />
         <setting id="provider.ettv" type="bool" label="ETTV" default="true" />
-        <setting id="provider.eztv" type="bool" label="EZTV" default="true" /> 
+        <setting id="provider.eztv" type="bool" label="EZTV" default="true" />
         <setting id="provider.glodls" type="bool" label="GLODLS" default="true" />
         <setting id="provider.ibit" type="bool" label="IBIT" default="true" />
         <setting id="provider.idope" type="bool" label="IDOPE" default="true" />
-        <setting id="provider.isohunt2" type="bool" label="ISOHUNT2" default="true" /> 
-        <setting id="provider.kickass2" type="bool" label="KICKASS2" default="true" /> 
+        <setting id="provider.isohunt2" type="bool" label="ISOHUNT2" default="true" />
+        <setting id="provider.kickass2" type="bool" label="KICKASS2" default="true" />
         <setting id="provider.limetorrents" type="bool" label="LIMETORRENTS" default="true" />
-        <setting id="provider.magnetdl" type="bool" label="MAGNETDL" default="true" />  
+        <setting id="provider.magnetdl" type="bool" label="MAGNETDL" default="true" />
         <setting id="provider.piratebay" type="bool" label="PIRATEBAY" default="true" />
-        <setting id="provider.skytorrents" type="bool" label="SKYTORRENTS" default="true" />  
         <setting id="provider.solidtorrents" type="bool" label="SOLIDTORRENTS" default="true" />
-        <setting id="provider.topnow" type="bool" label="TOPNOW" default="true" />
+        <setting id="provider.tordl" type="bool" label="TORDL" default="true" />
         <setting id="provider.torlock" type="bool" label="TORLOCK" default="true" />
-        <setting id="provider.torrentapi" type="bool" label="TORRENTAPI" default="true" />  
-        <setting id="provider.torrentdownloads" type="bool" label="TORRENTDOWNLOADS" default="true" /> 
+        <setting id="provider.torrentdownloads" type="bool" label="TORRENTDOWNLOADS" default="true" />
         <setting id="provider.torrentfunk" type="bool" label="TORRENTFUNK" default="true" />
         <setting id="provider.torrentgalaxy" type="bool" label="TORRENTGALAXY" default="true" />
         <setting id="provider.torrentquest" type="bool" label="TORRENTQUEST" default="true" />
+        <setting id="provider.yify" type="bool" label="YIFY" default="true" />
         <setting id="provider.yourbittorrent" type="bool" label="YOURBITTORRENT" default="true" />
-        <setting id="provider.zoogle" type="bool" label="ZOOGLE" default="true" /> 
+        <setting id="provider.zoogle" type="bool" label="ZOOGLE" default="true" />
     </category>
+    <!--END CLEAR-->
     <category label="32346">
         <setting type="lsep" label="FANART.TV" />
         <setting type="lsep" label="32582" default="" />
@@ -139,43 +158,21 @@
         <setting type="lsep" label="TMDb" />
         <setting id="tm.user" type="text" option="hidden" label="32309" default="68128451d921ff3b7f1b7610b3cbead0" />
         <setting type="sep" />
-        <setting type="lsep" label="Trakt" />
-        <setting id="trakt.auth" type="action" label="32306" option="close" action="RunPlugin(plugin://plugin.video.kpolyamass/?action=authTrakt)" />
-        <setting id="trakt.user" type="text" label="Account" default="" visible="true" enable="false" />
-        <setting id="trakt.token" type="text" visible="false" label="" default="" />
-        <setting id="trakt.refresh" type="text" visible="false" label="" default="" />
-        <setting type="sep" />
         <setting type="lsep" label="IMDb" />
         <setting id="imdb.user" type="text" label="32303" default="" />
         <setting type="sep" />
+        <setting type="lsep" label="TVDb" />
+        <setting id="tvdb.user" type="text" option="hidden" label="32303" default="27bef29779bbffe947232dc310a91f0c" />
+        <setting type="sep" />
+        <setting type="lsep" label="Easynews"/>
+        <setting id="easynews.user" type="text" label="Easynews Username" default=""/>
+        <setting id="easynews.password" type="text" label="Easynews Password" default=""/>
+        <setting type="sep" />
         <setting type="lsep" label="Furk.net" />
-        <setting id="furk.api" type="text" label="API" default="" />
-        <setting id="furk.limit" type="text" label="Results Limit" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Moviesplanet.is" />
-        <setting id="moviesplanet.user" type="text" label="32303" default="" />
-        <setting id="moviesplanet.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Streamlord.com" />
-        <setting id="streamlord.user" type="text" label="32303" default="" />
-        <setting id="streamlord.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Ororo.tv" />
-        <setting id="ororo.user" type="text" label="32304" default="" />
-        <setting id="ororo.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="SerienStream.to" />
-        <setting id="serienstream.user" type="text" label="32304" default="" />
-        <setting id="serienstream.pass" type="text" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="Seriesever.net" />
-        <setting id="seriesever.user" type="text" label="32303" default="" />
-        <setting id="seriesever.pass" type="text" option="hidden" label="32307" default="" />
-        <setting type="sep" />
-        <setting type="lsep" label="PRON" />
-        <setting id="pron.api" type="text" label="32309" default="" />
-        <setting id="pron.limit" type="labelenum" label="32581" default="10" values="10|20|30|40|50|60|70|80|90|100|150|200" />
-        <setting id="pron.download" type="bool" label="32009" default="false" />
+        <setting id="furk.user_name" type="text" label="Furk Username" default="" />
+        <setting id="furk.user_pass" type="text" label="Furk Password" option="hidden" default="" />
+        <setting id="furk.api" type="text" label="Furk API Key" default="" />
+        <setting id="furk.limit" label="Limit results" type="slider" default="25" range="5,5,200" option="int" />
     </category>
     <category label="32541">
         <setting id="library.movie" type="folder" label="32543" default="special://userdata/addon_data/plugin.video.kpolyamass/Movies" />

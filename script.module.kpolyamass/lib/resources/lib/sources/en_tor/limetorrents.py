@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, urllib, urlparse
+import re
 
 from resources.lib.modules import debrid
 from resources.lib.modules import cleantitle
@@ -24,12 +24,17 @@ from resources.lib.modules import dom_parser2 as dom
 from resources.lib.modules import workers
 from resources.lib.modules import source_utils
 
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote
+except ImportError: from urllib.parse import urlencode, quote
+
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['limetorrents.info', 'Limetor.pro']
+        self.domains = ['limetorrents.info']
         self.base_link = 'https://www.limetorrents.info'
         self.tvsearch = 'https://www.limetorrents.info/search/tv/{0}/'
         self.moviesearch = 'https://www.limetorrents.info/search/movies/{0}/'
@@ -37,7 +42,7 @@ class source:
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except BaseException:
             return
@@ -45,7 +50,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except BaseException:
             return
@@ -54,10 +59,10 @@ class source:
         try:
             if url is None: return
 
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except BaseException:
             return
@@ -72,7 +77,7 @@ class source:
             if debrid.status() is False:
                 raise Exception()
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -83,9 +88,9 @@ class source:
             data['title'], data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
             if 'tvshowtitle' in data:
-                url = self.tvsearch.format(urllib.quote(query))
+                url = self.tvsearch.format(quote(query))
             else:
-                url = self.moviesearch.format(urllib.quote(query))
+                url = self.moviesearch.format(quote(query))
 
             self._get_items(url)
             self.hostDict = hostDict + hostprDict
@@ -107,7 +112,7 @@ class source:
             posts = client.parseDOM(posts, 'tr')
             for post in posts:
                 data = dom.parse_dom(post, 'a', req='href')[1]
-                link = urlparse.urljoin(self.base_link, data.attrs['href'])
+                link = urljoin(self.base_link, data.attrs['href'])
                 name = data.content
                 t = name.split(self.hdlr)[0]
 

@@ -15,13 +15,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, urllib, urlparse
+import re
 
 from resources.lib.modules import control
 from resources.lib.modules import cleantitle
 from resources.lib.modules import debrid
 from resources.lib.modules import client
 from resources.lib.modules import source_utils
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, quote
+except ImportError: from urllib.parse import urlencode, quote_plus, quote
 
 class source:
     def __init__(self):
@@ -34,7 +39,7 @@ class source:
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -42,7 +47,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -50,10 +55,10 @@ class source:
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
             if url is None: return
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -68,7 +73,7 @@ class source:
             if debrid.status() is False:
                 raise Exception()
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -79,19 +84,19 @@ class source:
             
             items = [] ; urls = [] ; posts = [] ; links = []
 
-            url = urlparse.urljoin(self.base_link, self.search_link % data['imdb'])
+            url = urljoin(self.base_link, self.search_link % data['imdb'])
             r = client.request(url)
             if 'CLcBGAs/s1600/1.jpg' in r:
                 url = client.parseDOM(r, 'a', ret='href')[0]
-                self.base_link = url = urlparse.urljoin(url, self.search_link % data['imdb'])
+                self.base_link = url = urljoin(url, self.search_link % data['imdb'])
                 r = client.request(url)
             posts = client.parseDOM(r, 'article')
             if not posts:
                 if 'tvshowtitle' in data:
-                    url = urlparse.urljoin(self.base_link, self.search_link % (cleantitle.geturl(title).replace('-','+') + '+' + hdlr))
+                    url = urljoin(self.base_link, self.search_link % (cleantitle.geturl(title).replace('-','+') + '+' + hdlr))
                     r = client.request(url, headers={'User-Agent': client.agent()})
                     posts += client.parseDOM(r, 'article')
-                    url = urlparse.urljoin(self.base_link, self.search_link % cleantitle.geturl(title).replace('-','+'))
+                    url = urljoin(self.base_link, self.search_link % cleantitle.geturl(title).replace('-','+'))
                     r = client.request(url, headers={'User-Agent': client.agent()})
                     posts += client.parseDOM(r, 'article')
 

@@ -16,11 +16,13 @@
 '''
 
 
+from resources.lib.modules import control
+
 def get():
 
-		import xbmc,xbmcgui,xbmcaddon,xbmcvfs,os
-		addonInfo = xbmcaddon.Addon().getAddonInfo
-		addonPath = xbmc.translatePath(addonInfo('path'))
+        import xbmc,xbmcgui,xbmcaddon,xbmcvfs,os
+        addonInfo = xbmcaddon.Addon().getAddonInfo
+        addonPath = control.transPath(addonInfo('path'))
 		changelogfile = os.path.join(addonPath, 'changelog.txt')
 		r = open(changelogfile)
 		text = r.read()

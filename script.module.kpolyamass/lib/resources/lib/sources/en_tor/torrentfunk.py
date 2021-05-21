@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 '''
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +15,11 @@
 '''
 
 import re
-import urllib
-import urlparse
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, unquote
+except ImportError: from urllib.parse import urlencode, quote_plus, unquote
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -30,8 +32,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['torrentfunk2.com']
-        self.base_link = 'https://www.torrentfunk2.com'
+        self.domains = ['torrentfunk.com', 'torrentfunk2.com']
+        self.base_link = 'https://www.torrentfunk.com'
         self.search_link = '/all/torrents/%s.html?&sort=seeds&o=desc' # seeder low counts, site sucks
         self.min_seeders = 1
 
@@ -39,7 +41,7 @@ class source:
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -48,7 +50,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -58,10 +60,10 @@ class source:
         try:
             if url is None:
                 return
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -76,7 +78,7 @@ class source:
             if debrid.status() is False:
                 return self.sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -88,8 +90,8 @@ class source:
             query = '%s %s' % (self.title, self.hdlr)
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
-            url = self.search_link % urllib.quote_plus(query)
-            url = urlparse.urljoin(self.base_link, url)
+            url = self.search_link % quote_plus(query)
+            url = urljoin(self.base_link, url)
             # log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
 
             r = client.request(url)
@@ -125,7 +127,7 @@ class source:
                 return
 
             if not url.startswith('http'): 
-                link = urlparse.urljoin(self.base_link, url)
+                link = urljoin(self.base_link, url)
 
             link = client.request(link)
             if link is None:

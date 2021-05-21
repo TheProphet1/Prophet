@@ -18,15 +18,19 @@
 '''
 
 
-import urllib,json
+import base64
+import simplejson as json
 
+import six
+from six.moves import urllib_parse
+import requests
 from resources.lib.modules import cache
 from resources.lib.modules import client
 
 
 class tvMaze:
     def __init__(self, show_id = None):
-        self.api_url = 'http://api.tvmaze.com/%s%s'
+        self.api_url = 'https://api.tvmaze.com/%s%s'
         self.show_id = show_id
 
 
@@ -42,7 +46,7 @@ class tvMaze:
         try:
             # Encode the queries, if there is any...
             if (query != None):
-                query = '?' + urllib.urlencode(query)
+                query = '?' + urllib_parse.urlencode(query)
             else:
                 query = ''
 
@@ -130,8 +134,8 @@ class tvMaze:
 
     def episodeAbsoluteNumber(self, thetvdb, season, episode):
         try:
-            url = 'http://thetvdb.com/api/%s/series/%s/default/%01d/%01d' % ('NzVSVlJQUVpYNVFHRUVDUQ=='.decode('base64'), thetvdb, int(season), int(episode))
-            return int(client.parseDOM(client.request(url), 'absolute_number')[0])
+            url = 'https://thetvdb.com/api/%s/series/%s/default/%01d/%01d' % (base64.b64decode('MUQ2MkYyRjkwMDMwQzQ0NA'), thetvdb, int(season), int(episode))
+            return int(client.parseDOM(requests.get(url, timeout=15, verify=True).content, 'absolute_number')[0])
         except:
             pass
 
@@ -140,11 +144,11 @@ class tvMaze:
 
     def getTVShowTranslation(self, thetvdb, lang):
         try:
-            url = 'http://thetvdb.com/api/%s/series/%s/%s.xml' % ('NzVSVlJQUVpYNVFHRUVDUQ=='.decode('base64'), thetvdb, lang)
-            r = client.request(url)
+            url = 'https://thetvdb.com/api/%s/series/%s/%s.xml' % (base64.b64decode('MUQ2MkYyRjkwMDMwQzQ0NA=='), thetvdb, lang)
+            r = requests.get(url, timeout=15, verify=True).content
             title = client.parseDOM(r, 'SeriesName')[0]
             title = client.replaceHTMLCodes(title)
-            title = title.encode('utf-8')
+            title = six.ensure_str(title)
 
             return title
         except:

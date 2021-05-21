@@ -14,10 +14,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import re, urllib, urlparse
+import re
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, unquote
+except ImportError: from urllib.parse import urlencode, quote_plus, unquote
+
 from resources.lib.modules import cleantitle, debrid, source_utils
 from resources.lib.modules import client
-from resources.lib.modules import cfscrape
 
 
 class source:
@@ -27,12 +32,11 @@ class source:
         self.domains = ['idope.today']
         self.base_link = 'http://idope.org/'
         self.search_link = 'search?q=%s'
-        self.scraper = cfscrape.create_scraper()
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -40,7 +44,7 @@ class source:
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -49,10 +53,10 @@ class source:
         try:
             if url is None:
                 return
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -64,7 +68,7 @@ class source:
                 return sources
             if debrid.status() is False:
                 raise Exception()
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -76,11 +80,11 @@ class source:
             data['title'], data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
-            url = self.search_link % urllib.quote_plus(query)
-            url = urlparse.urljoin(self.base_link, url).replace('+%26+','+').replace('++','+')
+            url = self.search_link % quote_plus(query)
+            url = urljoin(self.base_link, url).replace('+%26+','+').replace('++','+')
 
             try:
-                r = self.scraper.get(url).content
+                r = client.request(url)
                 posts = client.parseDOM(r, 'tr')
                 for post in posts:
                     link = re.findall('a title="Download Torrent Magnet" href="(magnet:.+?)"', post, re.DOTALL)

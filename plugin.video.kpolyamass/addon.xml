@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.kpolyamass" version="1.1.6" name="Kpolyamass" provider-name="The Prophet">
+<addon id="plugin.video.kpolyamass" version="1.1.7" name="Kpolyamass" provider-name="The Prophet">
 	<requires>
-		<import addon="xbmc.python" version="2.19.0" />
+		<!--<import addon="xbmc.python" version="2.25.0" />-->
 		<import addon="script.module.kpolyamass" />
 		<import addon="script.kpolyamass.artwork" />
 		<import addon="script.kpolyamass.metadata" />
 		<import addon="script.module.resolveurl" />
 		<import addon="script.module.requests" />
-		<import addon="script.module.metahandler" />
+		<import addon="script.module.simplejson" />
+        <import addon="script.module.requests" />
+        <import addon="script.module.beautifulsoup4" />
+        <import addon="script.module.six" />
+        <import addon="script.module.kodi-six" />
+        <import addon="script.module.inputstreamhelper" version="0.3.3"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource" library="kpolyamass.py">
 		<provides>video</provides>
 	</extension>
+	<extension library="service.py" point="xbmc.service" start="startup" />
 	<extension point="xbmc.addon.metadata">
-		<summary lang="en">kpolyamass ResolveURL Covenant Fork From The Prophet</summary>
+		<summary lang="en">kpolyamass Add on for Kodi 19</summary>
 		<description lang="en">[I]A New Generation[/I][CR][CR][B]kpolyamass Movies and TV[/B][CR][CR]This addon does not form part of the Kodi Media Centre. Please do not seek assistance with this addon from any of the Official Kodi Support Channels.[CR][CR]The author does not host any of the content in this addon and takes no responsibility for content found.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>

@@ -18,7 +18,9 @@ from resources.lib.modules import control
 from resources.lib.modules import youtube
 from resources.lib.modules import youtube_menu
 
-import os,sys,re,datetime,urlparse
+import os,sys,re,datetime
+import six
+from six.moves import urllib_parse
 
 thishandle = int(sys.argv[1])
 

@@ -22,6 +22,7 @@
 
 import re
 import sys
+import six
 
 from resources.lib.modules import jsunpack
 
@@ -59,7 +60,7 @@ def run(e):
 
     try:
         t = jsunpack.unpack(t)
-        t = unicode(t, 'utf-8')
+        t = six.ensure_text(t)
     except:
         t = None
     

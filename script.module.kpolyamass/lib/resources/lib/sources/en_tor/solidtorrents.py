@@ -6,13 +6,18 @@
 '''
 
 
-import re, urllib, urlparse, json, traceback
+import re, json, traceback
 from resources.lib.modules import client
 from resources.lib.modules import control
 from resources.lib.modules import cleantitle
 from resources.lib.modules import source_utils
 from resources.lib.modules import log_utils
 from resources.lib.modules import debrid
+
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, quote
+except ImportError: from urllib.parse import urlencode, quote_plus, quote
 
 
 class source:
@@ -27,7 +32,7 @@ class source:
         if debrid.status() is False: return
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -36,7 +41,7 @@ class source:
         if debrid.status() is False: return
         try:
             url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -46,10 +51,10 @@ class source:
         try:
             if url is None: return
 
-            url = urlparse.parse_qs(url)
+            url = parse_qs(url)
             url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
             url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-            url = urllib.urlencode(url)
+            url = urlencode(url)
             return url
         except:
             return
@@ -61,7 +66,7 @@ class source:
             if url is None:
                 return sources
 
-            data = urlparse.parse_qs(url)
+            data = parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -73,7 +78,7 @@ class source:
             query = '%s S%02dE%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
 
-            url = urlparse.urljoin(self.base_link, self.search_link % urllib.quote_plus(query))
+            url = urljoin(self.base_link, self.search_link % quote_plus(query))
 
             r = client.request(url)
 

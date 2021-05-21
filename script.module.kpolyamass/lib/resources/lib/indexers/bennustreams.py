@@ -18,8 +18,11 @@
 '''
 
 
-import os,re,sys,hashlib,urllib,urlparse,json,base64,random,datetime
+import os,re,sys,hashlib,base64,random,datetime
 import xbmc,xbmcgui
+import six
+from six.moves import urllib_parse, urllib_request
+import simplejson as json
 
 try: from sqlite3 import dbapi2 as database
 except: from pysqlite2 import dbapi2 as database
@@ -83,7 +86,7 @@ class indexer:
         try:
             r, x = re.findall('(.+?)\|regex=(.+?)$', url)[0]
             x = regex.fetch(x)
-            r += urllib.unquote_plus(x)
+            r += urllib_parse.unquote_plus(x)
             url = regex.resolve(r)
             self.list = self.bennu_list('', result=url)
             if worker == True: self.worker()
@@ -595,7 +598,7 @@ class indexer:
                 regdata = re.compile('(<regex>.+?</regex>)', re.MULTILINE|re.DOTALL).findall(item)
                 regdata = ''.join(regdata)
                 reglist = re.compile('(<listrepeat>.+?</listrepeat>)', re.MULTILINE|re.DOTALL).findall(regdata)
-                regdata = urllib.quote_plus(regdata)
+                regdata = urllib_parse.quote_plus(regdata)
 
                 reghash = hashlib.md5()
                 for i in regdata: reghash.update(str(i))
@@ -917,7 +920,7 @@ class indexer:
                 fanart2 = '0'
 
             item = {'title': title, 'originaltitle': originaltitle, 'year': year, 'imdb': imdb, 'tmdb': tmdb, 'poster': '0', 'poster2': poster2, 'poster3': poster3, 'banner': banner, 'fanart': fanart, 'fanart2': fanart2, 'clearlogo': clearlogo, 'clearart': clearart, 'premiered': premiered, 'genre': genre, 'duration': duration, 'rating': rating, 'votes': votes, 'mpaa': mpaa, 'director': director, 'writer': writer, 'cast': cast, 'plot': plot, 'tagline': tagline}
-            item = dict((k,v) for k, v in item.iteritems() if not v == '0')
+            item = dict((k,v) for k, v in item.items() if not v == '0')
             self.list[i].update(item)
 
             if artmeta == False: raise Exception()
@@ -1043,9 +1046,9 @@ class indexer:
                     url = '%s?action=%s' % (sysaddon, i['action'])
                     try: url += '&worker=%s' % i['worker']
                     except: pass
-                    try: url += '&url=%s' % urllib.quote_plus(i['url'])
+                    try: url += '&url=%s' % urllib_parse.quote_plus(i['url'])
                     except: pass
-                    try: url += '&content=%s' % urllib.quote_plus(i['content'])
+                    try: url += '&content=%s' % urllib_parse.quote_plus(i['content'])
                     except: pass
                     if i['action'] == 'plugin' and 'url' in i: url = i['url']
 
@@ -1087,7 +1090,7 @@ class indexer:
 
                     folder = i['folder'] if 'folder' in i else True
 
-                    meta = dict((k,v) for k, v in i.iteritems() if not v == '0')
+                    meta = dict((k,v) for k, v in i.items() if not v == '0')
                     
                     if control.setting('metadata') == 'true':
                         try: name = meta['title'] + ' (%s)' % meta['year'] if not meta['year'] == '0' else meta['title']
@@ -1096,8 +1099,8 @@ class indexer:
                     cm = []
 
                     if content in ['movies', 'tvshows']:
-                        meta.update({'trailer': '%s?action=trailer&name=%s' % (sysaddon, urllib.quote_plus(name))})
-                        cm.append((control.lang(30707).encode('utf-8'), 'RunPlugin(%s?action=trailer&name=%s)' % (sysaddon, urllib.quote_plus(name))))
+                        meta.update({'trailer': '%s?action=trailer&name=%s' % (sysaddon, urllib_parse.quote_plus(name))})
+                        cm.append((control.lang(30707).encode('utf-8'), 'RunPlugin(%s?action=trailer&name=%s)' % (sysaddon, urllib_parse.quote_plus(name))))
 
                     if content in ['movies', 'tvshows', 'seasons', 'episodes']:
                         cm.append((control.lang(30708).encode('utf-8'), 'XBMC.Action(Info)'))
@@ -1108,15 +1111,15 @@ class indexer:
                     if content == 'movies':
                         try: dfile = '%s (%s)' % (i['title'], i['year'])
                         except: dfile = name
-                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib.quote_plus(dfile), urllib.quote_plus(i['url']), urllib.quote_plus(poster))))
+                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib_parse.quote_plus(dfile), urllib_parse.quote_plus(i['url']), urllib_parse.quote_plus(poster))))
                         except: pass
                     elif content == 'episodes':
                         try: dfile = '%s S%02dE%02d' % (i['tvshowtitle'], int(i['season']), int(i['episode']))
                         except: dfile = name
-                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib.quote_plus(dfile), urllib.quote_plus(i['url']), urllib.quote_plus(poster))))
+                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib_parse.quote_plus(dfile), urllib_parse.quote_plus(i['url']), urllib_parse.quote_plus(poster))))
                         except: pass
                     elif content == 'songs':
-                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib.quote_plus(name), urllib.quote_plus(i['url']), urllib.quote_plus(poster))))
+                        try: cm.append((control.lang(30722).encode('utf-8'), 'RunPlugin(%s?action=addDownload&name=%s&url=%s&image=%s)' % (sysaddon, urllib_parse.quote_plus(name), urllib_parse.quote_plus(i['url']), urllib_parse.quote_plus(poster))))
                         except: pass
 
                     if mode == 'movies':
@@ -1129,11 +1132,11 @@ class indexer:
                         cm.append((control.lang(30714).encode('utf-8'), 'RunPlugin(%s?action=addView&content=episodes)' % sysaddon))
 
                     if devmode == True:
-                        try: cm.append(('Open in browser', 'RunPlugin(%s?action=browser&url=%s)' % (sysaddon, urllib.quote_plus(i['url']))))
+                        try: cm.append(('Open in browser', 'RunPlugin(%s?action=browser&url=%s)' % (sysaddon, urllib_parse.quote_plus(i['url']))))
                         except: pass
 
                     if privmode == True:
-                        try: cm.append(('Open in browser', 'RunPlugin(%s?action=browser&url=%s)' % (sysaddon, urllib.quote_plus(i['url']))))
+                        try: cm.append(('Open in browser', 'RunPlugin(%s?action=browser&url=%s)' % (sysaddon, urllib_parse.quote_plus(i['url']))))
                         except: pass
                         
                     item = control.item(label=name, iconImage=poster, thumbnailImage=poster)
@@ -1162,7 +1165,7 @@ class indexer:
         try:
             i = items[0]
             if i['next'] == '': raise Exception()
-            url = '%s?action=%s&url=%s' % (sysaddon, i['nextaction'], urllib.quote_plus(i['next']))
+            url = '%s?action=%s&url=%s' % (sysaddon, i['nextaction'], urllib_parse.quote_plus(i['next']))
             item = control.item(label=control.lang(30500).encode('utf-8'))
             item.setArt({'addonPoster': addonPoster, 'thumb': addonPoster, 'poster': addonPoster, 'tvshow.poster': addonPoster, 'season.poster': addonPoster, 'banner': addonPoster, 'tvshow.banner': addonPoster, 'season.banner': addonPoster})
             item.setProperty('addonFanart_Image', addonFanart)
@@ -1181,7 +1184,7 @@ class resolver:
         try:
             url = self.get(url)
             if url == False: return
-            control.execute('RunPlugin(plugin://plugin.program.chrome.launcher/?url=%s&mode=showSite&stopPlayback=no)' % urllib.quote_plus(url))
+            control.execute('RunPlugin(plugin://plugin.program.chrome.launcher/?url=%s&mode=showSite&stopPlayback=no)' % urllib_parse.quote_plus(url))
         except:
             pass
 
@@ -1285,7 +1288,7 @@ class resolver:
         try:
             r, x = re.findall('(.+?)\|regex=(.+?)$', url)[0]
             x = regex.fetch(x)
-            r += urllib.unquote_plus(x)
+            r += urllib_parse.unquote_plus(x)
             if not '</regex>' in r: raise Exception()
             u = regex.resolve(r)
             if not u == None: url = u
@@ -1402,7 +1405,7 @@ class player(xbmc.Player):
             for i in ['title', 'originaltitle', 'tvshowtitle', 'year', 'season', 'episode', 'genre', 'rating', 'votes', 'director', 'writer', 'plot', 'tagline']:
                 try: meta[i] = control.infoLabel('listitem.%s' % i)
                 except: pass
-            meta = dict((k,v) for k, v in meta.iteritems() if not v == '')
+            meta = dict((k,v) for k, v in meta.items() if not v == '')
             if not 'title' in meta: meta['title'] = control.infoLabel('listitem.label')
             icon = control.infoLabel('listitem.icon')
 

@@ -18,20 +18,21 @@
 '''
 
 
-import json
+import simplejson as json
 
 from resources.lib.modules import control
 from resources.lib.modules import trakt
+from resources.lib.modules import log_utils #OH 28-04-2021
 
 
 def getMovieIndicators(refresh=False):
-    try:
-        if trakt.getTraktIndicatorsInfo() == True: raise Exception()
-        from metahandler import metahandlers
-        indicators = metahandlers.MetaData(preparezip=False)
-        return indicators
-    except:
-        pass
+#    try:
+#        if trakt.getTraktIndicatorsInfo() == True: raise Exception()
+#        from metahandler import metahandlers
+#        indicators = metahandlers.MetaData()
+#        return indicators
+#    except:
+#        pass
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
         if refresh == False: timeout = 720
@@ -44,13 +45,13 @@ def getMovieIndicators(refresh=False):
 
 
 def getTVShowIndicators(refresh=False):
-    try:
-        if trakt.getTraktIndicatorsInfo() == True: raise Exception()
-        from metahandler import metahandlers
-        indicators = metahandlers.MetaData(preparezip=False)
-        return indicators
-    except:
-        pass
+#    try:
+#        if trakt.getTraktIndicatorsInfo() == True: raise Exception()
+#        from metahandler import metahandlers
+#        indicators = metahandlers.MetaData()
+#        return indicators
+#    except:
+#        pass
     try:
         if trakt.getTraktIndicatorsInfo() == False: raise Exception()
         if refresh == False: timeout = 720
@@ -123,7 +124,7 @@ def markMovieDuringPlayback(imdb, watched):
 
     try:
         from metahandler import metahandlers
-        metaget = metahandlers.MetaData(preparezip=False)
+        metaget = metahandlers.MetaData()
         metaget.get_meta('movie', name='', imdb_id=imdb)
         metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
     except:
@@ -145,14 +146,14 @@ def markEpisodeDuringPlayback(imdb, tvdb, season, episode, watched):
 
     try:
         from metahandler import metahandlers
-        metaget = metahandlers.MetaData(preparezip=False)
+        metaget = metahandlers.MetaData()
         metaget.get_meta('tvshow', name='', imdb_id=imdb)
         metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
         metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
     except:
         pass
 
-
+#TC 2/01/19 started
 def movies(imdb, watched):
     control.busy()
     try:
@@ -161,15 +162,18 @@ def movies(imdb, watched):
         else: trakt.markMovieAsNotWatched(imdb)
         trakt.cachesyncMovies()
         control.refresh()
+        control.idle()
     except:
         pass
 
     try:
         from metahandler import metahandlers
-        metaget = metahandlers.MetaData(preparezip=False)
+        metaget = metahandlers.MetaData()
         metaget.get_meta('movie', name='', imdb_id=imdb)
         metaget.change_watched('movie', name='', imdb_id=imdb, watched=int(watched))
-        if trakt.getTraktIndicatorsInfo() == False: control.refresh()
+        if trakt.getTraktIndicatorsInfo() == False:
+            control.refresh()
+            control.idle()
     except:
         pass
 
@@ -182,16 +186,19 @@ def episodes(imdb, tvdb, season, episode, watched):
         else: trakt.markEpisodeAsNotWatched(tvdb, season, episode)
         trakt.cachesyncTVShows()
         control.refresh()
+        control.idle()
     except:
         pass
 
     try:
         from metahandler import metahandlers
-        metaget = metahandlers.MetaData(preparezip=False)
+        metaget = metahandlers.MetaData()
         metaget.get_meta('tvshow', name='', imdb_id=imdb)
         metaget.get_episode_meta('', imdb_id=imdb, season=season, episode=episode)
         metaget.change_watched('episode', '', imdb_id=imdb, season=season, episode=episode, watched=int(watched))
-        if trakt.getTraktIndicatorsInfo() == False: control.refresh()
+        if trakt.getTraktIndicatorsInfo() == False:
+            control.refresh()
+            control.idle()
     except:
         pass
 
@@ -206,7 +213,7 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
         from metahandler import metahandlers
         from resources.lib.indexers import episodes
 
-        metaget = metahandlers.MetaData(preparezip=False)
+        metaget = metahandlers.MetaData()
 
         name = control.addonInfo('name')
 
@@ -221,8 +228,8 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
         except: pass
         items = [{'label': '%s S%02dE%02d' % (tvshowtitle, int(i['season']), int(i['episode'])), 'season': int('%01d' % int(i['season'])), 'episode': int('%01d' % int(i['episode']))} for i in items]
 
-        for i in range(len(items)):
-            if xbmc.abortRequested == True: return sys.exit()
+        for i in list(range(len(items))):
+            if control.monitor.abortRequested(): return sys.exit()
 
             dialog.update(int((100 / float(len(items))) * i), str(name), str(items[i]['label']))
 
@@ -256,5 +263,4 @@ def tvshows(tvshowtitle, imdb, tvdb, season, watched):
         pass
 
     control.refresh()
-
-
+    control.idle()
