@@ -157,7 +157,7 @@ class tvshows:
         except:
             pass
 
-
+    def search(self):
 
         navigator.navigator().addDirectoryItem(32603, 'tvSearchnew', 'search.png', 'DefaultTVShows.png')
         try:
@@ -197,8 +197,8 @@ class tvshows:
         k.doModal()
         q = k.getText() if k.isConfirmed() else None
 
-        if (q == None or q == ''): return
-        q = q.lower()
+        if (q == None or q == ''): 
+            return
         try:
             from sqlite3 import dbapi2 as database
         except:
@@ -206,7 +206,6 @@ class tvshows:
 
         dbcon = database.connect(control.searchFile)
         dbcur = dbcon.cursor()
-        dbcur.execute("DELETE FROM tvshow WHERE term = ?", (q,))
         dbcur.execute("INSERT INTO tvshow VALUES (?,?)", (None, q))
         dbcon.commit()
         dbcur.close()
@@ -217,21 +216,8 @@ class tvshows:
             url = '%s?action=tvshowPage&url=%s' % (sys.argv[0], urllib_parse.quote_plus(url))
             control.execute('Container.Update(%s)' % url)
 
-    def search_term(self, q):
-        control.idle()
-        q = q.lower()
-        try:
-            from sqlite3 import dbapi2 as database
-        except:
-            from pysqlite2 import dbapi2 as database
-
-        dbcon = database.connect(control.searchFile)
-        dbcur = dbcon.cursor()
-        dbcur.execute("DELETE FROM tvshow WHERE term = ?", (q,))
-        dbcur.execute("INSERT INTO tvshow VALUES (?,?)", (None, q))
-        dbcon.commit()
-        dbcur.close()
-        url = self.search_link + urllib_parse.quote_plus(q)
+    def search_term(self, name):
+        url = self.search_link + urllib_parse.quote_plus(name)
         if int(control.getKodiVersion()) >= 18:
             self.get(url)
         else:
@@ -240,8 +226,6 @@ class tvshows:
 
     def person(self):
         try:
-            control.idle()
-
             t = six.ensure_str(control.lang(32010))
             k = control.keyboard('', t)
             k.doModal()
@@ -292,7 +276,7 @@ class tvshows:
             {
                 'name': cleangenre.lang(i[0], self.lang),
                 'url': self.genre_link % i[1] if i[2] else self.keyword_link % i[1],
-                'image': 'genres2.png',
+                'image': 'genres.png',
                 'action': 'tvshows'
             })
 
@@ -370,7 +354,6 @@ class tvshows:
         for i in networks:
             self.list.append({'name': i[0], 'url': self.tvmaze_link + i[1], 'image': i[2], 'action': 'tvshows'})
         self.addDirectory(self.list)
-        return self.list
         return self.list
 
 
@@ -760,13 +743,13 @@ class tvshows:
     def imdb_person_list(self, url):
         try:
             result = client.request(url)
-            items = client.parseDOM(result, 'div', attrs={'class': '.+? mode-detail'})
+            items = client.parseDOM(result, 'tr', attrs={'class': '.+? detailed'})
         except:
             return
 
         for item in items:
             try:
-                name = client.parseDOM(item, 'img', ret='alt')[0]
+                name = client.parseDOM(item, 'a', ret='title')[0]
                 name = client.replaceHTMLCodes(name)
                 name = six.ensure_str(name)
 
@@ -777,8 +760,8 @@ class tvshows:
                 url = six.ensure_str(url)
 
                 image = client.parseDOM(item, 'img', ret='src')[0]
-                # if not ('._SX' in image or '._SY' in image): raise Exception()
-                # image = re.sub('(?:_SX|_SY|_UX|_UY|_CR|_AL)(?:\d+|_).+?\.', '_SX500.', image)
+                if not ('._SX' in image or '._SY' in image): raise Exception()
+                image = re.sub('(?:_SX|_SY|_UX|_UY|_CR|_AL)(?:\d+|_).+?\.', '_SX500.', image)
                 image = client.replaceHTMLCodes(image)
                 image = six.ensure_str(image)
 
@@ -1315,6 +1298,7 @@ class tvshows:
             try:
                 label = i['title']
                 systitle = sysname = urllib_parse.quote_plus(i['originaltitle'])
+                sysimage = urllib_parse.quote_plus(i['poster'])
                 imdb, tvdb, year = i['imdb'], i['tvdb'], i['year']
 
                 meta = dict((k,v) for k, v in six.iteritems(i) if not v == '0')
@@ -1350,6 +1334,10 @@ class tvshows:
                     url = '%s?action=seasons&tvshowtitle=%s&year=%s&imdb=%s&tvdb=%s' % (sysaddon, systitle, year, imdb, tvdb)
 
                 cm = []
+
+                cm.append(('Find similar',
+                           'ActivateWindow(10025,%s?action=tvshows&url=https://api.trakt.tv/shows/%s/related,return)' % (
+                               sysaddon, imdb)))
 
                 cm.append((playRandom, 'RunPlugin(%s?action=random&rtype=season&tvshowtitle=%s&year=%s&imdb=%s&tvdb=%s)' % (sysaddon, urllib_parse.quote_plus(systitle), urllib_parse.quote_plus(year), urllib_parse.quote_plus(imdb), urllib_parse.quote_plus(tvdb))))
 
@@ -1453,7 +1441,7 @@ class tvshows:
 
                 if i['image'].startswith('http'):
                     thumb = i['image']
-                elif artPath != None:
+                elif not artPath == None:
                     thumb = os.path.join(artPath, i['image'])
                 else:
                     thumb = addonThumb
@@ -1480,7 +1468,7 @@ class tvshows:
                 item = control.item(label=name)
 
                 item.setArt({'icon': thumb, 'thumb': thumb})
-                if addonFanart != '': item.setProperty('Fanart_Image', addonFanart)
+                if not addonFanart == None: item.setProperty('Fanart_Image', addonFanart)
 
                 item.addContextMenuItems(cm)
 

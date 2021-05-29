@@ -48,15 +48,13 @@ action = params.get('action')
 
 class movies:
     def __init__(self):
-        self.count = int(control.setting('page.item.limit'))
         self.list = []
 
-        self.imdb_link = 'https://www.imdb.com'
-        self.trakt_link = 'https://api.trakt.tv'
+        self.imdb_link = 'http://www.imdb.com'
+        self.trakt_link = 'http://api.trakt.tv'
         self.datetime = (datetime.datetime.utcnow() - datetime.timedelta(hours=5))
         self.systime = (self.datetime).strftime('%Y%m%d%H%M%S%f')
         self.year_date = (self.datetime - datetime.timedelta(days=365)).strftime('%Y-%m-%d')
-        self.month_date = (self.datetime - datetime.timedelta(days=30)).strftime('%Y-%m-%d')
         self.today_date = (self.datetime).strftime('%Y-%m-%d')
         self.trakt_user = control.setting('trakt.user').strip()
         self.imdb_user = control.setting('imdb.user').replace('ur', '')
@@ -66,54 +64,53 @@ class movies:
         self.lang = control.apiLanguage()['trakt']
         self.hidecinema = control.setting('hidecinema')
 
-        self.search_link = 'https://api.trakt.tv/search/movie?limit=20&page=1&query='
-        self.fanart_tv_art_link = 'https://webservice.fanart.tv/v3/movies/%s'
-        self.fanart_tv_level_link = 'https://webservice.fanart.tv/v3/level'
-        self.tm_art_link = 'https://api.themoviedb.org/3/movie/%s/images?api_key=%s&language=en-US&include_image_language=en,%s,null' % (
+        self.search_link = 'http://api.trakt.tv/search/movie?limit=20&page=1&query='
+        self.fanart_tv_art_link = 'http://webservice.fanart.tv/v3/movies/%s'
+        self.fanart_tv_level_link = 'http://webservice.fanart.tv/v3/level'
+        self.tm_art_link = 'http://api.themoviedb.org/3/movie/%s/images?api_key=%s&language=en-US&include_image_language=en,%s,null' % (
         '%s', self.tm_user, self.lang)
         self.tm_img_link = 'https://image.tmdb.org/t/p/w%s%s'
 
-        self.persons_link = 'https://www.imdb.com/search/name?count=100&name='
-        self.personlist_link = 'https://www.imdb.com/search/name?count=100&gender=male,female'
-        self.person_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&role=%s&sort=year,desc&count=40&start=1'
-        self.keyword_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[0]&keywords=%s&sort=moviemeter,asc&count=40&start=1'
-        self.oscars_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&groups=oscar_best_picture_winners&sort=year,desc&count=40&start=1'
+        self.persons_link = 'http://www.imdb.com/search/name?count=100&name='
+        self.personlist_link = 'http://www.imdb.com/search/name?count=100&gender=male,female'
+        self.person_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&role=%s&sort=year,desc&count=40&start=1'
+        self.keyword_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[0]&keywords=%s&sort=moviemeter,asc&count=40&start=1'
+        self.oscars_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&groups=oscar_best_picture_winners&sort=year,desc&count=40&start=1'
         self.theaters_link = 'https://www.imdb.com/search/title?title_type=feature&num_votes=1000,&release_date=date[365],date[0]&sort=moviemeter,asc&count=40&start=1'
-        self.year_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=40&start=1'
+        self.year_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&year=%s,%s&sort=moviemeter,asc&count=40&start=1'
 		
         if self.hidecinema == 'true':
-            self.popular_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&groups=top_1000&release_date=,date[90]&sort=moviemeter,asc&count=40&start=1'
-            self.views_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&sort=num_votes,desc&release_date=,date[90]&count=40&start=1'
-            self.featured_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&release_date=date[365],date[90]&sort=moviemeter,asc&count=40&start=1'
-            self.genre_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[90]&genres=%s&sort=moviemeter,asc&count=40&start=1'
-            self.language_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&primary_language=%s&sort=moviemeter,asc&release_date=,date[90]&count=40&start=1'
-            self.certification_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&certificates=us:%s&sort=moviemeter,asc&release_date=,date[90]&count=40&start=1'
-            self.boxoffice_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&sort=boxoffice_gross_us,desc&release_date=,date[90]&count=40&start=1'
+            self.popular_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&groups=top_1000&release_date=,date[90]&sort=moviemeter,asc&count=40&start=1'
+            self.views_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&sort=num_votes,desc&release_date=,date[90]&count=40&start=1'
+            self.featured_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&release_date=date[365],date[90]&sort=moviemeter,asc&count=40&start=1'
+            self.genre_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[90]&genres=%s&sort=moviemeter,asc&count=40&start=1'
+            self.language_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&primary_language=%s&sort=moviemeter,asc&release_date=,date[90]&count=40&start=1'
+            self.certification_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&certificates=us:%s&sort=moviemeter,asc&release_date=,date[90]&count=40&start=1'
+            self.boxoffice_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&sort=boxoffice_gross_us,desc&release_date=,date[90]&count=40&start=1'
         else:
-            self.popular_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&groups=top_1000&sort=moviemeter,asc&count=40&start=1'
-            self.views_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&sort=num_votes,desc&count=40&start=1'
-            self.featured_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&release_date=date[365],date[60]&sort=moviemeter,asc&count=40&start=1'
-            self.genre_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[0]&genres=%s&sort=moviemeter,asc&count=40&start=1'
-            self.language_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&primary_language=%s&sort=moviemeter,asc&count=40&start=1'
-            self.certification_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&certificates=us:%s&sort=moviemeter,asc&count=40&start=1'
-            self.boxoffice_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&sort=boxoffice_gross_us,desc&count=40&start=1'
+            self.popular_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&groups=top_1000&sort=moviemeter,asc&count=40&start=1'
+            self.views_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&sort=num_votes,desc&count=40&start=1'
+            self.featured_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=1000,&production_status=released&release_date=date[365],date[60]&sort=moviemeter,asc&count=40&start=1'
+            self.genre_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie,documentary&num_votes=100,&release_date=,date[0]&genres=%s&sort=moviemeter,asc&count=40&start=1'
+            self.language_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&primary_language=%s&sort=moviemeter,asc&count=40&start=1'
+            self.certification_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&num_votes=100,&production_status=released&certificates=us:%s&sort=moviemeter,asc&count=40&start=1'
+            self.boxoffice_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&production_status=released&sort=boxoffice_gross_us,desc&count=40&start=1'
 
-        self.added_link = 'https://www.imdb.com/search/title?title_type=feature,tv_movie&languages=en&num_votes=500,&production_status=released&release_date=%s,%s&sort=release_date,desc&count=20&start=1' % (
+        self.added_link = 'http://www.imdb.com/search/title?title_type=feature,tv_movie&languages=en&num_votes=500,&production_status=released&release_date=%s,%s&sort=release_date,desc&count=20&start=1' % (
         self.year_date, self.today_date)
-        self.trending_link = 'https://api.trakt.tv/movies/trending?limit=40&page=1'
-        self.traktlists_link = 'https://api.trakt.tv/users/me/lists'
-        self.traktlikedlists_link = 'https://api.trakt.tv/users/likes/lists?limit=1000000'
-        self.traktlist_link = 'https://api.trakt.tv/users/%s/lists/%s/items'
-        self.traktcollection_link = 'https://api.trakt.tv/users/me/collection/movies'
-        self.traktwatchlist_link = 'https://api.trakt.tv/users/me/watchlist/movies'
-        self.traktfeatured_link = 'https://api.trakt.tv/recommendations/movies?limit=40'
-        self.trakthistory_link = 'https://api.trakt.tv/users/me/history/movies?limit=40&page=1'
-     #   self.onDeck_link = 'https://api.trakt.tv/sync/playback/movies?extended=full&limit=%d' % self.count
-        self.imdblists_link = 'https://www.imdb.com/user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles' % self.imdb_user
-        self.imdblist_link = 'https://www.imdb.com/list/%s/?view=detail&sort=alpha,asc&title_type=movie,short,tvMovie,tvSpecial,video&start=1'
-        self.imdblist2_link = 'https://www.imdb.com/list/%s/?view=detail&sort=date_added,desc&title_type=movie,short,tvMovie,tvSpecial,video&start=1'
-        self.imdbwatchlist_link = 'https://www.imdb.com/user/ur%s/watchlist?sort=alpha,asc' % self.imdb_user
-        self.imdbwatchlist2_link = 'https://www.imdb.com/user/ur%s/watchlist?sort=date_added,desc' % self.imdb_user
+        self.trending_link = 'http://api.trakt.tv/movies/trending?limit=40&page=1'
+        self.traktlists_link = 'http://api.trakt.tv/users/me/lists'
+        self.traktlikedlists_link = 'http://api.trakt.tv/users/likes/lists?limit=1000000'
+        self.traktlist_link = 'http://api.trakt.tv/users/%s/lists/%s/items'
+        self.traktcollection_link = 'http://api.trakt.tv/users/me/collection/movies'
+        self.traktwatchlist_link = 'http://api.trakt.tv/users/me/watchlist/movies'
+        self.traktfeatured_link = 'http://api.trakt.tv/recommendations/movies?limit=40'
+        self.trakthistory_link = 'http://api.trakt.tv/users/me/history/movies?limit=40&page=1'
+        self.imdblists_link = 'http://www.imdb.com/user/ur%s/lists?tab=all&sort=mdfd&order=desc&filter=titles' % self.imdb_user
+        self.imdblist_link = 'http://www.imdb.com/list/%s/?view=detail&sort=alpha,asc&title_type=movie,short,tvMovie,tvSpecial,video&start=1'
+        self.imdblist2_link = 'http://www.imdb.com/list/%s/?view=detail&sort=date_added,desc&title_type=movie,short,tvMovie,tvSpecial,video&start=1'
+        self.imdbwatchlist_link = 'http://www.imdb.com/user/ur%s/watchlist?sort=alpha,asc' % self.imdb_user
+        self.imdbwatchlist2_link = 'http://www.imdb.com/user/ur%s/watchlist?sort=date_added,desc' % self.imdb_user
 
 
     def get(self, url, idx=True, create_directory=True):
@@ -128,16 +125,7 @@ class movies:
             except:
                 pass
 
-            if self.trakt_link in url and url == self.onDeck_link:
-                self.blist = cache.get(self.trakt_list, 720, url, self.trakt_user)
-                self.list = []
-                self.list = cache.get(self.trakt_list, 0, url, self.trakt_user)
-                self.list = self.list[::-1]
-
-                if idx == True:
-                    self.worker()
-
-            elif u in self.trakt_link and '/users/' in url:
+            if u in self.trakt_link and '/users/' in url:
                 try:
                     if url == self.trakthistory_link:
                         raise Exception()
@@ -629,6 +617,7 @@ class movies:
 
                 imdb = client.parseDOM(item, 'a', ret='href')[0]
                 imdb = re.findall(r'(tt\d*)', imdb)[0]
+                imdb = six.ensure_str(imdb)
 
                 try:
                     poster = client.parseDOM(item, 'img', ret='loadlate')[0]
@@ -672,6 +661,7 @@ class movies:
                 if rating == '' or rating == '-':
                     rating = '0'
                 rating = client.replaceHTMLCodes(rating)
+                rating = six.ensure_str(rating)
 
                 try:
                     votes = client.parseDOM(item, 'div', ret='title', attrs={'class': '.*?rating-list'})[0]
@@ -683,6 +673,7 @@ class movies:
                     votes = '0'
                 if not votes: votes = '0'
                 votes = client.replaceHTMLCodes(votes)
+                votes = six.ensure_str(votes)
 
                 try:
                     mpaa = client.parseDOM(item, 'span', attrs={'class': 'certificate'})[0]
@@ -692,6 +683,7 @@ class movies:
                     mpaa = '0'
                 mpaa = mpaa.replace('_', '-')
                 mpaa = client.replaceHTMLCodes(mpaa)
+                mpaa = six.ensure_str(mpaa)
 
                 try:
                     director = re.findall('Director(?:s|):(.+?)(?:\||</div>)', item)[0]
@@ -702,6 +694,7 @@ class movies:
                 if director == '':
                     director = '0'
                 director = client.replaceHTMLCodes(director)
+                director = six.ensure_str(director)
 
                 try:
                     cast = re.findall('Stars(?:s|):(.+?)(?:\||</div>)', item)[0]
@@ -746,6 +739,7 @@ class movies:
         for item in items:
             try:
                 name = client.parseDOM(item, 'img', ret='alt')[0]
+                name = client.replaceHTMLCodes(name)
                 name = six.ensure_str(name)
 
                 url = client.parseDOM(item, 'a', ret='href')[0]
@@ -757,6 +751,7 @@ class movies:
                 # if not ('._SX' in image or '._SY' in image): raise Exception()
                 image = re.sub(r'(?:_SX|_SY|_UX|_UY|_CR|_AL)(?:\d+|_).+?\.', '_SX500.', image)
                 image = client.replaceHTMLCodes(image)
+                image = six.ensure_str(image)
 
                 self.list.append({'name': name, 'url': url, 'image': image})
             except:
@@ -782,6 +777,7 @@ class movies:
                 url = url.split('/list/', 1)[-1].strip('/')
                 url = self.imdblist_link % url
                 url = client.replaceHTMLCodes(url)
+                url = six.ensure_str(url)
 
                 self.list.append({'name': name, 'url': url, 'context': url})
             except:
@@ -1014,7 +1010,8 @@ class movies:
 
         isPlayable = 'true' if not 'plugin' in control.infoLabel('Container.PluginName') else 'false'
 
-        indicators = playcount.getMovieIndicators()
+        indicators = playcount.getMovieIndicators(
+            refresh=True) if action == 'movies' else playcount.getMovieIndicators()
 
         playbackMenu = control.lang(32063) if control.setting('hosts.mode') == '2' else control.lang(32064)
 

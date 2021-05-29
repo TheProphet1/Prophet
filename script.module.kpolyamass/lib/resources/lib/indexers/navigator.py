@@ -229,47 +229,43 @@ class navigator:
 
 
     def mytvshows(self, lite=False):
-        try:
-            self.accountCheck()
+        self.accountCheck()
 
-            if traktCredentials == True and imdbCredentials == True:
-                self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
-                self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
-                self.addDirectoryItem(32034, 'tvshows&url=imdbwatchlist', 'imdb2.png', 'DefaultTVShows.png')
+        if traktCredentials == True and imdbCredentials == True:
+            self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
+            self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
+            self.addDirectoryItem(32034, 'tvshows&url=imdbwatchlist', 'imdb.png', 'DefaultTVShows.png')
 
-            elif traktCredentials == True:
-                self.addDirectoryItem(90050, 'calendar&url=onDeck', 'trakt.png', 'DefaultTVShows.png')
-                self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
-                self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt2.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
+        elif traktCredentials == True:
+            self.addDirectoryItem(32032, 'tvshows&url=traktcollection', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktcollection'))
+            self.addDirectoryItem(32033, 'tvshows&url=traktwatchlist', 'trakt.png', 'DefaultTVShows.png', context=(32551, 'tvshowsToLibrary&url=traktwatchlist'))
 
-            elif imdbCredentials == True:
-                self.addDirectoryItem(32032, 'tvshows&url=imdbwatchlist', 'imdb2.png', 'DefaultTVShows.png')
-                self.addDirectoryItem(32033, 'tvshows&url=imdbwatchlist2', 'imdb2.png', 'DefaultTVShows.png')
+        elif imdbCredentials == True:
+            self.addDirectoryItem(32032, 'tvshows&url=imdbwatchlist', 'imdb.png', 'DefaultTVShows.png')
+            self.addDirectoryItem(32033, 'tvshows&url=imdbwatchlist2', 'imdb.png', 'DefaultTVShows.png')
 
-            if traktCredentials == True:
-                self.addDirectoryItem(32035, 'tvshows&url=traktfeatured', 'trakt2.png', 'DefaultTVShows.png')
+        if traktCredentials == True:
+            self.addDirectoryItem(32035, 'tvshows&url=traktfeatured', 'trakt.png', 'DefaultTVShows.png')
 
-            elif imdbCredentials == True:
-                self.addDirectoryItem(32035, 'tvshows&url=trending', 'imdb2.png', 'DefaultMovies.png', queue=True)
+        elif imdbCredentials == True:
+            self.addDirectoryItem(32035, 'tvshows&url=trending', 'imdb.png', 'DefaultMovies.png', queue=True)
 
-            if traktIndicators == True:
-                self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt2.png', 'DefaultTVShows.png', queue=True)
-                self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt2.png','DefaultRecentlyAddedEpisodes.png', queue=True)
-                self.addDirectoryItem(32038, 'calendar&url=mycalendar','trakt2.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
+        if traktIndicators == True:
+            self.addDirectoryItem(32036, 'calendar&url=trakthistory', 'trakt.png', 'DefaultTVShows.png', queue=True)
+            self.addDirectoryItem(32037, 'calendar&url=progress', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
+            self.addDirectoryItem(32038, 'calendar&url=mycalendar', 'trakt.png', 'DefaultRecentlyAddedEpisodes.png', queue=True)
 
-            self.addDirectoryItem(32040, 'tvUserlists','userlists2.png', 'DefaultTVShows.png')
+        self.addDirectoryItem(32040, 'tvUserlists', 'userlists.png', 'DefaultTVShows.png')
 
-            if traktCredentials == True:
-                self.addDirectoryItem(32041, 'episodeUserlists', 'userlists2.png', 'DefaultTVShows.png')
+        if traktCredentials == True:
+            self.addDirectoryItem(32041, 'episodeUserlists', 'userlists.png', 'DefaultTVShows.png')
 
-            if lite == False:
-                self.addDirectoryItem(32031, 'tvliteNavigator', 'tvshows.png', 'DefaultTVShows.png')
-                self.addDirectoryItem(32028, 'tvPerson', 'people-search2.png', 'DefaultTVShows.png')
-                self.addDirectoryItem(32010, 'tvSearch', 'search2.png', 'DefaultTVShows.png')
+        if lite == False:
+            self.addDirectoryItem(32031, 'tvliteNavigator', 'tvshows.png', 'DefaultTVShows.png')
+            self.addDirectoryItem(32028, 'tvPerson', 'people-search.png', 'DefaultTVShows.png')
+            self.addDirectoryItem(32010, 'tvSearch', 'search.png', 'DefaultTVShows.png')
 
-            self.endDirectory()
-        except:
-            print("ERROR")
+        self.endDirectory()
 
     def tools(self):
         self.addDirectoryItem(32043, 'openSettings&query=0.0', 'tools.png', 'DefaultAddonProgram.png')
@@ -317,10 +313,10 @@ class navigator:
         self.endDirectory()
 
     def search(self):
-        self.addDirectoryItem(32001, 'movieSearch','search.png', 'DefaultMovies.png')
-        self.addDirectoryItem(32002, 'tvSearch', 'search2.png', 'DefaultTVShows.png')
-        self.addDirectoryItem(32029, 'moviePerson','people-search.png', 'DefaultMovies.png')
-        self.addDirectoryItem(32030, 'tvPerson', 'people-search2.png', 'DefaultTVShows.png')
+        self.addDirectoryItem(32001, 'movieSearch', 'search.png', 'DefaultMovies.png')
+        self.addDirectoryItem(32002, 'tvSearch', 'search.png', 'DefaultTVShows.png')
+        self.addDirectoryItem(32029, 'moviePerson', 'people-search.png', 'DefaultMovies.png')
+        self.addDirectoryItem(32030, 'tvPerson', 'people-search.png', 'DefaultTVShows.png')
 
         self.endDirectory()
 
@@ -375,7 +371,7 @@ class navigator:
             return '1'
 
     def clearCache(self):
-        #control.idle()
+        control.idle()
         yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
@@ -383,7 +379,7 @@ class navigator:
         control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheMeta(self):
-        #control.idle()
+        control.idle()
         yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
@@ -391,15 +387,15 @@ class navigator:
         control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheProviders(self):
-        #control.idle()
-#        yes = control.yesnoDialog(control.lang(32056))
-#        if not yes: return
+        control.idle()
+        yes = control.yesnoDialog(control.lang(32056))
+        if not yes: return
         from resources.lib.modules import cache
         cache.cache_clear_providers()
         control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheSearch(self):
-        #control.idle()
+        control.idle()
         yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
@@ -407,7 +403,7 @@ class navigator:
         control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearDebridCheck(self):
-        #control.idle()
+        control.idle()
         yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
@@ -415,7 +411,7 @@ class navigator:
         control.infoDialog(six.ensure_str(control.lang(32057)), sound=True, icon='INFO')
 
     def clearCacheAll(self):
-        #control.idle()
+        control.idle()
         yes = control.yesnoDialog(control.lang(32056))
         if not yes: return
         from resources.lib.modules import cache
