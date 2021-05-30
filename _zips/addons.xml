@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.Amass_Reborn"
 	   name="[COLOR yellow]Amass Reborn[/COLOR]"
-	   version="2.0.3"
+	   version="2.0.4"
 	   provider-name="The Prophet">
     <requires>
 	    <import addon="script.module.resolveurl" />
@@ -128,7 +128,7 @@
     </extension>
 </addon>
 
-<addon id="repository.prophet" name="The Prophet repo" version="1.1.0" provider-name="The Prophet">
+<addon id="repository.prophet" name="The Prophet repo" version="1.1.1" provider-name="The Prophet">
 	<requires>
 		<import addon="xbmc.addon" version="12.0.0"/>
 	</requires>
@@ -148,19 +148,9 @@
 			<datadir zip="true">https://raw.githubusercontent.com/Gujal00/smrzips/master/zips/</datadir>
 		</dir>
 		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/a4k-openproject/repository.openscrapers/master/zips/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/a4k-openproject/repository.openscrapers/master/zips/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/a4k-openproject/repository.openscrapers/master/zips/</datadir>
-		</dir>
-		<dir>
 			<info compressed="false">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml</info>
 			<checksum>https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/addons.xml.md5</checksum>
 			<datadir zip="true">https://raw.githubusercontent.com/jenaddon/repository.jenrepo/master/zips/</datadir>
-		</dir>
-		<dir>
-			<info compressed="false">https://raw.githubusercontent.com/a4k-openproject/repository.openwizard/master/matrix/zips/addons.xml</info>
-			<checksum>https://raw.githubusercontent.com/a4k-openproject/repository.openwizard/master/matrix/zips/addons.xml.md5</checksum>
-			<datadir zip="true">https://raw.githubusercontent.com/a4k-openproject/repository.openwizard/master/matrix/zips/</datadir>
 		</dir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
@@ -195,7 +185,7 @@
 	</extension>
 </addon>
 
-<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.3.8" provider-name="The Prophet">
+<addon id="script.module.kpolyamass" name="Kpolyamass Module" version="1.3.9" provider-name="The Prophet">
 	<requires>
 		<!--<import addon="xbmc.python" version="2.25.0" />-->
         <import addon="script.module.beautifulsoup4"/>

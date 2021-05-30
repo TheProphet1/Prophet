@@ -337,7 +337,7 @@ class player(xbmc.Player):
         if int(self.currentTime) > 120:
             if control.setting('bookmarks') == 'true':
                 bookmarks().reset(self.currentTime, self.totalTime, self.name, self.year)
-            if (trakt.getTraktCredentialsInfo() == True and control.setting('trakt.scrobble') == 'true'):
+        if control.setting('trakt.scrobble') == 'true':
                 bookmarks().set_scrobble(self.currentTime, self.totalTime, self.content, self.imdb, self.tvdb, self.season, self.episode)
 
         try:
